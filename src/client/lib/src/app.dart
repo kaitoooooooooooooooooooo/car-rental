@@ -1,4 +1,4 @@
-import 'package:car_rent_client/src/features/car/presentation/cars_list/cars_list_screen.dart';
+import 'package:car_rent_client/src/features/car/presentation/cars_list/car_list_screen.dart';
 import 'package:flutter/material.dart';
 
 class App extends StatelessWidget {
@@ -9,6 +9,13 @@ class App extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Car Rental',
+
+      theme: ThemeData(
+        textSelectionTheme: const TextSelectionThemeData(
+          cursorColor: Colors.black,
+        ),
+      ),
+
       home: const CarsListScreen(),
     );
   }
