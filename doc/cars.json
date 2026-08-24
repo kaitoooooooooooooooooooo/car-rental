@@ -1,0 +1,174 @@
+[
+  {
+    "id": 1,
+    "marque": "Porsche",
+    "modele": "911 Carrera S",
+    "annee": 2023,
+    "categorie": "sport",
+    "statut": "valide",
+    "proprietaireId": { "$oid": "68a1f0000000000000000001" },
+    "immatriculation": "BE 145 892",
+    "description": "Coupé sportif emblématique, boîte PDK 8 rapports et châssis sport. Entretien complet effectué au centre Porsche de Berne.",
+    "localisation": {
+      "ville": "Bienne",
+      "canton": "BE",
+      "codePostal": "2502",
+      "adresse": "Rue de la Gare 24",
+      "pointRetrait": "Parking souterrain, niveau -2"
+    },
+    "caracteristiques": {
+      "transmission": "automatique",
+      "carburant": "essence",
+      "places": 4,
+      "portes": 2,
+      "puissanceCh": 450,
+      "cylindree": 2981,
+      "consommationMixte": 10.1,
+      "coffreLitres": 132,
+      "couleur": "Gris Craie",
+      "kilometrage": 18450
+    },
+    "equipements": [
+      "gps",
+      "climatisation_auto",
+      "sieges_chauffants",
+      "bluetooth",
+      "camera_recul",
+      "regulateur_adaptatif",
+      "apple_carplay",
+      "toit_ouvrant"
+    ],
+    "tarifs": {
+      "devise": "CHF",
+      "jour": 450,
+      "semaine": 2700,
+      "mois": 9200,
+      "caution": 5000,
+      "kilometrageInclusParJour": 200,
+      "prixKmSupplementaire": 2.5
+    },
+    "conditions": {
+      "ageMinimum": 25,
+      "anneesPermisMinimum": 3,
+      "kilometrageMaxParJour": 400,
+      "conduiteEtrangerAutorisee": false,
+      "animauxAutorises": false,
+      "fumeurAutorise": false
+    },
+    "indisponibilites": [
+      {
+        "debut": { "$date": "2026-09-14T00:00:00.000Z" },
+        "fin": { "$date": "2026-09-18T23:59:59.000Z" },
+        "motif": "Entretien annuel"
+      }
+    ],
+    "photos": [
+      {
+        "url": "https://picsum.photos/seed/porsche911-a/1200/800",
+        "legende": "Trois quarts avant",
+        "principale": true,
+        "ordre": 1
+      },
+      {
+        "url": "https://picsum.photos/seed/porsche911-b/1200/800",
+        "legende": "Profil droit",
+        "principale": false,
+        "ordre": 2
+      },
+      {
+        "url": "https://picsum.photos/seed/porsche911-c/1200/800",
+        "legende": "Intérieur, poste de conduite",
+        "principale": false,
+        "ordre": 3
+      }
+    ],
+    "note": {
+      "moyenne": 4.8,
+      "nombre": 12
+    },
+    "nombreLocations": 12,
+    "createdAt": { "$date": "2026-03-11T09:24:00.000Z" },
+    "updatedAt": { "$date": "2026-08-02T14:05:00.000Z" }
+  },
+  {
+    "id": 2,
+    "marque": "Range Rover",
+    "modele": "Sport P400e",
+    "annee": 2024,
+    "categorie": "suv",
+    "statut": "valide",
+    "proprietaireId": { "$oid": "68a1f0000000000000000002" },
+    "immatriculation": "VD 302 774",
+    "description": "SUV hybride rechargeable, 5 places et grand coffre. Idéal pour les trajets en famille et les départs en montagne, pneus hiver inclus de novembre à mars.",
+    "localisation": {
+      "ville": "Lausanne",
+      "canton": "VD",
+      "codePostal": "1003",
+      "adresse": "Avenue de Rumine 12",
+      "pointRetrait": "Devant l'agence, place réservée n°4"
+    },
+    "caracteristiques": {
+      "transmission": "automatique",
+      "carburant": "hybride",
+      "places": 5,
+      "portes": 5,
+      "puissanceCh": 404,
+      "cylindree": 1997,
+      "consommationMixte": 3.3,
+      "coffreLitres": 647,
+      "couleur": "Noir Santorini",
+      "kilometrage": 9120
+    },
+    "equipements": [
+      "gps",
+      "climatisation_auto",
+      "sieges_chauffants",
+      "bluetooth",
+      "camera_360",
+      "regulateur_adaptatif",
+      "android_auto",
+      "attelage",
+      "pneus_hiver",
+      "coffre_de_toit"
+    ],
+    "tarifs": {
+      "devise": "CHF",
+      "jour": 280,
+      "semaine": 1680,
+      "mois": 5900,
+      "caution": 3000,
+      "kilometrageInclusParJour": 250,
+      "prixKmSupplementaire": 1.8
+    },
+    "conditions": {
+      "ageMinimum": 23,
+      "anneesPermisMinimum": 2,
+      "kilometrageMaxParJour": 500,
+      "conduiteEtrangerAutorisee": true,
+      "animauxAutorises": true,
+      "fumeurAutorise": false
+    },
+    "indisponibilites": [],
+    "photos": [
+      {
+        "url": "https://picsum.photos/seed/rangerover-a/1200/800",
+        "legende": "Trois quarts avant",
+        "principale": true,
+        "ordre": 1
+      },
+      {
+        "url": "https://picsum.photos/seed/rangerover-b/1200/800",
+        "legende": "Coffre ouvert",
+        "principale": false,
+        "ordre": 2
+      }
+    ],
+    "note": {
+      "moyenne": 4.6,
+      "nombre": 5
+    },
+    "nombreLocations": 5,
+    "createdAt": { "$date": "2026-05-28T16:40:00.000Z" },
+    "updatedAt": { "$date": "2026-08-10T08:15:00.000Z" }
+  }
+]

@@ -1,0 +1,86 @@
+openapi: 3.0.4
+info:
+  title: Car Rental API
+  version: 1.0.0
+  description: Location de voitures premium - API véhicules
+
+servers:
+  - url: http://localhost:3000
+    description: Le serveur de développement
+
+components:
+  schemas:
+    Cars:
+      type: object
+      properties:
+        id:
+          type: number
+        marque:
+          type: string
+        modele:
+          type: string
+        annee:
+          type: number
+        categorie:
+          type: string
+        statut:
+          type: string
+        proprietaireId:
+          type: string
+        immatriculation:
+          type: string
+        description:
+          type: string
+        localisation:
+          type: object
+        caracteristiques:
+          type: object
+        equipements:
+          type: array
+        tarifs:
+          type: object
+        conditions:
+          type: object
+        indisponibilites:
+          type: array
+        photos:
+          type: array
+        note:
+          type: object
+        nombreLocations:
+          type: number
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required: [id, marque, modele, annee, categorie, statut, proprietaireId, immatriculation, description, localisation, caracteristiques, equipements, tarifs, conditions, indisponibilites, photos, note, nombreLocations, createdAt, updatedAt]
+
+tags:
+  - name: Car
+    description: Gestion des véhicules
+
+paths:
+  /cars:
+    get:
+      summary: Récupérer la liste de tous les véhicules
+      tags: [Car]
+      responses:
+        "200":
+          description: Succès - La liste est récupérée ou liste vide
+  /cars/{id}:
+    get:
+      summary: Rechercher un véhicule selon son id
+      tags: [Car]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: L'id du véhicule à rechercher
+          example: 68a1f0000000000000000001
+      responses:
+        "200":
+          description: véhicule trouvé
+        "500":
+          description: Le véhicule n'est pas trouvé ou l'id est invalide

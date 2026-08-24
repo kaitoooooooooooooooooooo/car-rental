@@ -1,0 +1,30 @@
+{
+  // Le SDK Flutter est trouvé via le PATH utilisateur (voir scripts/install-flutter.ps1).
+  // Si VS Code ne le trouve pas, décommente la ligne ci-dessous et adapte le chemin :
+  // "dart.flutterSdkPath": "C:\\Users\\<toi>\\dev\\flutter",
+
+  "dart.openDevTools": "flutter",
+  "dart.debugExternalPackageLibraries": false,
+  "dart.debugSdkLibraries": false,
+
+  "files.exclude": {
+    "**/.dart_tool": true,
+    "**/build": true,
+    "**/node_modules": true
+  },
+  "search.exclude": {
+    "**/build": true,
+    "**/node_modules": true,
+    "**/.dart_tool": true
+  },
+
+  "[dart]": {
+    "editor.formatOnSave": true,
+    "editor.rulers": [80],
+    "editor.selectionHighlight": false,
+    "editor.tabCompletion": "onlySnippets",
+    "editor.wordBasedSuggestions": "off"
+  },
+
+  "terminal.integrated.defaultProfile.windows": "PowerShell"
+}
