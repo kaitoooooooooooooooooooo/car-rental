@@ -1,0 +1,106 @@
+﻿CAR RENTAL - Documentation du projet
+
+Auteur : Tom Mehl
+Cours  : 3ème année - Codage
+Date   : 24 août 2026
+
+
+1. LE PROJET
+
+Car Rental ("Rivano") est une application de location de voitures entre
+particuliers et professionnels. L'utilisateur consulte un catalogue de véhicules avec leurs
+photos, caractéristiques, tarifs et conditions.
+
+Il est composé de quatre parties :
+  cars.json          les données des véhicules
+  server/            une API REST qui stocke et expose ces données
+  car_rent_client/   une application Flutter qui les affiche
+  la maquette Figma  la référence visuelle
+
+Le flux est le suivant :
+cars.json -> MongoDB -> API Express (port 3000) -> Flutter
+
+
+2. LES DONNÉES : cars.json
+
+C'est un tableau JSON contenant les véhicules (pour l'instant une Porsche 911
+et un Range Rover). Il est importé dans MongoDB et sert de référence
+commune : le serveur et le client utilisent exactement les mêmes champs.
+
+Chaque véhicule a 20 champs :
+- des champs simples : id, marque, modele, annee, categorie, statut,
+  proprietaireId, immatriculation, description, nombreLocations,
+  createdAt, updatedAt
+- des objets : localisation (ville, canton, adresse), caracteristiques
+  (transmission, carburant, places, puissance), tarifs (jour, semaine,
+  mois, caution), conditions (âge minimum, animaux), note
+- des tableaux : equipements, indisponibilites, photos
+
+Deux champs utilisent une notation spéciale de MongoDB :
+  "proprietaireId": { "$oid": "68a1f0000000000000000001" }
+  "createdAt": { "$date": "2026-03-11T09:24:00.000Z" }
+
+3. LE SERVEUR
+
+Technologies : Node.js, Express 5, MongoDB, Mongoose, Swagger.
+Le serveur écoute le port 3000.
+
+Le code est séparé en quatre fichiers, chacun avec un seul rôle :
+  app.js                       démarre le serveur et se connecte à MongoDB
+  routes/carRoutes.js          liste les URLs de l'API
+  controller/carController.js  contient la logique des routes
+  models/car.js                décrit un véhicule (schéma Mongoose)
+
+L'API propose deux routes :
+  GET /cars       renvoie la liste de tous les véhicules
+  GET /cars/:id   renvoie un véhicule à partir de son identifiant MongoDB
+
+Pour /cars/:id, le contrôleur vérifie d'abord que l'identifiant est un
+ObjectId valide, puis cherche le véhicule. Il renvoie une erreur si l'id
+est invalide ou si aucun véhicule ne correspond.
+
+Le fichier swagger.yaml décrit l'API. La page http://localhost:3000/docs
+affiche cette documentation et permet de tester les routes directement
+dans le navigateur.
+
+
+4. LE CLIENT
+
+Technologies : Flutter (Dart), Riverpod (gestion de l'état), http (appels
+réseau), equatable, google_fonts, flutter_svg.
+
+Le code est découpé en trois couches, dans lib/src/features/car/ :
+
+  domain/        les modèles, une classe Dart par objet du JSON (Car,
+                 Localisation, Caracteristiques, Tarifs, Conditions, Note,
+                 Photo, Indisponibilite). Chacune a une méthode fromJson()
+                 qui la construit à partir des données reçues.
+
+  data/          CarService, la seule classe qui parle au serveur. Elle
+                 appelle GET /cars, décode la réponse et la transforme en
+                 liste d'objets Car. Deux providers Riverpod exposent ce
+                 résultat au reste de l'application.
+
+  presentation/  CarsListScreen, l'écran de liste. Il réagit à l'état du
+                 provider et gère les trois cas : chargement, erreur, et
+                 données reçues (une carte par véhicule avec sa photo).
+
+5. LA MAQUETTE FIGMA
+
+La maquette a été réalisée avant le développement du client, afin de  fixer l'interface
+avant d'écrire le code.
+
+Lien : https://www.figma.com/design/o3gKd2JOmqF7HPEL5zM47Y/Car-Rental-App?node-id=1326-12648&t=Iewe4RplWyMcO9Pz-1
+
+Elle définit :
+- le nom et le logo ("Rivano", logo exporté en SVG dans
+  assets/images/app/logo.svg)
+- la typographie : Roboto, chargée avec google_fonts
+- la palette de couleurs, reportée dans lib/src/constants/colors.dart :
+  fond #F5F5F5, gris principal #454545, bleu d'accent #3B82F6,
+  boutons #21292B, bordures #D7D7D7, textes #000000 et #7F7F7F,
+  erreur #B00020
+- la disposition de l'écran : barre de titre avec logo et icônes, puis une
+  liste de cartes véhicules
+
+Les couleurs sont regroupées dans un seul fichier : constants/colors.dart

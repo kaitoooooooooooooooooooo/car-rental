@@ -1,0 +1,43 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Flutter Web (Chrome)",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "cwd": "${workspaceFolder}/car_rent_client",
+      "deviceId": "chrome",
+      "args": ["--web-port", "5000"]
+    },
+    {
+      "name": "Flutter Web (Chrome) + Mongo",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "cwd": "${workspaceFolder}/car_rent_client",
+      "deviceId": "chrome",
+      "args": ["--web-port", "5000"],
+      "preLaunchTask": "mongo: démarrer"
+    },
+    {
+      "name": "API Express (Node)",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/server/app.js",
+      "cwd": "${workspaceFolder}/server",
+      "console": "integratedTerminal",
+      "restart": true,
+      "skipFiles": ["<node_internals>/**"],
+      "preLaunchTask": "mongo: démarrer"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "▶ Tout lancer (Mongo + API + Chrome)",
+      "configurations": ["API Express (Node)", "Flutter Web (Chrome)"],
+      "preLaunchTask": "mongo: démarrer",
+      "stopAll": true
+    }
+  ]
+}
