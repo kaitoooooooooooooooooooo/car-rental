@@ -1,11 +1,11 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const swaggerUI = require('swagger-ui-express');
+import express from "express";
+import swaggerUI from "swagger-ui-express";
 
-const CarRoutes = require('./routes/carRoutes');
-const swaggerDocument = require("./swagger");
+import CarRoutes from "./routes/carRoutes.js";
+import swaggerDocument from "./swagger.js";
+import { connectToDatabase, disconnectFromDatabase } from "./db.js";
 
-const app = express();
+export const app = express();
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -18,9 +18,17 @@ app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 app.use("/cars", CarRoutes);
 
-mongoose
-    .connect("mongodb://localhost:27017/car_rental")
-    .then(result => {
-        console.log("server started");
-        app.listen(3000);
-    }).catch(err => console.log(err));
+// En mode test, c'est le fichier de tests qui gère la base de données ;
+// le serveur ne doit ni se connecter ni écouter un port.
+if (process.env.NODE_ENV !== "test") {
+    await connectToDatabase();
+    app.listen(3000, () => {
+        console.log("Server running on port 3000");
+    });
+    process.on("SIGINT", async () => {
+        await disconnectFromDatabase();
+        process.exit();
+    });
+}
+
+export default app;

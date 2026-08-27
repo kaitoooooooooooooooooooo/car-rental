@@ -1,7 +1,11 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const CarSchema = new Schema({
+    _id: {
+        type: Schema.Types.ObjectId,
+        required: false,
+    },
     id: {
         type: Number,
         required: true,
@@ -84,4 +88,4 @@ const CarSchema = new Schema({
     },
 });
 
-module.exports = mongoose.model("Car", CarSchema);
+export default mongoose.model("Car", CarSchema);

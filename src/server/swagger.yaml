@@ -82,5 +82,7 @@ paths:
       responses:
         "200":
           description: véhicule trouvé
-        "500":
-          description: Le véhicule n'est pas trouvé ou l'id est invalide
+        "400":
+          description: L'id reçu est invalide
+        "404":
+          description: Aucun véhicule ne correspond à cet id
