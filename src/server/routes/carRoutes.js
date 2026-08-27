@@ -1,9 +1,9 @@
-const express = require('express');
+import express from "express";
+import { getCars, getCarById } from "../controller/carController.js";
+
 const router = express.Router();
 
-const carController = require("../controller/carController");
+router.get("/", getCars);
+router.get("/:id", getCarById);
 
-router.get("/", carController.getCars);
-router.get("/:id", carController.getCarById);
-
-module.exports = router;
+export default router;
