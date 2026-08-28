@@ -18,8 +18,6 @@ app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 app.use("/cars", CarRoutes);
 
-// En mode test, c'est le fichier de tests qui gère la base de données ;
-// le serveur ne doit ni se connecter ni écouter un port.
 if (process.env.NODE_ENV !== "test") {
     await connectToDatabase();
     app.listen(3000, () => {
