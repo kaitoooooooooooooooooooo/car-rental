@@ -1,8 +1,7 @@
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 
-// Le serveur MongoDB en mémoire n'est créé qu'à la demande, afin que le
-// démarrage normal de l'API (npm start) n'en dépende pas.
+
 let mongodb = null;
 
 const isTest = () => process.env.NODE_ENV === "test";
@@ -37,7 +36,6 @@ export async function disconnectFromDatabase() {
     console.log("Disconnected from database");
 }
 
-// Identifiants fixes : les tests doivent pouvoir retrouver un véhicule par _id.
 export const PORSCHE_ID = "68a1f0000000000000000101";
 export const RANGE_ROVER_ID = "68a1f0000000000000000102";
 export const UNKNOWN_ID = "68a1f00000000000000009ff";
