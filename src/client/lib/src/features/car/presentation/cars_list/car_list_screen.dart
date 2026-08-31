@@ -1,9 +1,13 @@
+// ignore_for_file: dead_null_aware_expression
+
+import 'package:car_rent_client/src/constants/app_sizes.dart';
 import 'package:car_rent_client/src/constants/colors.dart';
 import 'package:car_rent_client/src/features/car/data/remote/car_service.dart';
 import 'package:car_rent_client/src/features/car/presentation/cars_list/car_card.dart';
+import 'package:car_rent_client/src/features/car/presentation/cars_list/rangeselector.dart';
+import 'package:car_rent_client/src/features/car/presentation/cars_list/segmentedControl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CarsListScreen extends ConsumerStatefulWidget {
@@ -13,10 +17,15 @@ class CarsListScreen extends ConsumerStatefulWidget {
   ConsumerState<CarsListScreen> createState() => _CarsListScreenState();
 }
 
+enum ViewMode { day, week, month }
+
 class _CarsListScreenState extends ConsumerState<CarsListScreen> {
   final SearchController _searchController = SearchController();
 
   String _searchText = '';
+
+  // ignore: prefer_final_fields, unused_field
+  int _index = 0;
 
   @override
   void initState() {
@@ -38,20 +47,22 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
   @override
   Widget build(BuildContext context) {
     final carsListValue = ref.watch(carsListFutureProvider);
+    MediaQuery.of(context).size.height;
 
-    const assetName = 'assets/images/app/logo.svg';
-    final Widget svg = SvgPicture.asset(
-      assetName,
-      semanticsLabel: 'Rivano Logo',
+    final Widget logo = CircleAvatar(
+      backgroundColor: Colors.black,
+      child: Container(
+        margin: EdgeInsets.all(3),
+        child: Image.asset('assets/images/app/logo.png'),
+      ),
     );
 
     return Scaffold(
       backgroundColor: AppColors.background,
-
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
+            padding: const EdgeInsets.fromLTRB(16, 25, 16, 24),
             child: Column(
               children: [
                 Row(
@@ -59,7 +70,10 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                   children: [
                     Row(
                       children: [
-                        Container(margin: const EdgeInsets.all(10), child: svg),
+                        Container(
+                          margin: const EdgeInsets.all(10),
+                          child: logo,
+                        ),
                         SizedBox(width: 4),
                         Text(
                           'Rivano',
@@ -87,7 +101,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                     ),
                   ],
                 ),
-                Container(
+                SizedBox(
                   height: 40,
                   child: Divider(color: Colors.grey.shade300, thickness: 1),
                 ),
@@ -147,17 +161,118 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                     SizedBox(width: 30),
                     RawMaterialButton(
                       splashColor: AppColors.white,
-                      onPressed: () {},
+                      onPressed: () {
+                        showModalBottomSheet(
+                          backgroundColor: AppColors.white,
+                          context: context,
+                          builder: (context) {
+                            return Container(
+                              margin: const EdgeInsets.only(
+                                top: 10,
+                                left: 20,
+                                right: 20,
+                                bottom: 10,
+                              ),
+                              width: double.infinity,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const SizedBox(height: 10),
+                                  Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: IconButton(
+                                          hoverColor: Colors.transparent,
+                                          splashColor: Colors.transparent,
+                                          highlightColor: Colors.transparent,
+                                          icon: const Icon(
+                                            Icons.clear,
+                                            color: AppColors.buttons,
+                                            size: 20,
+                                          ),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                      ),
+                                      Text(
+                                        'Filters',
+                                        style: GoogleFonts.roboto(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppColors.textPrimary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                    child: Divider(
+                                      color: Colors.grey.shade300,
+                                      thickness: 1,
+                                    ),
+                                  ),
+                                  gapH8,
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Types of Cars',
+                                        style: GoogleFonts.roboto(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppColors.textPrimary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  gapH8,
+                                  CarTypeToggle(
+                                    onChanged: (value) {
+                                      print('Sélection : $value');
+                                    },
+                                  ),
+                                  gapH16,
+                                  SizedBox(
+                                    height: 20,
+                                    child: Divider(
+                                      color: Colors.grey.shade300,
+                                      thickness: 1,
+                                    ),
+                                  ),
+                                  gapH8,
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Price range',
+                                        style: GoogleFonts.roboto(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppColors.textPrimary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  RangeSelector(),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
                       elevation: 2.0,
                       fillColor: Colors.white,
+                      padding: EdgeInsets.all(15.0),
+                      shape: CircleBorder(),
                       constraints: BoxConstraints(minWidth: 0.0),
                       child: Icon(
                         Icons.tune,
                         size: 26.0,
                         color: AppColors.icon,
                       ),
-                      padding: EdgeInsets.all(15.0),
-                      shape: CircleBorder(),
                     ),
                   ],
                 ),
@@ -227,8 +342,11 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                       child: carsListValue.when(
                         data: (cars) {
                           final filteredCars = cars.where((car) {
-                            final brand = car.marque?.toLowerCase() ?? '';
-                            final model = car.modele?.toLowerCase() ?? '';
+                            // ignore: duplicate_ignore
+                            // ignore: dead_null_aware_expression, dead_code
+                            final brand = car.marque.toLowerCase() ?? '';
+                            // ignore: dead_code
+                            final model = car.modele.toLowerCase() ?? '';
                             return brand.contains(_searchText) ||
                                 model.contains(_searchText);
                           }).toList();
