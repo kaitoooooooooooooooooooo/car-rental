@@ -15,7 +15,9 @@ class CarCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final photo = car.photos.isEmpty ? null : car.photos.first;
     final asset = photo?.asset;
+    // ignore: dead_null_aware_expression, dead_code
     final marque = (car.marque ?? '').toUpperCase();
+    // ignore: dead_null_aware_expression
     final model = (car.modele ?? '').toUpperCase();
 
     return Card(
