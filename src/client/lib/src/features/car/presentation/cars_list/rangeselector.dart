@@ -1,5 +1,8 @@
+import 'package:car_rent_client/src/constants/app_sizes.dart';
+import 'package:car_rent_client/src/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 
@@ -36,6 +39,7 @@ class _RangeSelectorState extends ConsumerState<RangeSelector> {
 
         final prices = cars
             .map((car) => car.tarifs.jour)
+            // ignore: unnecessary_null_comparison
             .where((price) => price != null)
             .map((price) => (price as num).toDouble())
             .toList();
@@ -65,52 +69,36 @@ class _RangeSelectorState extends ConsumerState<RangeSelector> {
             SfRangeSelector(
               min: minPrice,
               max: maxPrice,
-
+              activeColor: AppColors.textPrimary,
               initialValues: SfRangeValues(minPrice, maxPrice),
-
               interval: ((maxPrice - minPrice) / 5).clamp(1, double.infinity),
-
               showLabels: true,
               showTicks: true,
-
               onChanged: (SfRangeValues values) {
                 setState(() {
                   _values = values;
                 });
               },
-
               child: SizedBox(
                 height: 130,
-
                 child: SfCartesianChart(
                   margin: EdgeInsets.zero,
-
                   primaryXAxis: NumericAxis(
                     minimum: minPrice,
                     maximum: maxPrice,
                     isVisible: false,
                   ),
-
                   primaryYAxis: NumericAxis(isVisible: false),
-
                   plotAreaBorderWidth: 0,
-
                   tooltipBehavior: TooltipBehavior(enable: true),
-
                   series: <ColumnSeries<ChartData, double>>[
                     ColumnSeries<ChartData, double>(
                       dataSource: chartData,
-
                       xValueMapper: (ChartData data, _) => data.x,
-
                       yValueMapper: (ChartData data, _) => data.y,
-
-                      color: const Color.fromARGB(255, 126, 184, 253),
-
+                      color: AppColors.textPrimary,
                       width: 0.7,
-
                       spacing: 0.1,
-
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(4),
                         topRight: Radius.circular(4),
@@ -120,13 +108,74 @@ class _RangeSelectorState extends ConsumerState<RangeSelector> {
                 ),
               ),
             ),
-
             const SizedBox(height: 10),
-
-            Text(
-              'Prix : ${_values.start.toStringAsFixed(0)} - '
-              '${_values.end.toStringAsFixed(0)}',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
+                  children: [
+                    Text(
+                      'Minimum',
+                      style: GoogleFonts.roboto(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    gapH8,
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: AppColors.stoke, width: 1),
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 6,
+                      ),
+                      child: Text(
+                        '${_values.start.toStringAsFixed(0)}',
+                        style: GoogleFonts.roboto(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    Text(
+                      'Maximum',
+                      style: GoogleFonts.roboto(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    gapH8,
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: AppColors.stoke, width: 1),
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 6,
+                      ),
+                      child: Text(
+                        '${_values.end.toStringAsFixed(0)}',
+                        style: GoogleFonts.roboto(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ],
         );

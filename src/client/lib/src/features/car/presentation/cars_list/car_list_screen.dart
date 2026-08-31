@@ -257,6 +257,28 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                                     ],
                                   ),
                                   RangeSelector(),
+                                  gapH16,
+                                  SizedBox(
+                                    height: 20,
+                                    child: Divider(
+                                      color: Colors.grey.shade300,
+                                      thickness: 1,
+                                    ),
+                                  ),
+                                  gapH8,
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Rental Time',
+                                        style: GoogleFonts.roboto(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppColors.textPrimary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ],
                               ),
                             );
