@@ -1,120 +1,132 @@
-﻿CAR RENTAL ("Rivano") - Documentation projet / Suivi Scrum
+﻿   __   _____         _        __  ___ 
+  /__\  \_   \/\   /\/_\    /\ \ \/___\
+ / \//   / /\/\ \ / //_\\  /  \/ //  //
+/ _  \/\/ /_   \ V /  _  \/ /\  / \_// 
+\/ \_/\____/    \_/\_/ \_/\_\ \/\___/  
+                                       
+CAR RENTAL ("Rivano") - Documentation projet & Suivi Scrum
 
 Auteur : Tom Mehl
 Cours  : 3eme annee - Projet Rivano
-Mise a jour : 27/08/2026
+Mise a jour : 03/09/2026
 
 
-1. CADRE SCRUM
+1. OBJECTIF
 
-OBJECTIF DE SPRINT
-Livrer une application de location de voitures fonctionnelle de bout en
-bout : catalogue de vehicules servi par une API REST et consomme par une
-application Flutter conforme a la maquette Figma.
+	Une application de location de voitures de luxe : un catalogue de
+	vehicules provenant d'une API REST et affiche dans une application Flutter
+	conforme a la maquette Figma.
 
 
 2. DEFINITION OF DONE (DoD)
 
-Une User Story est "Done" si :
-  D1  le code est sur main et compile sans erreur
+A User Story is Done if :
+  D1  le code compile sans erreur
   D2  l'API repond avec le bon code HTTP (200 / 400 / 404)
   D3  la route est documentee dans swagger.yaml et testable sur /docs
   D4  l'ecran Flutter gere les 3 etats : chargement / erreur / donnees
-  D5  l'UI respecte la maquette Figma (couleurs, typo, disposition)
+  D5  l'UI respecte la maquette Figma
   D6  le rendu est verifie sur emulateur Android
-  D7  la documentation (ce fichier) est a jour
+  D7  cette documentation est a jour
 
 
-3. SPRINT BACKLOG - ETAT AU 27/08/2026
+3. AVANCEMENT AU 03/09/2026
 
-  ID  User Story                                   Etat        DoD
-  --  -------------------------------------------  ----------  ---------
-  US1 Modeliser les donnees (cars.json)            DONE        ok
-  US2 Serveur Express + connexion MongoDB          DONE        D1,D2
-  US3 GET /cars - liste des vehicules              DONE        D1-D3
-  US4 GET /cars/:id - detail d'un vehicule         DONE        D1-D3
-  US5 Documentation Swagger (/docs)                DONE        D3
-  US6 Maquette Figma + charte graphique            DONE        D5
-  US7 Modeles Dart + parsing JSON                  DONE        D1
-  US8 CarService + providers Riverpod              DONE        D1,D4
-  US9 Ecran liste (cartes + barre de recherche)    EN COURS    D4 ok,
-                                                               D5/D6 en
-                                                               cours
-  US10 Ecran detail vehicule                       A FAIRE     -
-  US11 Filtre / recherche fonctionnelle            A FAIRE     -
-  US12 Reservation (dates + indisponibilites)      A FAIRE     -
-  US13 Gestion des erreurs reseau cote client      A FAIRE     -
-  US14 Tests unitaires serveur (Jest + supertest)  DONE        D1-D3
-  US15 Tests de widgets cote client                A FAIRE     -
+  NO   User Story                                  	Etat
+  ---  ------------------------------------------  	----------
+  1  Modeliser les donnees (cars.json)           	DONE
+  2  Serveur Express + connexion MongoDB         	DONE
+  3  GET /cars - liste des vehicules             	DONE
+  4  GET /cars/:id - detail d'un vehicule        	DONE
+  5  Documentation Swagger (/docs)               	DONE
+  6  Maquette Figma + charte graphique           	DONE
+  7  Modeles Dart + parsing JSON                 	DONE
+  8  CarService + providers Riverpod             	DONE
+  9  Ecran liste (cartes + barre de recherche)   	DONE
+  14 Tests unitaires serveur (Jest + supertest)  	DONE
+  11 Panneau de filtres (UI)                     	EN COURS
+  10 Ecran detail vehicule                       	A FAIRE
+  12 Reservation (dates + indisponibilites)      	A FAIRE
+  13 Gestion des erreurs reseau cote client      	A FAIRE
+  15 Tests de widgets cote client                	A FAIRE
 
-Avancement : 9 US terminees / 15 (60%)
-
-4. CE QUI EST DEMONTRABLE AUJOURD'HUI (REVUE)
-
-Scenario de demo :
-  1. Lancer le serveur      -> npm start (port 3000)
-  2. Ouvrir la doc API      -> http://localhost:3000/docs
-  3. Tester GET /cars       -> liste JSON des vehicules
-  4. Tester GET /cars/:id   -> un vehicule (+ 400 id invalide,
-                               404 introuvable)
-  5. Lancer les tests       -> npm test : 9 tests verts (Jest,
-                               supertest, mongodb-memory-server)
-  6. Lancer le client       -> flutter run
-  7. L'application affiche le catalogue : logo Rivano, barre de
-     recherche, une carte par vehicule avec photo, marque/modele et
-     tarif, donnees venant reellement de l'API.
-
-Chaine complete validee : cars.json -> MongoDB -> API Express -> Flutter.
+	Avancement : 10 / 15 
 
 
-5. ARCHITECTURE (RESUME)
+4. FAIT RECEMMENT (28/08 -> 03/09)
+
+  - Panneau de filtres ("Filters") ouvert en bottom sheet depuis la
+    barre de recherche de l'ecran liste.
+  - Decoupage du gros fichier car_list_screen.dart : tout le contenu du
+    filtre est sorti dans des widgets separes (le fichier passe de ~300
+    a 130 lignes).
+      filter_bottomSheet.dart      
+      type_cars_widget.dart        
+      range_selector_widget.dart   
+      rental_time_widget.dart      section duree de location (a finir)
+
+  - Ajout des librairies syncfusion_flutter_sliders et
+    syncfusion_flutter_charts pour le slider et l'histogramme.
+  - Ajout des logos SVG des marques de voitures (assets/brands-icons).
+
+  A finir : brancher les filtres sur la liste (aujourd'hui le panneau
+  est visuel, il ne filtre pas encore les resultats).
+
+
+5. ARCHITECTURE
 
 Flux : cars.json -> MongoDB -> API Express (port 3000) -> Flutter
 
 DONNEES - doc/cars.json
-  Tableau JSON de vehicules, importe dans MongoDB, reference commune au
+  Tableau JSON de vehicules importe dans MongoDB, reference commune au
   serveur et au client. 20 champs par vehicule : champs simples (id,
-  marque, modele, annee, categorie, statut, immatriculation, ...),
-  objets (localisation, caracteristiques, tarifs, conditions, note),
-  tableaux (equipements, indisponibilites, photos).
-  Notation MongoDB : { "$oid": ... } et { "$date": ... }.
+  marque, modele, annee, categorie, statut, ...), objets (localisation,
+  caracteristiques, tarifs, conditions, note) et tableaux (equipements,
+  indisponibilites, photos).
 
-SERVEUR - src/server (Node.js, Express 5, Mongoose, Swagger)
-  app.js                       demarrage + connexion MongoDB
-  routes/carRoutes.js          URLs de l'API
-  controller/carController.js  logique (validation ObjectId, 400/404)
-  models/car.js                schema Mongoose
-  swagger.yaml + /docs         documentation testable
-  db.js                        connexion BDD reelle ou en memoire
-                               (+ prepareDatabase pour les tests)
-  test/app.test.js             9 tests Jest + supertest (npm test)
-  Routes : GET /cars | GET /cars/:id
+SERVEUR - src/server (Node.js, 		Express 5, Mongoose, Swagger)
+  app.js                       		demarrage + connexion MongoDB
+  routes/carRoutes.js          		URLs de l'API
+  controller/carController.js  		logique (validation ObjectId, 400/404)
+  models/car.js                		schema Mongoose
+  swagger.yaml + /docs         		documentation testable
+  db.js                        		connexion BDD reelle ou en memoire
+  test/app.test.js             		9 tests Jest + supertest
+  Routes : 	GET /cars  
+			GET /cars/:id
 
-CLIENT - src/client (Flutter, Riverpod, http, google_fonts, flutter_svg)
+CLIENT - src/client (Flutter, Riverpod, http, google_fonts, flutter_svg,
+                     syncfusion)
   lib/src/features/car/
-    domain/        modeles Dart (Car, Localisation, Caracteristiques,
+    domain/        modeles Dart 				(Car, Localisation, Caracteristiques,
                    Tarifs, Conditions, Note, Photo, Indisponibilite)
-                   avec fromJson()
-    data/remote/   CarService : seul point d'appel a l'API + providers
-    data/local/    fake_cars_repository (donnees de secours / dev)
-    presentation/  CarsListScreen + CarCard (3 etats : chargement,
-                   erreur, donnees)
-  constants/colors.dart, app_sizes.dart : charte issue de Figma
+    data/remote/   CarService  					seul point d'appel a l'API + providers
+    data/local/    fake_cars_repository 		(donnees de secours / dev)
+    presentation/cars_list/
+                   car_list_screen.dart    		ecran liste (3 etats)
+                   car_card.dart           		carte d'un vehicule
+                   filter_bottomSheet.dart 		panneau de filtres
+                   type_cars_widget.dart   		filtre par categorie
+                   range_selector_widget.dart 	filtre par prix
+                   rental_time_widget.dart 		duree de location
+  constants/colors.dart, app_sizes.dart 		Chartre graphique
 
-MAQUETTE FIGMA
+FIGMA
   https://www.figma.com/design/o3gKd2JOmqF7HPEL5zM47Y/Car-Rental-App?node-id=1326-12648
-  Nom/logo "Rivano" (assets/images/app/logo.svg), typo Roboto,
-  palette : fond #F5F5F5, gris #454545, accent #3B82F6, boutons #21292B,
-  bordures #D7D7D7, textes #000000 / #7F7F7F, erreur #B00020.
+
+6. UTILISATION DE L'AI
+Au Cours de ce project j ai eu recours a l'utilisation de l'ia :
+
+  - Création du fichier cars.json
+  - Récupération et organisation des photos des voitures
+  - Génération du logo de l'application
 
 
-6. RESTE A FAIRE (27/08 -> 04/09)
+6. RESTE A FAIRE
 
-  Semaine 3
-    - US9  finaliser l'ecran liste (conformite Figma + emulateur)
-    - US10 ecran detail vehicule (navigation depuis la carte)
-    - US11 recherche/filtre branches sur la liste
-    - US12 reservation avec verification des indisponibilites
-    - US13 messages d'erreur reseau explicites
-    - US15 tests de widgets cote client (module ICH-426)
-    - passe UI finale + mise a jour de la doc
+  - brancher les filtres (type, prix, duree) sur la liste
+  - ecran detail vehicule (navigation depuis la carte)
+  - reservation avec verification des indisponibilites
+  - messages d'erreur reseau explicites
+  - tests de widgets cote client (module ICH-426)
+  - passe UI finale + mise a jour de la doc
