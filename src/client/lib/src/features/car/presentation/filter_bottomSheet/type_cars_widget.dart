@@ -21,69 +21,52 @@ class _CarTypeToggleState extends State<CarTypeToggle> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(0),
-          decoration: BoxDecoration(
-            border: Border.all(color: AppColors.stoke, width: 1),
-            borderRadius: BorderRadius.circular(50),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: options.map((option) {
-              final bool isSelected = selected == option;
-
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 0),
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selected = option;
-                    });
-
-                    widget.onChanged?.call(option);
-                  },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 280),
-                    curve: Curves.easeInOut,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? const Color(0xFF000000)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(46),
-                      boxShadow: isSelected
-                          ? const [
-                              BoxShadow(
-                                color: Color.fromARGB(0, 0, 0, 0),
-                                blurRadius: 16,
-                                offset: Offset(0, 4),
-                              ),
-                            ]
-                          : null,
-                    ),
-                    child: Text(
-                      option,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: isSelected
-                            ? Colors.white
-                            : AppColors.textPrimary,
-                      ),
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        border: Border.all(color: AppColors.stoke, width: 1),
+        borderRadius: BorderRadius.circular(50),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: options.map((option) {
+          final bool isSelected = selected == option;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () {
+                setState(() => selected = option);
+                widget.onChanged?.call(option);
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 280),
+                curve: Curves.easeInOut,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 14,
+                ),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? const Color(0xFF000000)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(46),
+                ),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    option,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected ? Colors.white : AppColors.textPrimary,
                     ),
                   ),
                 ),
-              );
-            }).toList(),
-          ),
-        ),
-      ],
+              ),
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 }
