@@ -1,83 +1,65 @@
 import 'package:car_rent_client/src/constants/app_sizes.dart';
 import 'package:car_rent_client/src/constants/colors.dart';
+import 'package:car_rent_client/src/features/car/data/remote/car_service.dart';
+import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/car_filter_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 
-import 'package:car_rent_client/src/features/car/data/remote/car_service.dart';
-
-class RangeSelector extends ConsumerStatefulWidget {
+class RangeSelector extends ConsumerWidget {
   const RangeSelector({super.key});
 
   @override
-  ConsumerState<RangeSelector> createState() => _RangeSelectorState();
-}
-
-class _RangeSelectorState extends ConsumerState<RangeSelector> {
-  SfRangeValues _values = const SfRangeValues(0, 1000);
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final carsListValue = ref.watch(carsListFutureProvider);
+    final filter = ref.watch(carFilterProvider);
+    final notifier = ref.read(carFilterProvider.notifier);
 
     return carsListValue.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-
       error: (error, stackTrace) => Center(
         child: Text(
           'Erreur : $error',
           style: const TextStyle(color: Colors.red),
         ),
       ),
-
       data: (cars) {
         if (cars.isEmpty) {
           return const Center(child: Text('Aucune donnée disponible'));
         }
 
-        final prices = cars
-            .map((car) => car.tarifs.jour)
-            // ignore: unnecessary_null_comparison
-            .where((price) => price != null)
-            .map((price) => (price as num).toDouble())
-            .toList();
-
-        if (prices.isEmpty) {
-          return const Center(child: Text('Aucun prix disponible'));
-        }
-
+        final prices = cars.map((car) => car.tarifs.jour.toDouble()).toList();
         final minPrice = prices.reduce((a, b) => a < b ? a : b);
-
         final maxPrice = prices.reduce((a, b) => a > b ? a : b);
 
-        final Map<double, int> priceCount = {};
+        final currentStart = filter.minPrice ?? minPrice;
+        final currentEnd = filter.maxPrice ?? maxPrice;
 
+        final Map<double, int> priceCount = {};
         for (final price in prices) {
           priceCount[price] = (priceCount[price] ?? 0) + 1;
         }
-
-        final chartData = priceCount.entries
-            .map((entry) => ChartData(x: entry.key, y: entry.value.toDouble()))
-            .toList();
-
-        chartData.sort((a, b) => a.x.compareTo(b.x));
+        final chartData =
+            priceCount.entries
+                .map((e) => ChartData(x: e.key, y: e.value.toDouble()))
+                .toList()
+              ..sort((a, b) => a.x.compareTo(b.x));
 
         return Column(
+          key: ValueKey('range-${filter.resetToken}'),
           children: [
             SfRangeSelector(
               min: minPrice,
               max: maxPrice,
               activeColor: AppColors.textPrimary,
-              initialValues: SfRangeValues(minPrice, maxPrice),
+              initialValues: SfRangeValues(currentStart, currentEnd),
               interval: ((maxPrice - minPrice) / 5).clamp(1, double.infinity),
               showLabels: true,
               showTicks: true,
               onChanged: (SfRangeValues values) {
-                setState(() {
-                  _values = values;
-                });
+                notifier.setPriceRange(values.start, values.end);
               },
               child: SizedBox(
                 height: 130,
@@ -134,7 +116,7 @@ class _RangeSelectorState extends ConsumerState<RangeSelector> {
                         vertical: 6,
                       ),
                       child: Text(
-                        '${_values.start.toStringAsFixed(0)}',
+                        currentStart.toStringAsFixed(0),
                         style: GoogleFonts.roboto(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -165,7 +147,7 @@ class _RangeSelectorState extends ConsumerState<RangeSelector> {
                         vertical: 6,
                       ),
                       child: Text(
-                        '${_values.end.toStringAsFixed(0)}',
+                        currentEnd.toStringAsFixed(0),
                         style: GoogleFonts.roboto(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -186,7 +168,6 @@ class _RangeSelectorState extends ConsumerState<RangeSelector> {
 
 class ChartData {
   ChartData({required this.x, required this.y});
-
   final double x;
   final double y;
 }

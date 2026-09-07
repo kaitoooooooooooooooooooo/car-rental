@@ -1,134 +1,228 @@
+import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:car_rent_client/src/constants/app_sizes.dart';
 import 'package:car_rent_client/src/constants/colors.dart';
+import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/car_filter_provider.dart';
+import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/custom_time_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class RentalBooking extends StatefulWidget {
-  const RentalBooking({super.key});
+const int _minDurationMinutes = 60;
 
-  @override
-  State<RentalBooking> createState() => _RentalBookingState();
+int _toMinutes(TimeOfDay time) => time.hour * 60 + time.minute;
+
+TimeOfDay _addMinutes(TimeOfDay time, int minutes) {
+  final total = (_toMinutes(time) + minutes) % (24 * 60);
+  return TimeOfDay(hour: total ~/ 60, minute: total % 60);
 }
 
-class _RentalBookingState extends State<RentalBooking> {
-  String rentalType = 'Day';
+bool _hasMinDuration(TimeOfDay start, TimeOfDay end) {
+  var diff = _toMinutes(end) - _toMinutes(start);
+  if (diff <= 0) diff += 24 * 60;
+  return diff >= _minDurationMinutes;
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        RentalTimeWidget(
-          onChanged: (value) => setState(() => rentalType = value),
-        ),
-        gapH16,
-        DatePicker(rentalType: rentalType),
-      ],
+String _formatDate(DateTime? date) {
+  if (date == null) return '--/--/----';
+  return '${date.day.toString().padLeft(2, '0')}/'
+      '${date.month.toString().padLeft(2, '0')}/'
+      '${date.year}';
+}
+
+String _formatTime(TimeOfDay? time) {
+  if (time == null) return '--:--';
+  final hour = time.hour.toString().padLeft(2, '0');
+  final minute = time.minute.toString().padLeft(2, '0');
+  return '$hour:$minute';
+}
+
+class DatePicker extends ConsumerWidget {
+  const DatePicker({super.key});
+
+  Future<void> _openCalendarDialog(BuildContext context, WidgetRef ref) async {
+    final currentDates = ref.read(carFilterProvider).selectedDates;
+
+    final config = CalendarDatePicker2WithActionButtonsConfig(
+      calendarType: CalendarDatePicker2Type.range,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365 * 10)),
+      selectedDayHighlightColor: Colors.black,
+      daySplashColor: Colors.black,
+      dayTextStyle: const TextStyle(
+        color: Colors.black,
+        fontWeight: FontWeight.w600,
+      ),
+      selectedDayTextStyle: const TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.w700,
+      ),
+      weekdayLabelTextStyle: const TextStyle(
+        color: Colors.black,
+        fontWeight: FontWeight.bold,
+      ),
+      controlsTextStyle: const TextStyle(
+        color: Colors.black,
+        fontSize: 15,
+        fontWeight: FontWeight.bold,
+      ),
+      centerAlignModePicker: true,
+      closeDialogOnCancelTapped: true,
+      firstDayOfWeek: 1,
+      rangeBidirectional: true,
+      selectedRangeHighlightColor: Colors.black12,
+      selectedRangeDayTextStyle: const TextStyle(
+        color: Colors.black,
+        fontWeight: FontWeight.w700,
+      ),
     );
-  }
-}
 
-class DatePicker extends StatefulWidget {
-  const DatePicker({super.key, this.rentalType = 'Weekly'});
+    final values = await showCalendarDatePicker2Dialog(
+      context: context,
+      config: config,
+      dialogSize: const Size(325, 400),
+      borderRadius: BorderRadius.circular(16),
+      value: currentDates,
+      dialogBackgroundColor: Colors.white,
+    );
 
-  /// 'Hour' ou 'Day' -> un seul sélecteur (juste une date)
-  /// 'Weekly' ou 'Monthly' -> deux sélecteurs (début + fin)
-  final String rentalType;
-
-  @override
-  State<DatePicker> createState() => _DatePickerState();
-}
-
-class _DatePickerState extends State<DatePicker> {
-  DateTime? startDate;
-  DateTime? endDate;
-
-  bool get _showEndDate =>
-      widget.rentalType == 'Weekly' || widget.rentalType == 'Monthly';
-
-  @override
-  void didUpdateWidget(covariant DatePicker oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // si on repasse en mode "une seule date", on efface la date de fin
-    if (oldWidget.rentalType != widget.rentalType && !_showEndDate) {
-      endDate = null;
+    if (values != null) {
+      ref.read(carFilterProvider.notifier).setSelectedDates(values);
     }
   }
 
-  Future<void> _selectDate({required bool isStart}) async {
-    final DateTime? date = await showDatePicker(
-      context: context,
-      initialDate: isStart
-          ? (startDate ?? DateTime.now())
-          : (endDate ?? startDate ?? DateTime.now()),
-      firstDate: isStart ? DateTime.now() : (startDate ?? DateTime.now()),
-      lastDate: DateTime(2050),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColors.primary,
-              onSurface: AppColors.textPrimary,
-            ),
-          ),
-          child: child!,
-        );
-      },
+  Future<void> _openStartTimeDialog(BuildContext context, WidgetRef ref) async {
+    final filter = ref.read(carFilterProvider);
+    final time = await showCustomTimePicker(
+      context,
+      initialTime: filter.startTime,
     );
-    if (date == null) return;
+    if (time == null) return;
 
-    setState(() {
-      if (isStart) {
-        startDate = date;
-        if (endDate != null && endDate!.isBefore(date)) endDate = null;
-      } else {
-        endDate = date;
-      }
-    });
+    final notifier = ref.read(carFilterProvider.notifier);
+    notifier.setStartTime(time);
+    if (filter.endTime != null && !_hasMinDuration(time, filter.endTime!)) {
+      notifier.setEndTime(_addMinutes(time, _minDurationMinutes));
+    }
   }
 
-  String _format(DateTime? date) {
-    if (date == null) return '--/--/----';
-    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+  Future<void> _openEndTimeDialog(BuildContext context, WidgetRef ref) async {
+    final filter = ref.read(carFilterProvider);
+    final defaultInitial = filter.startTime != null
+        ? _addMinutes(filter.startTime!, _minDurationMinutes)
+        : null;
+
+    final time = await showCustomTimePicker(
+      context,
+      initialTime: filter.endTime ?? defaultInitial,
+    );
+    if (time == null) return;
+
+    if (filter.startTime != null && !_hasMinDuration(filter.startTime!, time)) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('La durée minimale de location est de 1 heure'),
+          ),
+        );
+      }
+      return;
+    }
+
+    ref.read(carFilterProvider.notifier).setEndTime(time);
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final filter = ref.watch(carFilterProvider);
+    final isDayMode = filter.rentalType == 'Day';
+
+    if (isDayMode) {
+      final dates = filter.selectedDates;
+      final label = (dates.isEmpty || dates.first == null)
+          ? 'Choose a date'
+          : '${_formatDate(dates.first)}  -  ${dates.length > 1 ? _formatDate(dates[1]) : '--/--/----'}';
+
+      return OutlinedButton(
+        onPressed: () => _openCalendarDialog(context, ref),
+        style: OutlinedButton.styleFrom(
+          side: BorderSide.none,
+          padding: EdgeInsets.zero,
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+        child: Text(
+          label,
+          style: const TextStyle(
+            color: AppColors.textSecondary,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      );
+    }
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        OutlinedButton(
-          onPressed: () => _selectDate(isStart: true),
-          child: Text(_format(startDate)),
-        ),
-        if (_showEndDate) ...[
-          const SizedBox(width: 8),
-          OutlinedButton(
-            onPressed: () => _selectDate(isStart: false),
-            child: Text(_format(endDate)),
+        OutlinedButton.icon(
+          onPressed: () => _openStartTimeDialog(context, ref),
+          style: OutlinedButton.styleFrom(
+            side: BorderSide.none,
+            padding: EdgeInsets.zero,
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
-        ],
+          icon: const Icon(
+            Icons.access_time,
+            size: 16,
+            color: AppColors.textSecondary,
+          ),
+          label: Text(
+            _formatTime(filter.startTime),
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+        gapW8,
+        const Text('-', style: TextStyle(color: AppColors.stoke)),
+        gapW8,
+        OutlinedButton.icon(
+          onPressed: () => _openEndTimeDialog(context, ref),
+          style: OutlinedButton.styleFrom(
+            side: BorderSide.none,
+            padding: EdgeInsets.zero,
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          icon: const Icon(
+            Icons.access_time,
+            size: 16,
+            color: AppColors.textSecondary,
+          ),
+          label: Text(
+            _formatTime(filter.endTime),
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
       ],
     );
   }
 }
 
-class RentalTimeWidget extends StatefulWidget {
-  const RentalTimeWidget({super.key, this.onChanged});
+class RentalTimeWidget extends ConsumerWidget {
+  const RentalTimeWidget({super.key});
 
-  final ValueChanged<String>? onChanged;
-
-  @override
-  State<RentalTimeWidget> createState() => _RentalTimeWidgetState();
-}
-
-class _RentalTimeWidgetState extends State<RentalTimeWidget> {
-  final List<String> options = const ['Hour', 'Day', 'Weekly', 'Monthly'];
-
-  String selected = 'Day';
+  static const List<String> options = ['Hour', 'Day'];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selected = ref.watch(carFilterProvider).rentalType;
+    final notifier = ref.read(carFilterProvider.notifier);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -148,10 +242,7 @@ class _RentalTimeWidgetState extends State<RentalTimeWidget> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 2),
                 child: GestureDetector(
-                  onTap: () {
-                    setState(() => selected = option);
-                    widget.onChanged?.call(option);
-                  },
+                  onTap: () => notifier.setRentalType(option),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: AnimatedContainer(

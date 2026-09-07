@@ -1,6 +1,7 @@
 import 'package:car_rent_client/src/constants/colors.dart';
-import 'package:car_rent_client/src/features/car/data/remote/car_service.dart';
+import 'package:car_rent_client/src/features/car/presentation/cars_list/brand_card.dart';
 import 'package:car_rent_client/src/features/car/presentation/cars_list/car_card.dart';
+import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/car_filter_provider.dart';
 import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/filter_bottomSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,24 +14,16 @@ class CarsListScreen extends ConsumerStatefulWidget {
   ConsumerState<CarsListScreen> createState() => _CarsListScreenState();
 }
 
-enum ViewMode { day, week, month }
-
 class _CarsListScreenState extends ConsumerState<CarsListScreen> {
-  final SearchController _searchController = SearchController();
-
-  String _searchText = '';
-
-  // ignore: prefer_final_fields, unused_field
-  int _index = 0;
+  late final SearchController _searchController;
 
   @override
   void initState() {
     super.initState();
-
+    _searchController = SearchController();
+    _searchController.text = ref.read(searchQueryProvider);
     _searchController.addListener(() {
-      setState(() {
-        _searchText = _searchController.text.toLowerCase();
-      });
+      ref.read(searchQueryProvider.notifier).state = _searchController.text;
     });
   }
 
@@ -42,8 +35,8 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final carsListValue = ref.watch(carsListFutureProvider);
-    MediaQuery.of(context).size.height;
+    final filteredCarsValue = ref.watch(filteredCarsProvider);
+    final searchText = ref.watch(searchQueryProvider);
 
     final Widget logo = CircleAvatar(
       backgroundColor: Colors.black,
@@ -140,22 +133,20 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                           ),
                         ),
                         trailing: [
-                          if (_searchText.isNotEmpty)
+                          if (searchText.isNotEmpty)
                             IconButton(
                               icon: const Icon(
                                 Icons.clear,
                                 color: AppColors.icon,
                                 size: 20,
                               ),
-                              onPressed: () {
-                                _searchController.clear();
-                              },
+                              onPressed: () => _searchController.clear(),
                             ),
                         ],
                       ),
                     ),
                     SizedBox(width: 30),
-                    FilterBottomsheet(),
+                    const FilterBottomsheet(),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -171,6 +162,8 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 10),
+                BrandCard(),
               ],
             ),
           ),
@@ -221,18 +214,9 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                     ),
                     SizedBox(height: 20),
                     Expanded(
-                      child: carsListValue.when(
+                      child: filteredCarsValue.when(
                         data: (cars) {
-                          final filteredCars = cars.where((car) {
-                            // ignore: duplicate_ignore
-                            // ignore: dead_null_aware_expression, dead_code
-                            final brand = car.marque.toLowerCase() ?? '';
-                            // ignore: dead_null_aware_expression, dead_code
-                            final model = car.modele.toLowerCase() ?? '';
-                            return brand.contains(_searchText) ||
-                                model.contains(_searchText);
-                          }).toList();
-                          if (filteredCars.isEmpty) {
+                          if (cars.isEmpty) {
                             return const Center(
                               child: Text(
                                 'Aucune voiture trouvée',
@@ -242,7 +226,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                           }
                           return GridView.builder(
                             padding: const EdgeInsets.only(bottom: 90),
-                            itemCount: filteredCars.length,
+                            itemCount: cars.length,
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 2,
@@ -251,7 +235,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                                   childAspectRatio: 0.85,
                                 ),
                             itemBuilder: (context, index) {
-                              final car = filteredCars[index];
+                              final car = cars[index];
                               return CarCard(car: car, onTap: () {});
                             },
                           );

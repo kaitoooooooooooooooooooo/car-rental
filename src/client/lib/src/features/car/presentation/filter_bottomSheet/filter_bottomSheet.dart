@@ -1,21 +1,23 @@
+// ignore: file_names
 import 'package:car_rent_client/src/constants/app_sizes.dart';
 import 'package:car_rent_client/src/constants/colors.dart';
+import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/Siting_widget.dart';
+import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/car_filter_provider.dart';
+import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/fuel_widget.dart';
+import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/location_widget.dart';
 import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/price_range_widget.dart';
 import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/rental_time_widget.dart';
+import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/stars_widget.dart';
 import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/type_cars_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class FilterBottomsheet extends StatefulWidget {
+class FilterBottomsheet extends ConsumerWidget {
   const FilterBottomsheet({super.key});
 
   @override
-  State<FilterBottomsheet> createState() => _FilterBottomsheetState();
-}
-
-class _FilterBottomsheetState extends State<FilterBottomsheet> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return RawMaterialButton(
       splashColor: AppColors.white,
       onPressed: () {
@@ -93,7 +95,7 @@ class _FilterBottomsheetState extends State<FilterBottomsheet> {
                           ],
                         ),
                         gapH8,
-                        CarTypeToggle(onChanged: (value) {}),
+                        const CarTypeToggle(),
                         gapH16,
                         SizedBox(
                           height: 20,
@@ -116,7 +118,7 @@ class _FilterBottomsheetState extends State<FilterBottomsheet> {
                             ),
                           ],
                         ),
-                        RangeSelector(),
+                        const RangeSelector(),
                         gapH16,
                         SizedBox(
                           height: 20,
@@ -126,10 +128,155 @@ class _FilterBottomsheetState extends State<FilterBottomsheet> {
                           ),
                         ),
                         gapH8,
-                        RentalTimeWidget(),
+                        const RentalTimeWidget(),
+                        gapH28,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Pick up and Drop Date',
+                              style: GoogleFonts.roboto(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            const DatePicker(),
+                          ],
+                        ),
+                        gapH28,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Car location',
+                              style: GoogleFonts.roboto(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
+                        gapH16,
+                        const Row(children: [LocationWidget()]),
+                        gapH16,
+                        SizedBox(
+                          height: 20,
+                          child: Divider(
+                            color: Colors.grey.shade300,
+                            thickness: 1,
+                          ),
+                        ),
+                        gapH16,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Rating',
+                              style: GoogleFonts.roboto(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
                         gapH8,
-                        Center(child: DatePicker()),
+                        Consumer(
+                          builder: (context, ref, _) {
+                            final rating = ref
+                                .watch(carFilterProvider)
+                                .minRating;
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Choose the minimum rate',
+                                  style: GoogleFonts.roboto(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                StarRatingWidget(
+                                  rating: rating,
+                                  onRatingChanged: (r) => ref
+                                      .read(carFilterProvider.notifier)
+                                      .setMinRating(r),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                        gapH28,
+                        const SitingWidget(),
+                        gapH28,
+                        const FuelWidget(),
+                        gapH28,
+                        SizedBox(
+                          height: 20,
+                          child: Divider(
+                            color: Colors.grey.shade300,
+                            thickness: 1,
+                          ),
+                        ),
                         gapH8,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextButton(
+                              onPressed: () => ref
+                                  .read(carFilterProvider.notifier)
+                                  .clearAll(),
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.black,
+                                overlayColor: Colors.black,
+                              ),
+                              child: Text(
+                                'Clear All',
+                                style: GoogleFonts.roboto(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                            ),
+                            Consumer(
+                              builder: (context, ref, _) {
+                                final filteredCars = ref.watch(
+                                  filteredCarsProvider,
+                                );
+                                final label = filteredCars.when(
+                                  data: (cars) => 'Show ${cars.length} Cars',
+                                  loading: () => 'Show Cars',
+                                  error: (_, __) => 'Show Cars',
+                                );
+                                return ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.black,
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                  ),
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      label,
+                                      style: GoogleFonts.roboto(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.white,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
