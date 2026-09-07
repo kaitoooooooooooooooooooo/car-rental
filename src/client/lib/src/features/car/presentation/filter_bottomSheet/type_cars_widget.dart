@@ -1,26 +1,22 @@
 import 'package:car_rent_client/src/constants/colors.dart';
+import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/car_filter_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CarTypeToggle extends StatefulWidget {
-  const CarTypeToggle({super.key, this.onChanged});
+class CarTypeToggle extends ConsumerWidget {
+  const CarTypeToggle({super.key});
 
-  final ValueChanged<String>? onChanged;
-
-  @override
-  State<CarTypeToggle> createState() => _CarTypeToggleState();
-}
-
-class _CarTypeToggleState extends State<CarTypeToggle> {
-  final List<String> options = const [
-    'All Cars',
-    'Regular Cars',
-    'Luxury Cars',
-  ];
-
-  String selected = 'All Cars';
+  static const Map<CarTypeFilter, String> _labels = {
+    CarTypeFilter.all: 'All Cars',
+    CarTypeFilter.regular: 'Regular Cars',
+    CarTypeFilter.luxury: 'Luxury Cars',
+  };
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selected = ref.watch(carFilterProvider).carType;
+    final notifier = ref.read(carFilterProvider.notifier);
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -29,14 +25,11 @@ class _CarTypeToggleState extends State<CarTypeToggle> {
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: options.map((option) {
-          final bool isSelected = selected == option;
+        children: _labels.entries.map((entry) {
+          final bool isSelected = selected == entry.key;
           return Expanded(
             child: GestureDetector(
-              onTap: () {
-                setState(() => selected = option);
-                widget.onChanged?.call(option);
-              },
+              onTap: () => notifier.setCarType(entry.key),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 280),
                 curve: Curves.easeInOut,
@@ -54,7 +47,7 @@ class _CarTypeToggleState extends State<CarTypeToggle> {
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
-                    option,
+                    entry.value,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,

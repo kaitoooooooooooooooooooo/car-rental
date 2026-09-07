@@ -43,6 +43,9 @@ dependencies:
   material_ui: ^1.1.0
   syncfusion_flutter_sliders: ^34.2.5
   syncfusion_flutter_charts: ^34.2.5
+  calendar_date_picker2: ^3.0.0
+  five_pointed_star: ^1.0.4
+  custom_time_picker: ^0.0.2
 
 dev_dependencies:
   flutter_test:

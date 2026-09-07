@@ -76,13 +76,13 @@ class CarCard extends ConsumerWidget {
                             minWidth: 0.0,
                             minHeight: 0.0,
                           ),
+                          padding: const EdgeInsets.all(6.0),
+                          shape: const CircleBorder(),
                           child: Icon(
                             Icons.favorite_border_outlined,
                             size: 16.0,
                             color: AppColors.icon,
                           ),
-                          padding: const EdgeInsets.all(6.0),
-                          shape: const CircleBorder(),
                         ),
                       ),
                     ],
@@ -114,7 +114,7 @@ class CarCard extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        (marque + ' ' + model).toUpperCase(),
+                        ('$marque $model').toUpperCase(),
                         style: GoogleFonts.roboto(
                           textStyle: const TextStyle(
                             color: Color.fromARGB(255, 0, 0, 0),
