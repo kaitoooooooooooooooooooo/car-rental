@@ -1,14 +1,14 @@
-﻿   __   _____         _        __  ___ 
+﻿   __   _____         _        __  ___
   /__\  \_   \/\   /\/_\    /\ \ \/___\
  / \//   / /\/\ \ / //_\\  /  \/ //  //
-/ _  \/\/ /_   \ V /  _  \/ /\  / \_// 
-\/ \_/\____/    \_/\_/ \_/\_\ \/\___/  
-                                       
+/ _  \/\/ /_   \ V /  _  \/ /\  / \_//
+\/ \_/\____/    \_/\_/ \_/\_\ \/\___/
+
 CAR RENTAL ("Rivano") - Documentation projet & Suivi Scrum
 
 Auteur : Tom Mehl
 Cours  : 3eme annee - Projet Rivano
-Mise a jour : 03/09/2026
+Mise a jour : 11/09/2026 (fin du sprint)
 
 
 1. OBJECTIF
@@ -30,7 +30,7 @@ A User Story is Done if :
   D7  cette documentation est a jour
 
 
-3. AVANCEMENT AU 03/09/2026
+3. AVANCEMENT AU 11/09/2026
 
   NO   User Story                                  	Etat
   ---  ------------------------------------------  	----------
@@ -44,36 +44,85 @@ A User Story is Done if :
   8  CarService + providers Riverpod             	DONE
   9  Ecran liste (cartes + barre de recherche)   	DONE
   14 Tests unitaires serveur (Jest + supertest)  	DONE
-  11 Panneau de filtres (UI)                     	EN COURS
+  11 Panneau de filtres (UI + filtrage reel)     	DONE
+  12 Reservation (dates + indisponibilites)      	EN COURS (choix des dates fait)
   10 Ecran detail vehicule                       	A FAIRE
-  12 Reservation (dates + indisponibilites)      	A FAIRE
   13 Gestion des erreurs reseau cote client      	A FAIRE
   15 Tests de widgets cote client                	A FAIRE
 
-	Avancement : 10 / 15 
+	Avancement : 11 / 15
+
+  Etat du code au 11/09/2026 (verifie avant la review) :
+    - flutter analyze : 0 erreur, 0 warning (3 remarques de nommage)
+    - flutter test    : 8 / 8 tests OK (modeles fromJson)
+    - npm test        : 9 / 9 tests OK (API Jest + supertest)
 
 
-4. FAIT RECEMMENT (28/08 -> 03/09)
+4. FAIT CE SPRINT (03/09 -> 11/09)
 
-  - Panneau de filtres ("Filters") ouvert en bottom sheet depuis la
-    barre de recherche de l'ecran liste.
-  - Decoupage du gros fichier car_list_screen.dart : tout le contenu du
-    filtre est sorti dans des widgets separes (le fichier passe de ~300
-    a 130 lignes).
-      filter_bottomSheet.dart      
-      type_cars_widget.dart        
-      range_selector_widget.dart   
-      rental_time_widget.dart      section duree de location (a finir)
+  03/09 - Organisation des filtres
+  - Decoupage du gros fichier car_list_screen.dart : la bottom sheet et
+    chacune de ses sections sont sorties dans des widgets separes
+    (dossier presentation/filter_bottomSheet/).
+  - Debut de la section Rental Time avec un calendrier.
 
-  - Ajout des librairies syncfusion_flutter_sliders et
-    syncfusion_flutter_charts pour le slider et l'histogramme.
-  - Ajout des logos SVG des marques de voitures (assets/brands-icons).
+  04/09 - Calendrier
+  - Premier essai avec un calendrier anime trouve sur flutterawesome.com :
+    abandonne (echec).
+  - Weekly review avec M. Guerdat -> changement de direction : utilisation
+    d'un date picker standard (aujourd'hui calendar_date_picker2 en mode
+    "range" pour choisir une date de debut et de fin).
 
-  A finir : brancher les filtres sur la liste (aujourd'hui le panneau
-  est visuel, il ne filtre pas encore les resultats).
+  07/09 - Filtres complets et fonctionnels
+  - Rental Time : passage de 4 choix a 2 (Hour / Day) pour diminuer la
+    charge cognitive. En mode Day -> calendrier (plage de dates), en mode
+    Hour -> heure de debut / fin avec une duree minimale d'une heure
+    (message d'erreur si l'utilisateur choisit moins).
+  - Car location : champ de recherche (reprise de la search bar de
+    l'accueil), filtre sur la ville ou le canton.
+  - Rating : choix de la note minimale avec 5 etoiles (appui long = demi
+    etoile). Ce filtre remplace "Colors" prevu dans le Figma, car la
+    couleur des voitures n'existe pas dans cars.json.
+  - Seating Capacity (2 / 4 / 6 / 8) et Fuel Type (Petrol / Hybrid /
+    Electric / Diesel) : selection multiple, meme style que Rental Time.
+  - Finition de la bottom sheet : espaces, Divider, boutons "Clear All"
+    et "Show X Cars" (le nombre de voitures se met a jour en direct).
+  - Filtres branches sur la liste : creation d'un Provider dédié aux
+    filtres (car_filter_provider.dart), les filtres sont conserves
+    pendant toute la session.
+  - Debut de la section Brands (ListView.builder horizontal).
+
+  10/09 - Mac + fin de sprint
+  - Prise en main du Mac (iMac Intel) et mise a jour vers macOS 26.6.2.
+  - Installation de Xcode 26.6 (compatible iOS 26). Difficulte : la
+    version de l'App Store demande une puce Apple M1 minimum ; il faut
+    telecharger la version "Universal" sur developer.apple.com.
+  - Import du projet depuis GitHub sur le Mac.
+  - Mise en forme de la documentation et du Gantt de fin de sprint.
 
 
-5. ARCHITECTURE
+5. FONCTIONNEMENT DES FILTRES
+
+  Tout passe par un seul etat : CarFilterState (car_filter_provider.dart).
+  Chaque widget de la bottom sheet lit et modifie cet etat via Riverpod.
+  filteredCarsProvider combine la liste de l'API, les filtres et la
+  barre de recherche ; l'ecran liste affiche uniquement ce resultat.
+
+  Filtre            Regle appliquee sur chaque voiture
+  ----------------  ------------------------------------------------------
+  Recherche         marque ou modele contient le texte
+  Types of Cars     Luxury = tarif jour > 1000 CHF, Regular = le reste
+  Price range       tarif jour entre le min et le max du slider
+  Rental Time       mode Day : exclut les voitures indisponibles sur la
+                    plage de dates choisie (champ indisponibilites)
+  Car location      ville ou canton contient le texte
+  Rating            note moyenne >= note minimale
+  Seating Capacity  nombre de places dans la selection
+  Fuel Type         carburant dans la selection (essence = Petrol)
+  Clear All         remet tous les filtres a zero
+
+
+6. ARCHITECTURE
 
 Flux : cars.json -> MongoDB -> API Express (port 3000) -> Flutter
 
@@ -92,41 +141,73 @@ SERVEUR - src/server (Node.js, 		Express 5, Mongoose, Swagger)
   swagger.yaml + /docs         		documentation testable
   db.js                        		connexion BDD reelle ou en memoire
   test/app.test.js             		9 tests Jest + supertest
-  Routes : 	GET /cars  
+  Routes : 	GET /cars
 			GET /cars/:id
 
 CLIENT - src/client (Flutter, Riverpod, http, google_fonts, flutter_svg,
-                     syncfusion)
+                     syncfusion, calendar_date_picker2)
   lib/src/features/car/
     domain/        modeles Dart 				(Car, Localisation, Caracteristiques,
                    Tarifs, Conditions, Note, Photo, Indisponibilite)
     data/remote/   CarService  					seul point d'appel a l'API + providers
-    data/local/    fake_cars_repository 		(donnees de secours / dev)
+    data/local/    fake_cars_repository 		(donnees de secours / dev, vide)
     presentation/cars_list/
                    car_list_screen.dart    		ecran liste (3 etats)
                    car_card.dart           		carte d'un vehicule
-                   filter_bottomSheet.dart 		panneau de filtres
+                   brand_card.dart         		liste horizontale des marques
+    presentation/filter_bottomSheet/
+                   filter_bottomSheet.dart 		panneau de filtres (bottom sheet)
+                   car_filter_provider.dart		etat des filtres + liste filtree
                    type_cars_widget.dart   		filtre par categorie
-                   range_selector_widget.dart 	filtre par prix
-                   rental_time_widget.dart 		duree de location
+                   price_range_widget.dart 		slider + histogramme des prix
+                   rental_time_widget.dart 		Hour / Day + dates ou heures
+                   custom_time_picker.dart 		selecteur d'heure
+                   location_widget.dart    		filtre par lieu
+                   stars_widget.dart       		note minimale (etoiles)
+                   Siting_widget.dart      		nombre de places
+                   fuel_widget.dart        		type de carburant
   constants/colors.dart, app_sizes.dart 		Chartre graphique
 
 FIGMA
   https://www.figma.com/design/o3gKd2JOmqF7HPEL5zM47Y/Car-Rental-App?node-id=1326-12648
 
-6. UTILISATION DE L'AI
-Au Cours de ce project j ai eu recours a l'utilisation de l'ia :
+
+7. ENVIRONNEMENT MAC / iOS
+
+  Machine : iMac Intel (Core i5-10600), macOS 26.6.2
+  Xcode   : 26.6 "Universal" 
+  Projet  : importe depuis GitHub
+
+  Attention : Xcode 26 et macOS 26 sont les dernieres versions pour les
+  Mac Intel. Si l'iPhone passe a iOS 27, il ne pourra plus recevoir de
+  build depuis ce Mac -> mises a jour automatiques d'iOS desactivees.
+  (SVP achetez des nouveaux IMac Mr Guerdat)
+
+
+8. UTILISATION DE L'AI
+Au Cours de ce project j ai eu recours a l'utilisation de l'ia pour :
 
   - Création du fichier cars.json
   - Récupération et organisation des photos des voitures
   - Génération du logo de l'application
 
 
-6. RESTE A FAIRE
 
-  - brancher les filtres (type, prix, duree) sur la liste
+9. LIMITES CONNUES / DETTE TECHNIQUE
+
+  - Brands : visuel uniquement, le meme logo (Ferrari) est repete 10 fois
+    et un clic ne filtre pas encore par marque.
+  - Rental Time en mode Hour : les heures sont choisies mais ne filtrent
+    pas encore la liste (seul le mode Day verifie les indisponibilites).
+  - "View All" et le clic sur une carte ne font encore rien (ecran
+    detail a faire).
+
+
+10. RESTE A FAIRE (sprint suivant)
+
+  - section (Widget) Brands : vrais logos + filtre par marque
   - ecran detail vehicule (navigation depuis la carte)
-  - reservation avec verification des indisponibilites
-  - messages d'erreur reseau explicites
+  - reservation avec verification des indisponibilites (aussi en heures)
   - tests de widgets cote client (module ICH-426)
+  - premier build et test sur iPhone depuis le Mac
   - passe UI finale + mise a jour de la doc
