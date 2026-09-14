@@ -287,11 +287,11 @@ class FilterBottomsheet extends ConsumerWidget {
         );
       },
       elevation: 2.0,
-      fillColor: AppColors.surface,
+      fillColor: AppColors.accent,
       padding: EdgeInsets.all(15.0),
       shape: CircleBorder(),
       constraints: BoxConstraints(minWidth: 0.0),
-      child: Icon(Icons.tune, size: 26.0, color: AppColors.icon),
+      child: Icon(Icons.tune, size: 26.0, color: AppColors.onAccent),
     );
   }
 }

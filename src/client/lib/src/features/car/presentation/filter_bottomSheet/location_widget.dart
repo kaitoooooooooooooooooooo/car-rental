@@ -32,7 +32,6 @@ class _LocationWidgetState extends ConsumerState<LocationWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // Resynchronise le champ si le filtre est modifié ailleurs (ex: Clear All).
     ref.listen<CarFilterState>(carFilterProvider, (previous, next) {
       if (next.location != _searchController.text) {
         _searchController.text = next.location;

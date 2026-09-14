@@ -51,7 +51,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 25, 16, 24),
+            padding: const EdgeInsets.fromLTRB(16, 45, 16, 24),
             child: Column(
               children: [
                 Row(
@@ -60,7 +60,12 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                     Row(
                       children: [
                         Container(
-                          margin: const EdgeInsets.all(10),
+                          margin: const EdgeInsets.only(
+                            left: 10.0,
+                            right: 10.0,
+                            top: 10.0,
+                            bottom: 10.0,
+                          ),
                           child: logo,
                         ),
                         SizedBox(width: 4),
@@ -92,7 +97,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                 ),
                 SizedBox(
                   height: 40,
-                  child: Divider(color: AppColors.borderSubtle, thickness: 1),
+                  child: Divider(color: AppColors.onAccent, thickness: 1),
                 ),
                 Row(
                   children: [

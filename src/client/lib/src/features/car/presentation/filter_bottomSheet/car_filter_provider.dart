@@ -7,8 +7,11 @@ import 'package:flutter_riverpod/legacy.dart';
 
 enum CarTypeFilter { all, regular, luxury }
 
+const Object _unset = Object();
+
 @immutable
 class CarFilterState {
+  final String? brand;
   final CarTypeFilter carType;
   final double? minPrice;
   final double? maxPrice;
@@ -24,6 +27,7 @@ class CarFilterState {
   final int resetToken;
 
   const CarFilterState({
+    this.brand,
     this.carType = CarTypeFilter.all,
     this.minPrice,
     this.maxPrice,
@@ -39,6 +43,7 @@ class CarFilterState {
   });
 
   CarFilterState copyWith({
+    Object? brand = _unset,
     CarTypeFilter? carType,
     double? minPrice,
     double? maxPrice,
@@ -52,6 +57,7 @@ class CarFilterState {
     Set<String>? fuelTypes,
   }) {
     return CarFilterState(
+      brand: identical(brand, _unset) ? this.brand : brand as String?,
       carType: carType ?? this.carType,
       minPrice: minPrice ?? this.minPrice,
       maxPrice: maxPrice ?? this.maxPrice,
@@ -68,6 +74,7 @@ class CarFilterState {
   }
 
   bool get hasActiveFilters =>
+      brand != null ||
       carType != CarTypeFilter.all ||
       minPrice != null ||
       maxPrice != null ||
@@ -81,6 +88,9 @@ class CarFilterState {
 class CarFilterNotifier extends StateNotifier<CarFilterState> {
   CarFilterNotifier() : super(const CarFilterState());
 
+  void toggleBrand(String brand) =>
+      state = state.copyWith(brand: state.brand == brand ? null : brand);
+
   void setCarType(CarTypeFilter type) => state = state.copyWith(carType: type);
 
   void setPriceRange(double min, double max) =>
@@ -88,6 +98,7 @@ class CarFilterNotifier extends StateNotifier<CarFilterState> {
 
   void setRentalType(String type) {
     state = CarFilterState(
+      brand: state.brand,
       carType: state.carType,
       minPrice: state.minPrice,
       maxPrice: state.maxPrice,
@@ -156,6 +167,10 @@ List<Car> _applyFilters(List<Car> cars, CarFilterState filter, String query) {
           car.marque.toLowerCase().contains(normalizedQuery) ||
           car.modele.toLowerCase().contains(normalizedQuery);
       if (!matchesText) return false;
+    }
+
+    if (filter.brand != null && car.marque.trim() != filter.brand) {
+      return false;
     }
 
     if (filter.carType != CarTypeFilter.all) {
