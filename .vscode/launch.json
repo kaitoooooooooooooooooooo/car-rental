@@ -2,41 +2,35 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Flutter Web (Chrome)",
+      "name": "Flutter : appareil choisi en bas à droite (debug, hot reload)",
       "type": "dart",
       "request": "launch",
       "program": "lib/main.dart",
-      "cwd": "${workspaceFolder}/car_rent_client",
-      "deviceId": "chrome",
-      "args": ["--web-port", "5000"]
+      "cwd": "${workspaceFolder}/src/client"
     },
     {
-      "name": "Flutter Web (Chrome) + Mongo",
+      "name": "Flutter : Chrome",
       "type": "dart",
       "request": "launch",
       "program": "lib/main.dart",
-      "cwd": "${workspaceFolder}/car_rent_client",
+      "cwd": "${workspaceFolder}/src/client",
       "deviceId": "chrome",
-      "args": ["--web-port", "5000"],
-      "preLaunchTask": "mongo: démarrer"
+      "args": ["--web-port", "5000"]
     },
     {
       "name": "API Express (Node)",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/server/app.js",
-      "cwd": "${workspaceFolder}/server",
+      "program": "${workspaceFolder}/src/server/app.js",
+      "cwd": "${workspaceFolder}/src/server",
       "console": "integratedTerminal",
-      "restart": true,
-      "skipFiles": ["<node_internals>/**"],
-      "preLaunchTask": "mongo: démarrer"
+      "skipFiles": ["<node_internals>/**"]
     }
   ],
   "compounds": [
     {
-      "name": "▶ Tout lancer (Mongo + API + Chrome)",
-      "configurations": ["API Express (Node)", "Flutter Web (Chrome)"],
-      "preLaunchTask": "mongo: démarrer",
+      "name": "▶ API + Flutter (appareil choisi)",
+      "configurations": ["API Express (Node)", "Flutter : appareil choisi en bas à droite (debug, hot reload)"],
       "stopAll": true
     }
   ]
