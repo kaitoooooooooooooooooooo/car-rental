@@ -51,7 +51,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 45, 16, 24),
+            padding: const EdgeInsets.fromLTRB(16, 45, 16, 0),
             child: Column(
               children: [
                 Row(
@@ -167,11 +167,11 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
-                BrandCard(),
               ],
             ),
           ),
+          const SizedBox(height: 10),
+          BrandCard(),
           Expanded(
             child: Container(
               decoration: BoxDecoration(
@@ -182,7 +182,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 30, 16, 24),
+                padding: const EdgeInsets.fromLTRB(16, 30, 16, 0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -237,7 +237,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                                   crossAxisCount: 2,
                                   mainAxisSpacing: 16,
                                   crossAxisSpacing: 16,
-                                  childAspectRatio: 0.85,
+                                  mainAxisExtent: 255,
                                 ),
                             itemBuilder: (context, index) {
                               final car = cars[index];
