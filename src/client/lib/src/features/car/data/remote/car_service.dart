@@ -5,7 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
 class CarService {
-  static const url = 'http://127.0.0.1:3000';
+  // Sur iPhone, 127.0.0.1 = le telephone lui-meme : passer l'IP du Mac avec
+  // flutter run --dart-define=API_URL=http://<ip-du-mac>:3000
+  static const url = String.fromEnvironment(
+    'API_URL',
+    defaultValue: 'http://127.0.0.1:3000',
+  );
 
   Future<List<Car>> fetchCarsList() async {
     final cars = <Car>[];
