@@ -39,7 +39,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
     final searchText = ref.watch(searchQueryProvider);
 
     final Widget logo = CircleAvatar(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.surface,
       child: Container(
         margin: EdgeInsets.all(3),
         child: Image.asset('assets/images/app/logo.png'),
@@ -77,13 +77,13 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                       children: [
                         Icon(
                           Icons.circle_notifications,
-                          color: Colors.black,
+                          color: AppColors.textPrimary,
                           size: 45,
                         ),
                         SizedBox(width: 10),
                         Icon(
                           Icons.account_circle,
-                          color: Colors.black,
+                          color: AppColors.textPrimary,
                           size: 45,
                         ),
                       ],
@@ -92,7 +92,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                 ),
                 SizedBox(
                   height: 40,
-                  child: Divider(color: Colors.grey.shade300, thickness: 1),
+                  child: Divider(color: AppColors.borderSubtle, thickness: 1),
                 ),
                 Row(
                   children: [
@@ -104,14 +104,14 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                           GoogleFonts.roboto(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            color: Colors.black87,
+                            color: AppColors.textPrimary,
                           ),
                         ),
                         hintStyle: WidgetStatePropertyAll(
                           GoogleFonts.roboto(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
-                            color: Colors.grey,
+                            color: AppColors.textSecondary,
                           ),
                         ),
                         leading: const Icon(
@@ -123,13 +123,13 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                           EdgeInsets.symmetric(horizontal: 16),
                         ),
                         backgroundColor: WidgetStatePropertyAll(
-                          Colors.grey.shade100,
+                          AppColors.surface,
                         ),
                         elevation: const WidgetStatePropertyAll(0),
                         shape: WidgetStatePropertyAll(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
-                            side: BorderSide(color: Colors.grey.shade300),
+                            side: BorderSide(color: AppColors.stoke),
                           ),
                         ),
                         trailing: [
@@ -170,7 +170,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: AppColors.white,
+                color: AppColors.surfaceLow,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(40),
                   topRight: Radius.circular(40),

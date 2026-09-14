@@ -43,17 +43,17 @@ class CarCard extends ConsumerWidget {
                       Container(
                         decoration: BoxDecoration(
                           border: Border(
-                            top: BorderSide(width: 2.0, color: AppColors.stoke),
+                            top: BorderSide(width: 2.0, color: AppColors.borderSubtle),
                             left: BorderSide(
                               width: 2.0,
-                              color: AppColors.stoke,
+                              color: AppColors.borderSubtle,
                             ),
                             right: BorderSide(
                               width: 2.0,
-                              color: AppColors.stoke,
+                              color: AppColors.borderSubtle,
                             ),
                           ),
-                          color: const Color(0xFFF0F0F0),
+                          color: AppColors.surfaceElevated,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
@@ -68,10 +68,10 @@ class CarCard extends ConsumerWidget {
                         top: 6,
                         right: 6,
                         child: RawMaterialButton(
-                          splashColor: AppColors.white,
+                          splashColor: AppColors.accentSoft,
                           onPressed: () {},
                           elevation: 2.0,
-                          fillColor: Colors.white,
+                          fillColor: AppColors.surface,
                           constraints: const BoxConstraints(
                             minWidth: 0.0,
                             minHeight: 0.0,
@@ -98,15 +98,15 @@ class CarCard extends ConsumerWidget {
                     bottom: 10,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.white,
+                    color: AppColors.surface,
                     borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(20),
                       bottomRight: Radius.circular(20),
                     ),
                     border: Border(
-                      bottom: BorderSide(width: 2.0, color: AppColors.stoke),
-                      left: BorderSide(width: 2.0, color: AppColors.stoke),
-                      right: BorderSide(width: 2.0, color: AppColors.stoke),
+                      bottom: BorderSide(width: 2.0, color: AppColors.borderSubtle),
+                      left: BorderSide(width: 2.0, color: AppColors.borderSubtle),
+                      right: BorderSide(width: 2.0, color: AppColors.borderSubtle),
                     ),
                   ),
                   child: Column(
@@ -117,7 +117,7 @@ class CarCard extends ConsumerWidget {
                         ('$marque $model').toUpperCase(),
                         style: GoogleFonts.roboto(
                           textStyle: const TextStyle(
-                            color: Color.fromARGB(255, 0, 0, 0),
+                            color: AppColors.textPrimary,
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
                             letterSpacing: -0.3,
@@ -146,7 +146,7 @@ class CarCard extends ConsumerWidget {
                           const Icon(
                             IconData(0xf01d4, fontFamily: 'MaterialIcons'),
                             size: 20,
-                            color: Color(0xFFFF8F3A),
+                            color: AppColors.accent,
                           ),
                         ],
                       ),

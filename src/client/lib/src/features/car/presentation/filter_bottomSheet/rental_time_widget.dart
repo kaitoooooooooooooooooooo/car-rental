@@ -46,22 +46,22 @@ class DatePicker extends ConsumerWidget {
       calendarType: CalendarDatePicker2Type.range,
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365 * 10)),
-      selectedDayHighlightColor: Colors.black,
-      daySplashColor: Colors.black,
+      selectedDayHighlightColor: AppColors.accent,
+      daySplashColor: AppColors.accentSoft,
       dayTextStyle: const TextStyle(
-        color: Colors.black,
+        color: AppColors.textPrimary,
         fontWeight: FontWeight.w600,
       ),
       selectedDayTextStyle: const TextStyle(
-        color: Colors.white,
+        color: AppColors.onAccent,
         fontWeight: FontWeight.w700,
       ),
       weekdayLabelTextStyle: const TextStyle(
-        color: Colors.black,
+        color: AppColors.textSecondary,
         fontWeight: FontWeight.bold,
       ),
       controlsTextStyle: const TextStyle(
-        color: Colors.black,
+        color: AppColors.textPrimary,
         fontSize: 15,
         fontWeight: FontWeight.bold,
       ),
@@ -69,9 +69,9 @@ class DatePicker extends ConsumerWidget {
       closeDialogOnCancelTapped: true,
       firstDayOfWeek: 1,
       rangeBidirectional: true,
-      selectedRangeHighlightColor: Colors.black12,
+      selectedRangeHighlightColor: AppColors.accentSoft,
       selectedRangeDayTextStyle: const TextStyle(
-        color: Colors.black,
+        color: AppColors.textPrimary,
         fontWeight: FontWeight.w700,
       ),
     );
@@ -82,7 +82,7 @@ class DatePicker extends ConsumerWidget {
       dialogSize: const Size(325, 400),
       borderRadius: BorderRadius.circular(16),
       value: currentDates,
-      dialogBackgroundColor: Colors.white,
+      dialogBackgroundColor: AppColors.surface,
     );
 
     if (values != null) {
@@ -252,7 +252,7 @@ class RentalTimeWidget extends ConsumerWidget {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? const Color(0xFF000000)
+                            ? AppColors.accent
                             : Colors.transparent,
                         border: Border.all(color: AppColors.stoke, width: 1),
                         borderRadius: BorderRadius.circular(50),
@@ -265,7 +265,7 @@ class RentalTimeWidget extends ConsumerWidget {
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: isSelected
-                                ? Colors.white
+                                ? AppColors.onAccent
                                 : AppColors.textSecondary,
                           ),
                         ),

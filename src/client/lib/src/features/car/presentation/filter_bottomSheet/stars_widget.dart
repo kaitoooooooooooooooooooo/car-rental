@@ -1,3 +1,4 @@
+import 'package:car_rent_client/src/constants/colors.dart';
 import 'package:flutter/material.dart';
 
 class StarRatingWidget extends StatelessWidget {
@@ -29,7 +30,7 @@ class StarRatingWidget extends StatelessWidget {
     return GestureDetector(
       onTap: () => onRatingChanged?.call(starValue),
       onLongPress: () => onRatingChanged?.call(starValue - 0.5),
-      child: Icon(icon, size: 32, color: color ?? const Color(0xFFFF8F3A)),
+      child: Icon(icon, size: 32, color: color ?? AppColors.accent),
     );
   }
 

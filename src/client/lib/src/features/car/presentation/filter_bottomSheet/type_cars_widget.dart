@@ -40,7 +40,7 @@ class CarTypeToggle extends ConsumerWidget {
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? const Color(0xFF000000)
+                      ? AppColors.accent
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(46),
                 ),
@@ -51,7 +51,7 @@ class CarTypeToggle extends ConsumerWidget {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: isSelected ? Colors.white : AppColors.textPrimary,
+                      color: isSelected ? AppColors.onAccent : AppColors.textPrimary,
                     ),
                   ),
                 ),

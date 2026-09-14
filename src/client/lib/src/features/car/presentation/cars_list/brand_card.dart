@@ -1,3 +1,4 @@
+import 'package:car_rent_client/src/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -15,7 +16,7 @@ class BrandCard extends StatelessWidget {
           return Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(100),
-              color: Colors.black,
+              color: AppColors.surface,
             ),
             width: 120,
             margin: const EdgeInsets.only(right: 12),
