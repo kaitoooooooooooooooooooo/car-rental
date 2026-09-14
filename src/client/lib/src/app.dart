@@ -1,6 +1,7 @@
 import 'package:car_rent_client/src/constants/colors.dart';
 import 'package:car_rent_client/src/features/car/presentation/cars_list/car_list_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -13,6 +14,7 @@ class App extends StatelessWidget {
 
       theme: ThemeData(
         brightness: Brightness.dark,
+        textTheme: GoogleFonts.manropeTextTheme(ThemeData.dark().textTheme),
         scaffoldBackgroundColor: AppColors.background,
         canvasColor: AppColors.surfaceLow,
         dividerColor: AppColors.borderSubtle,

@@ -46,14 +46,14 @@ class _LocationWidgetState extends ConsumerState<LocationWidget> {
         controller: _searchController,
         hintText: 'Choose your location',
         textStyle: WidgetStatePropertyAll(
-          GoogleFonts.roboto(
+          GoogleFonts.manrope(
             fontSize: 14,
             fontWeight: FontWeight.w500,
             color: AppColors.textPrimary,
           ),
         ),
         hintStyle: WidgetStatePropertyAll(
-          GoogleFonts.roboto(
+          GoogleFonts.manrope(
             fontSize: 14,
             fontWeight: FontWeight.w400,
             color: AppColors.textSecondary,

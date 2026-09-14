@@ -66,7 +66,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                         SizedBox(width: 4),
                         Text(
                           'Rivano',
-                          style: GoogleFonts.roboto(
+                          style: GoogleFonts.manrope(
                             fontSize: 30,
                             fontWeight: FontWeight.w700,
                           ),
@@ -101,14 +101,14 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                         controller: _searchController,
                         hintText: 'Search your dream car...',
                         textStyle: WidgetStatePropertyAll(
-                          GoogleFonts.roboto(
+                          GoogleFonts.manrope(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                             color: AppColors.textPrimary,
                           ),
                         ),
                         hintStyle: WidgetStatePropertyAll(
-                          GoogleFonts.roboto(
+                          GoogleFonts.manrope(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
                             color: AppColors.textSecondary,
@@ -154,7 +154,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                   children: [
                     Text(
                       'Brands',
-                      style: GoogleFonts.roboto(
+                      style: GoogleFonts.manrope(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
@@ -187,7 +187,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                       children: [
                         Text(
                           'Best Cars',
-                          style: GoogleFonts.roboto(
+                          style: GoogleFonts.manrope(
                             fontSize: 20,
                             fontWeight: FontWeight.w700,
                             color: AppColors.textPrimary,
@@ -195,7 +195,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                         ),
                         Text(
                           'View All',
-                          style: GoogleFonts.roboto(
+                          style: GoogleFonts.manrope(
                             fontSize: 18,
                             fontWeight: FontWeight.w400,
                             color: AppColors.textSecondary,
@@ -206,7 +206,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                     SizedBox(height: 10),
                     Text(
                       'Available',
-                      style: GoogleFonts.roboto(
+                      style: GoogleFonts.manrope(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
                         color: AppColors.textSecondary,

@@ -53,7 +53,14 @@ class CarCard extends ConsumerWidget {
                               color: AppColors.borderSubtle,
                             ),
                           ),
-                          color: AppColors.surfaceElevated,
+                          gradient: const LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              AppColors.gradientDark,
+                              AppColors.gradientYellow,
+                            ],
+                          ),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
@@ -115,7 +122,7 @@ class CarCard extends ConsumerWidget {
                     children: [
                       Text(
                         ('$marque $model').toUpperCase(),
-                        style: GoogleFonts.roboto(
+                        style: GoogleFonts.manrope(
                           textStyle: const TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 15,
@@ -131,7 +138,7 @@ class CarCard extends ConsumerWidget {
                         children: [
                           Text(
                             car.note.moyenne.toString(),
-                            style: GoogleFonts.roboto(
+                            style: GoogleFonts.manrope(
                               textStyle: const TextStyle(
                                 color: AppColors.textSecondary,
                                 fontSize: 15,
@@ -161,7 +168,7 @@ class CarCard extends ConsumerWidget {
                           SizedBox(width: 5),
                           Text(
                             "${car.localisation.ville} ${car.localisation.canton}",
-                            style: GoogleFonts.roboto(
+                            style: GoogleFonts.manrope(
                               textStyle: const TextStyle(
                                 color: AppColors.textSecondary,
                                 fontSize: 15,
@@ -185,7 +192,7 @@ class CarCard extends ConsumerWidget {
                           SizedBox(width: 5),
                           Text(
                             "${car.tarifs.devise}  ${car.tarifs.jour} / Day",
-                            style: GoogleFonts.roboto(
+                            style: GoogleFonts.manrope(
                               textStyle: const TextStyle(
                                 color: AppColors.textSecondary,
                                 fontSize: 15,
