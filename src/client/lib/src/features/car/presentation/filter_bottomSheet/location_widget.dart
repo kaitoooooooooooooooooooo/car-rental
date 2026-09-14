@@ -49,14 +49,14 @@ class _LocationWidgetState extends ConsumerState<LocationWidget> {
           GoogleFonts.roboto(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            color: AppColors.textPrimary,
           ),
         ),
         hintStyle: WidgetStatePropertyAll(
           GoogleFonts.roboto(
             fontSize: 14,
             fontWeight: FontWeight.w400,
-            color: Colors.grey,
+            color: AppColors.textSecondary,
           ),
         ),
         leading: const Icon(
@@ -67,12 +67,12 @@ class _LocationWidgetState extends ConsumerState<LocationWidget> {
         padding: const WidgetStatePropertyAll<EdgeInsets>(
           EdgeInsets.symmetric(horizontal: 16),
         ),
-        backgroundColor: WidgetStatePropertyAll(AppColors.white),
+        backgroundColor: WidgetStatePropertyAll(AppColors.surface),
         elevation: const WidgetStatePropertyAll(0),
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
-            side: BorderSide(color: Colors.grey.shade300),
+            side: BorderSide(color: AppColors.stoke),
           ),
         ),
         trailing: [

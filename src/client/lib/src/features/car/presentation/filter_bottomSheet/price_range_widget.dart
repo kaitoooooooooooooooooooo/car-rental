@@ -22,7 +22,7 @@ class RangeSelector extends ConsumerWidget {
       error: (error, stackTrace) => Center(
         child: Text(
           'Erreur : $error',
-          style: const TextStyle(color: Colors.red),
+          style: const TextStyle(color: AppColors.error),
         ),
       ),
       data: (cars) {
@@ -53,7 +53,7 @@ class RangeSelector extends ConsumerWidget {
             SfRangeSelector(
               min: minPrice,
               max: maxPrice,
-              activeColor: AppColors.textPrimary,
+              activeColor: AppColors.accent,
               initialValues: SfRangeValues(currentStart, currentEnd),
               interval: ((maxPrice - minPrice) / 5).clamp(1, double.infinity),
               showLabels: true,

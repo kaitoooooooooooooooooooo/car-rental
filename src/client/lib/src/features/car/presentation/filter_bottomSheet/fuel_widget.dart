@@ -49,7 +49,7 @@ class FuelWidget extends ConsumerWidget {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? const Color(0xFF000000)
+                            ? AppColors.accent
                             : Colors.transparent,
                         border: Border.all(color: AppColors.stoke, width: 1),
                         borderRadius: BorderRadius.circular(50),
@@ -62,7 +62,7 @@ class FuelWidget extends ConsumerWidget {
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: isSelected
-                                ? Colors.white
+                                ? AppColors.onAccent
                                 : AppColors.textSecondary,
                           ),
                         ),

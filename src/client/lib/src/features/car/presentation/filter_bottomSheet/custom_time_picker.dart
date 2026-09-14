@@ -11,7 +11,7 @@ Future<TimeOfDay?> showCustomTimePicker(
     orientation: Orientation.landscape,
     builder: (context, child) {
       return Theme(
-        data: Theme.of(context).copyWith(brightness: Brightness.light),
+        data: Theme.of(context).copyWith(brightness: Brightness.dark),
         child: Directionality(
           textDirection: TextDirection.ltr,
           child: MediaQuery(

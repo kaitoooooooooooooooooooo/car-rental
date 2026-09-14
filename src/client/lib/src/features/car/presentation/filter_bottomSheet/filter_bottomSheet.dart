@@ -19,10 +19,10 @@ class FilterBottomsheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return RawMaterialButton(
-      splashColor: AppColors.white,
+      splashColor: AppColors.accentSoft,
       onPressed: () {
         showModalBottomSheet(
-          backgroundColor: AppColors.white,
+          backgroundColor: AppColors.surfaceLow,
           context: context,
           isScrollControlled: true,
           builder: (context) {
@@ -76,7 +76,7 @@ class FilterBottomsheet extends ConsumerWidget {
                         SizedBox(
                           height: 20,
                           child: Divider(
-                            color: Colors.grey.shade300,
+                            color: AppColors.borderSubtle,
                             thickness: 1,
                           ),
                         ),
@@ -100,7 +100,7 @@ class FilterBottomsheet extends ConsumerWidget {
                         SizedBox(
                           height: 20,
                           child: Divider(
-                            color: Colors.grey.shade300,
+                            color: AppColors.borderSubtle,
                             thickness: 1,
                           ),
                         ),
@@ -123,7 +123,7 @@ class FilterBottomsheet extends ConsumerWidget {
                         SizedBox(
                           height: 20,
                           child: Divider(
-                            color: Colors.grey.shade300,
+                            color: AppColors.borderSubtle,
                             thickness: 1,
                           ),
                         ),
@@ -164,7 +164,7 @@ class FilterBottomsheet extends ConsumerWidget {
                         SizedBox(
                           height: 20,
                           child: Divider(
-                            color: Colors.grey.shade300,
+                            color: AppColors.borderSubtle,
                             thickness: 1,
                           ),
                         ),
@@ -217,7 +217,7 @@ class FilterBottomsheet extends ConsumerWidget {
                         SizedBox(
                           height: 20,
                           child: Divider(
-                            color: Colors.grey.shade300,
+                            color: AppColors.borderSubtle,
                             thickness: 1,
                           ),
                         ),
@@ -230,8 +230,8 @@ class FilterBottomsheet extends ConsumerWidget {
                                   .read(carFilterProvider.notifier)
                                   .clearAll(),
                               style: TextButton.styleFrom(
-                                foregroundColor: Colors.black,
-                                overlayColor: Colors.black,
+                                foregroundColor: AppColors.textPrimary,
+                                overlayColor: AppColors.textPrimary,
                               ),
                               child: Text(
                                 'Clear All',
@@ -254,8 +254,8 @@ class FilterBottomsheet extends ConsumerWidget {
                                 );
                                 return ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.black,
-                                    foregroundColor: Colors.white,
+                                    backgroundColor: AppColors.accent,
+                                    foregroundColor: AppColors.onAccent,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(50),
                                     ),
@@ -268,7 +268,7 @@ class FilterBottomsheet extends ConsumerWidget {
                                       style: GoogleFonts.roboto(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500,
-                                        color: AppColors.white,
+                                        color: AppColors.onAccent,
                                       ),
                                     ),
                                   ),
@@ -287,7 +287,7 @@ class FilterBottomsheet extends ConsumerWidget {
         );
       },
       elevation: 2.0,
-      fillColor: Colors.white,
+      fillColor: AppColors.surface,
       padding: EdgeInsets.all(15.0),
       shape: CircleBorder(),
       constraints: BoxConstraints(minWidth: 0.0),
