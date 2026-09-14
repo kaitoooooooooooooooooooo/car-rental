@@ -18,6 +18,10 @@ class AppColors {
   static const Color surface = Color(0xFF30322B);
   static const Color surfaceElevated = Color(0xFF3A3C34);
 
+  // Dégradé carte voiture (noir en haut → jaune en bas)
+  static const Color gradientDark = Color(0xFF292929);
+  static const Color gradientYellow = Color(0xFFEFFE7D);
+
   // Texte
   static const Color textPrimary = Color(0xFFF4F4F0);
   static const Color textSecondary = Color(0xFFA7A99F);

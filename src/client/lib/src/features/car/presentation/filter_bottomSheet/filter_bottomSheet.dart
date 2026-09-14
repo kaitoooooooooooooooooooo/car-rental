@@ -65,7 +65,7 @@ class FilterBottomsheet extends ConsumerWidget {
                             ),
                             Text(
                               'Filters',
-                              style: GoogleFonts.roboto(
+                              style: GoogleFonts.manrope(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.textPrimary,
@@ -86,7 +86,7 @@ class FilterBottomsheet extends ConsumerWidget {
                           children: [
                             Text(
                               'Types of Cars',
-                              style: GoogleFonts.roboto(
+                              style: GoogleFonts.manrope(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.textPrimary,
@@ -110,7 +110,7 @@ class FilterBottomsheet extends ConsumerWidget {
                           children: [
                             Text(
                               'Price range',
-                              style: GoogleFonts.roboto(
+                              style: GoogleFonts.manrope(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.textPrimary,
@@ -135,7 +135,7 @@ class FilterBottomsheet extends ConsumerWidget {
                           children: [
                             Text(
                               'Pick up and Drop Date',
-                              style: GoogleFonts.roboto(
+                              style: GoogleFonts.manrope(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
                                 color: AppColors.textPrimary,
@@ -150,7 +150,7 @@ class FilterBottomsheet extends ConsumerWidget {
                           children: [
                             Text(
                               'Car location',
-                              style: GoogleFonts.roboto(
+                              style: GoogleFonts.manrope(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
                                 color: AppColors.textPrimary,
@@ -174,7 +174,7 @@ class FilterBottomsheet extends ConsumerWidget {
                           children: [
                             Text(
                               'Rating',
-                              style: GoogleFonts.roboto(
+                              style: GoogleFonts.manrope(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.textPrimary,
@@ -193,7 +193,7 @@ class FilterBottomsheet extends ConsumerWidget {
                               children: [
                                 Text(
                                   'Choose the minimum rate',
-                                  style: GoogleFonts.roboto(
+                                  style: GoogleFonts.manrope(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400,
                                     color: AppColors.textPrimary,
@@ -235,7 +235,7 @@ class FilterBottomsheet extends ConsumerWidget {
                               ),
                               child: Text(
                                 'Clear All',
-                                style: GoogleFonts.roboto(
+                                style: GoogleFonts.manrope(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
                                   color: AppColors.textPrimary,
@@ -265,7 +265,7 @@ class FilterBottomsheet extends ConsumerWidget {
                                     padding: const EdgeInsets.all(8.0),
                                     child: Text(
                                       label,
-                                      style: GoogleFonts.roboto(
+                                      style: GoogleFonts.manrope(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500,
                                         color: AppColors.onAccent,

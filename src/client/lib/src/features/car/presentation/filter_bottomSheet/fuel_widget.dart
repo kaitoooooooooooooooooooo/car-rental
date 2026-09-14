@@ -25,7 +25,7 @@ class FuelWidget extends ConsumerWidget {
       children: [
         Text(
           'Fuel Type',
-          style: GoogleFonts.roboto(
+          style: GoogleFonts.manrope(
             fontSize: 16,
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,

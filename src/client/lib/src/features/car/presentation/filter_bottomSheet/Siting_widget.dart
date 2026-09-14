@@ -21,7 +21,7 @@ class SitingWidget extends ConsumerWidget {
       children: [
         Text(
           'Siting Capacity',
-          style: GoogleFonts.roboto(
+          style: GoogleFonts.manrope(
             fontSize: 16,
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,

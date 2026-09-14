@@ -99,7 +99,7 @@ class RangeSelector extends ConsumerWidget {
                   children: [
                     Text(
                       'Minimum',
-                      style: GoogleFonts.roboto(
+                      style: GoogleFonts.manrope(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                         color: AppColors.textSecondary,
@@ -117,7 +117,7 @@ class RangeSelector extends ConsumerWidget {
                       ),
                       child: Text(
                         currentStart.toStringAsFixed(0),
-                        style: GoogleFonts.roboto(
+                        style: GoogleFonts.manrope(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                           color: AppColors.textSecondary,
@@ -130,7 +130,7 @@ class RangeSelector extends ConsumerWidget {
                   children: [
                     Text(
                       'Maximum',
-                      style: GoogleFonts.roboto(
+                      style: GoogleFonts.manrope(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                         color: AppColors.textSecondary,
@@ -148,7 +148,7 @@ class RangeSelector extends ConsumerWidget {
                       ),
                       child: Text(
                         currentEnd.toStringAsFixed(0),
-                        style: GoogleFonts.roboto(
+                        style: GoogleFonts.manrope(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                           color: AppColors.textSecondary,

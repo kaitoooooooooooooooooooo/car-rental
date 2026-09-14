@@ -228,7 +228,7 @@ class RentalTimeWidget extends ConsumerWidget {
       children: [
         Text(
           'Rental Time',
-          style: GoogleFonts.roboto(
+          style: GoogleFonts.manrope(
             fontSize: 16,
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
