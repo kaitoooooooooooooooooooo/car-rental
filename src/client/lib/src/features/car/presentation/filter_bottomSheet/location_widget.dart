@@ -18,9 +18,11 @@ class _LocationWidgetState extends ConsumerState<LocationWidget> {
   void initState() {
     super.initState();
     _searchController = SearchController();
-    _searchController.text = ref.read(carFilterProvider).location;
+    _searchController.text = ref.read(draftFilterProvider).location;
     _searchController.addListener(() {
-      ref.read(carFilterProvider.notifier).setLocation(_searchController.text);
+      ref
+          .read(draftFilterProvider.notifier)
+          .setLocation(_searchController.text);
     });
   }
 
@@ -32,13 +34,13 @@ class _LocationWidgetState extends ConsumerState<LocationWidget> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<CarFilterState>(carFilterProvider, (previous, next) {
+    ref.listen<CarFilterState>(draftFilterProvider, (previous, next) {
       if (next.location != _searchController.text) {
         _searchController.text = next.location;
       }
     });
 
-    final location = ref.watch(carFilterProvider).location;
+    final location = ref.watch(draftFilterProvider).location;
 
     return Expanded(
       child: SearchBar(

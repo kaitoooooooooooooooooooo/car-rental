@@ -10,7 +10,7 @@ class AppColors {
   static const Color accentSoft = Color(0x33408B77);
   static const Color onAccent = Color(0xFFF2F4F3);
 
-  static const Color background = Color.fromARGB(255, 68, 73, 70);
+  static const Color background = Color(0xFF444946);
   static const Color surfaceLow = Color(0xFF1B1D1C);
   static const Color surface = Color(0xFF2C302E);
   static const Color surfaceElevated = Color(0xFF363B38);

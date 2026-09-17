@@ -45,8 +45,8 @@ class CarFilterState {
   CarFilterState copyWith({
     Object? brand = _unset,
     CarTypeFilter? carType,
-    double? minPrice,
-    double? maxPrice,
+    Object? minPrice = _unset,
+    Object? maxPrice = _unset,
     String? rentalType,
     List<DateTime?>? selectedDates,
     TimeOfDay? startTime,
@@ -59,8 +59,12 @@ class CarFilterState {
     return CarFilterState(
       brand: identical(brand, _unset) ? this.brand : brand as String?,
       carType: carType ?? this.carType,
-      minPrice: minPrice ?? this.minPrice,
-      maxPrice: maxPrice ?? this.maxPrice,
+      minPrice: identical(minPrice, _unset)
+          ? this.minPrice
+          : minPrice as double?,
+      maxPrice: identical(maxPrice, _unset)
+          ? this.maxPrice
+          : maxPrice as double?,
       rentalType: rentalType ?? this.rentalType,
       selectedDates: selectedDates ?? this.selectedDates,
       startTime: startTime ?? this.startTime,
@@ -91,9 +95,12 @@ class CarFilterNotifier extends StateNotifier<CarFilterState> {
   void toggleBrand(String brand) =>
       state = state.copyWith(brand: state.brand == brand ? null : brand);
 
-  void setCarType(CarTypeFilter type) => state = state.copyWith(carType: type);
+  void setCarType(CarTypeFilter type) {
+    if (type == state.carType) return;
+    state = state.copyWith(carType: type, minPrice: null, maxPrice: null);
+  }
 
-  void setPriceRange(double min, double max) =>
+  void setPriceRange(double? min, double? max) =>
       state = state.copyWith(minPrice: min, maxPrice: max);
 
   void setRentalType(String type) {
@@ -141,9 +148,16 @@ class CarFilterNotifier extends StateNotifier<CarFilterState> {
   void clearAll() {
     state = CarFilterState(resetToken: state.resetToken + 1);
   }
+
+  void replaceWith(CarFilterState filter) => state = filter;
 }
 
 final carFilterProvider =
+    StateNotifierProvider<CarFilterNotifier, CarFilterState>(
+      (ref) => CarFilterNotifier(),
+    );
+
+final draftFilterProvider =
     StateNotifierProvider<CarFilterNotifier, CarFilterState>(
       (ref) => CarFilterNotifier(),
     );
@@ -153,6 +167,14 @@ final searchQueryProvider = StateProvider<String>((ref) => '');
 final filteredCarsProvider = Provider<AsyncValue<List<Car>>>((ref) {
   final carsAsync = ref.watch(carsListFutureProvider);
   final filter = ref.watch(carFilterProvider);
+  final query = ref.watch(searchQueryProvider);
+
+  return carsAsync.whenData((cars) => _applyFilters(cars, filter, query));
+});
+
+final draftFilteredCarsProvider = Provider<AsyncValue<List<Car>>>((ref) {
+  final carsAsync = ref.watch(carsListFutureProvider);
+  final filter = ref.watch(draftFilterProvider);
   final query = ref.watch(searchQueryProvider);
 
   return carsAsync.whenData((cars) => _applyFilters(cars, filter, query));
@@ -173,13 +195,7 @@ List<Car> _applyFilters(List<Car> cars, CarFilterState filter, String query) {
       return false;
     }
 
-    if (filter.carType != CarTypeFilter.all) {
-      const seuilLuxe = 1000;
-      final isLuxury = car.tarifs.jour > seuilLuxe;
-
-      if (filter.carType == CarTypeFilter.luxury && !isLuxury) return false;
-      if (filter.carType == CarTypeFilter.regular && isLuxury) return false;
-    }
+    if (!matchesCarType(car, filter.carType)) return false;
 
     if (filter.minPrice != null && car.tarifs.jour < filter.minPrice!) {
       return false;
@@ -228,6 +244,20 @@ List<Car> _applyFilters(List<Car> cars, CarFilterState filter, String query) {
 
     return true;
   }).toList();
+}
+
+const int luxuryDailyPriceThreshold = 1000;
+
+bool matchesCarType(Car car, CarTypeFilter type) {
+  final isLuxury = car.tarifs.jour > luxuryDailyPriceThreshold;
+  switch (type) {
+    case CarTypeFilter.all:
+      return true;
+    case CarTypeFilter.luxury:
+      return isLuxury;
+    case CarTypeFilter.regular:
+      return !isLuxury;
+  }
 }
 
 String _normalize(String s) => s

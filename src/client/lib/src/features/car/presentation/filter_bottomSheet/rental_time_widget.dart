@@ -40,7 +40,7 @@ class DatePicker extends ConsumerWidget {
   const DatePicker({super.key});
 
   Future<void> _openCalendarDialog(BuildContext context, WidgetRef ref) async {
-    final currentDates = ref.read(carFilterProvider).selectedDates;
+    final currentDates = ref.read(draftFilterProvider).selectedDates;
 
     final config = CalendarDatePicker2WithActionButtonsConfig(
       calendarType: CalendarDatePicker2Type.range,
@@ -86,19 +86,19 @@ class DatePicker extends ConsumerWidget {
     );
 
     if (values != null) {
-      ref.read(carFilterProvider.notifier).setSelectedDates(values);
+      ref.read(draftFilterProvider.notifier).setSelectedDates(values);
     }
   }
 
   Future<void> _openStartTimeDialog(BuildContext context, WidgetRef ref) async {
-    final filter = ref.read(carFilterProvider);
+    final filter = ref.read(draftFilterProvider);
     final time = await showCustomTimePicker(
       context,
       initialTime: filter.startTime,
     );
     if (time == null) return;
 
-    final notifier = ref.read(carFilterProvider.notifier);
+    final notifier = ref.read(draftFilterProvider.notifier);
     notifier.setStartTime(time);
     if (filter.endTime != null && !_hasMinDuration(time, filter.endTime!)) {
       notifier.setEndTime(_addMinutes(time, _minDurationMinutes));
@@ -106,7 +106,7 @@ class DatePicker extends ConsumerWidget {
   }
 
   Future<void> _openEndTimeDialog(BuildContext context, WidgetRef ref) async {
-    final filter = ref.read(carFilterProvider);
+    final filter = ref.read(draftFilterProvider);
     final defaultInitial = filter.startTime != null
         ? _addMinutes(filter.startTime!, _minDurationMinutes)
         : null;
@@ -128,12 +128,12 @@ class DatePicker extends ConsumerWidget {
       return;
     }
 
-    ref.read(carFilterProvider.notifier).setEndTime(time);
+    ref.read(draftFilterProvider.notifier).setEndTime(time);
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final filter = ref.watch(carFilterProvider);
+    final filter = ref.watch(draftFilterProvider);
     final isDayMode = filter.rentalType == 'Day';
 
     if (isDayMode) {
@@ -220,8 +220,8 @@ class RentalTimeWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selected = ref.watch(carFilterProvider).rentalType;
-    final notifier = ref.read(carFilterProvider.notifier);
+    final selected = ref.watch(draftFilterProvider).rentalType;
+    final notifier = ref.read(draftFilterProvider.notifier);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
