@@ -13,8 +13,8 @@ class SitingWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selected = ref.watch(carFilterProvider).seatingCapacities;
-    final notifier = ref.read(carFilterProvider.notifier);
+    final selected = ref.watch(draftFilterProvider).seatingCapacities;
+    final notifier = ref.read(draftFilterProvider.notifier);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

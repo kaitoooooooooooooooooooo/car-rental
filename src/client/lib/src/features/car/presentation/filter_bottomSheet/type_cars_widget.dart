@@ -14,8 +14,8 @@ class CarTypeToggle extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selected = ref.watch(carFilterProvider).carType;
-    final notifier = ref.read(carFilterProvider.notifier);
+    final selected = ref.watch(draftFilterProvider).carType;
+    final notifier = ref.read(draftFilterProvider.notifier);
 
     return Container(
       width: double.infinity,
@@ -39,9 +39,7 @@ class CarTypeToggle extends ConsumerWidget {
                 ),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: isSelected
-                      ? AppColors.accent
-                      : Colors.transparent,
+                  color: isSelected ? AppColors.accent : Colors.transparent,
                   borderRadius: BorderRadius.circular(46),
                 ),
                 child: FittedBox(
@@ -51,7 +49,9 @@ class CarTypeToggle extends ConsumerWidget {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: isSelected ? AppColors.onAccent : AppColors.textPrimary,
+                      color: isSelected
+                          ? AppColors.onAccent
+                          : AppColors.textPrimary,
                     ),
                   ),
                 ),

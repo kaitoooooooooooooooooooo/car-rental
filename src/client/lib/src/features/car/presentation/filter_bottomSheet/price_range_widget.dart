@@ -8,14 +8,37 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 
+const double _lowPercentile = 0.05;
+const double _highPercentile = 0.95;
+const int _maxLabelIntervals = 8;
+const int _bucketsPerLabel = 4;
+const int _minorTicksPerLabel = 1;
+const double _sliderStep = 10;
+const double _minBarRatio = 0.2;
+const List<double> _labelSteps = [
+  10,
+  20,
+  25,
+  50,
+  100,
+  200,
+  250,
+  500,
+  1000,
+  2000,
+  2500,
+  5000,
+  10000,
+];
+
 class RangeSelector extends ConsumerWidget {
   const RangeSelector({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final carsListValue = ref.watch(carsListFutureProvider);
-    final filter = ref.watch(carFilterProvider);
-    final notifier = ref.read(carFilterProvider.notifier);
+    final filter = ref.watch(draftFilterProvider);
+    final notifier = ref.read(draftFilterProvider.notifier);
 
     return carsListValue.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -30,56 +53,77 @@ class RangeSelector extends ConsumerWidget {
           return const Center(child: Text('Aucune donnée disponible'));
         }
 
-        final prices = cars.map((car) => car.tarifs.jour.toDouble()).toList();
-        final minPrice = prices.reduce((a, b) => a < b ? a : b);
-        final maxPrice = prices.reduce((a, b) => a > b ? a : b);
-
-        final currentStart = filter.minPrice ?? minPrice;
-        final currentEnd = filter.maxPrice ?? maxPrice;
-
-        final Map<double, int> priceCount = {};
-        for (final price in prices) {
-          priceCount[price] = (priceCount[price] ?? 0) + 1;
-        }
-        final chartData =
-            priceCount.entries
-                .map((e) => ChartData(x: e.key, y: e.value.toDouble()))
+        final prices =
+            cars
+                .where((car) => matchesCarType(car, filter.carType))
+                .map((car) => car.tarifs.jour.toDouble())
                 .toList()
-              ..sort((a, b) => a.x.compareTo(b.x));
+              ..sort();
+
+        if (prices.isEmpty) {
+          return const Center(child: Text('Aucune voiture pour ce type'));
+        }
+
+        final scale = PriceScale.fromPrices(prices);
+        final chartData = scale.buildHistogram(prices);
+
+        final double currentStart = (filter.minPrice ?? scale.axisMin)
+            .clamp(scale.axisMin, scale.axisMax)
+            .toDouble();
+        final double currentEnd = (filter.maxPrice ?? scale.axisMax)
+            .clamp(scale.axisMin, scale.axisMax)
+            .toDouble();
+
+        final minLabel = currentStart.toStringAsFixed(0);
+        final maxLabel = filter.maxPrice == null
+            ? '${scale.axisMax.toStringAsFixed(0)}+'
+            : currentEnd.toStringAsFixed(0);
 
         return Column(
-          key: ValueKey('range-${filter.resetToken}'),
+          key: ValueKey('range-${filter.resetToken}-${filter.carType.name}'),
           children: [
             SfRangeSelector(
-              min: minPrice,
-              max: maxPrice,
+              min: scale.axisMin,
+              max: scale.axisMax,
               activeColor: AppColors.accent,
               initialValues: SfRangeValues(currentStart, currentEnd),
-              interval: ((maxPrice - minPrice) / 5).clamp(1, double.infinity),
+              interval: scale.labelStep,
+              stepSize: _sliderStep,
+              minorTicksPerInterval: _minorTicksPerLabel,
               showLabels: true,
               showTicks: true,
+              labelFormatterCallback: (dynamic value, String formattedText) {
+                final number = (value as num).toDouble();
+                return number >= scale.axisMax
+                    ? '${number.toStringAsFixed(0)}+'
+                    : number.toStringAsFixed(0);
+              },
               onChanged: (SfRangeValues values) {
-                notifier.setPriceRange(values.start, values.end);
+                final double start = (values.start as num).toDouble();
+                final double end = (values.end as num).toDouble();
+                notifier.setPriceRange(
+                  start <= scale.axisMin ? null : start,
+                  end >= scale.axisMax ? null : end,
+                );
               },
               child: SizedBox(
                 height: 130,
                 child: SfCartesianChart(
-                  margin: EdgeInsets.zero,
+                  margin: const EdgeInsets.only(bottom: 10),
                   primaryXAxis: NumericAxis(
-                    minimum: minPrice,
-                    maximum: maxPrice,
+                    minimum: scale.axisMin,
+                    maximum: scale.axisMax,
                     isVisible: false,
                   ),
-                  primaryYAxis: NumericAxis(isVisible: false),
+                  primaryYAxis: NumericAxis(isVisible: false, minimum: 0),
                   plotAreaBorderWidth: 0,
-                  tooltipBehavior: TooltipBehavior(enable: true),
                   series: <ColumnSeries<ChartData, double>>[
                     ColumnSeries<ChartData, double>(
                       dataSource: chartData,
                       xValueMapper: (ChartData data, _) => data.x,
                       yValueMapper: (ChartData data, _) => data.y,
                       color: AppColors.textPrimary,
-                      width: 0.7,
+                      width: 0.9,
                       spacing: 0.1,
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(4),
@@ -95,73 +139,108 @@ class RangeSelector extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  children: [
-                    Text(
-                      'Minimum',
-                      style: GoogleFonts.manrope(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    gapH8,
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.stoke, width: 1),
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 18,
-                        vertical: 6,
-                      ),
-                      child: Text(
-                        currentStart.toStringAsFixed(0),
-                        style: GoogleFonts.manrope(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text(
-                      'Maximum',
-                      style: GoogleFonts.manrope(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    gapH8,
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.stoke, width: 1),
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 18,
-                        vertical: 6,
-                      ),
-                      child: Text(
-                        currentEnd.toStringAsFixed(0),
-                        style: GoogleFonts.manrope(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                _PriceBadge(title: 'Minimum', value: minLabel),
+                _PriceBadge(title: 'Maximum', value: maxLabel),
               ],
             ),
           ],
         );
       },
+    );
+  }
+}
+
+class PriceScale {
+  const PriceScale({
+    required this.axisMin,
+    required this.axisMax,
+    required this.labelStep,
+  });
+
+  factory PriceScale.fromPrices(List<double> sortedPrices) {
+    final last = sortedPrices.length - 1;
+    final low = sortedPrices[(last * _lowPercentile).round()];
+    final high = sortedPrices[(last * _highPercentile).round()];
+    final span = high - low;
+
+    final labelStep = _labelSteps.firstWhere(
+      (step) => span / step <= _maxLabelIntervals,
+      orElse: () => _labelSteps.last,
+    );
+
+    final axisMin = (low / labelStep).floor() * labelStep;
+    var axisMax = (high / labelStep).ceil() * labelStep;
+    if (axisMax <= axisMin) axisMax = axisMin + labelStep;
+
+    return PriceScale(axisMin: axisMin, axisMax: axisMax, labelStep: labelStep);
+  }
+
+  final double axisMin;
+  final double axisMax;
+  final double labelStep;
+
+  double get bucketWidth => labelStep / _bucketsPerLabel;
+
+  int get bucketCount => ((axisMax - axisMin) / bucketWidth).round();
+
+  List<ChartData> buildHistogram(List<double> prices) {
+    final counts = List<int>.filled(bucketCount, 0);
+    for (final price in prices) {
+      final index = ((price - axisMin) / bucketWidth).floor().clamp(
+        0,
+        bucketCount - 1,
+      );
+      counts[index]++;
+    }
+
+    final maxCount = counts.fold<int>(0, (a, b) => a > b ? a : b);
+    final minVisibleHeight = maxCount * _minBarRatio;
+
+    return List.generate(bucketCount, (i) {
+      final count = counts[i];
+      final height = count == 0
+          ? 0.0
+          : (count < minVisibleHeight ? minVisibleHeight : count.toDouble());
+      return ChartData(x: axisMin + (i + 0.5) * bucketWidth, y: height);
+    });
+  }
+}
+
+class _PriceBadge extends StatelessWidget {
+  const _PriceBadge({required this.title, required this.value});
+
+  final String title;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.manrope(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        gapH8,
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: AppColors.stoke, width: 1),
+            borderRadius: BorderRadius.circular(50),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+          child: Text(
+            value,
+            style: GoogleFonts.manrope(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

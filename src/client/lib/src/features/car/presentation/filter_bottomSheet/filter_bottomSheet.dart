@@ -21,6 +21,9 @@ class FilterBottomsheet extends ConsumerWidget {
     return RawMaterialButton(
       splashColor: AppColors.accentSoft,
       onPressed: () {
+        ref
+            .read(draftFilterProvider.notifier)
+            .replaceWith(ref.read(carFilterProvider));
         showModalBottomSheet(
           backgroundColor: AppColors.surfaceLow,
           context: context,
@@ -186,7 +189,7 @@ class FilterBottomsheet extends ConsumerWidget {
                         Consumer(
                           builder: (context, ref, _) {
                             final rating = ref
-                                .watch(carFilterProvider)
+                                .watch(draftFilterProvider)
                                 .minRating;
                             return Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -202,7 +205,7 @@ class FilterBottomsheet extends ConsumerWidget {
                                 StarRatingWidget(
                                   rating: rating,
                                   onRatingChanged: (r) => ref
-                                      .read(carFilterProvider.notifier)
+                                      .read(draftFilterProvider.notifier)
                                       .setMinRating(r),
                                 ),
                               ],
@@ -227,7 +230,7 @@ class FilterBottomsheet extends ConsumerWidget {
                           children: [
                             TextButton(
                               onPressed: () => ref
-                                  .read(carFilterProvider.notifier)
+                                  .read(draftFilterProvider.notifier)
                                   .clearAll(),
                               style: TextButton.styleFrom(
                                 foregroundColor: AppColors.textPrimary,
@@ -245,10 +248,14 @@ class FilterBottomsheet extends ConsumerWidget {
                             Consumer(
                               builder: (context, ref, _) {
                                 final filteredCars = ref.watch(
-                                  filteredCarsProvider,
+                                  draftFilteredCarsProvider,
                                 );
+                                final hasNoCars =
+                                    filteredCars.value?.isEmpty ?? false;
                                 final label = filteredCars.when(
-                                  data: (cars) => 'Show ${cars.length} Cars',
+                                  data: (cars) => cars.isEmpty
+                                      ? 'No Cars Found'
+                                      : 'Show ${cars.length} Cars',
                                   loading: () => 'Show Cars',
                                   error: (_, __) => 'Show Cars',
                                 );
@@ -256,20 +263,47 @@ class FilterBottomsheet extends ConsumerWidget {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.accent,
                                     foregroundColor: AppColors.onAccent,
+                                    disabledBackgroundColor: AppColors.surface,
+                                    disabledForegroundColor:
+                                        AppColors.textMuted,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(50),
                                     ),
                                   ),
-                                  onPressed: () => Navigator.pop(context),
+                                  onPressed: hasNoCars
+                                      ? null
+                                      : () {
+                                          ref
+                                              .read(carFilterProvider.notifier)
+                                              .replaceWith(
+                                                ref.read(draftFilterProvider),
+                                              );
+                                          Navigator.pop(context);
+                                        },
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      label,
-                                      style: GoogleFonts.manrope(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                        color: AppColors.onAccent,
-                                      ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        if (hasNoCars) ...[
+                                          const Icon(
+                                            Icons.search_off_rounded,
+                                            size: 18,
+                                            color: AppColors.textMuted,
+                                          ),
+                                          const SizedBox(width: 6),
+                                        ],
+                                        Text(
+                                          label,
+                                          style: GoogleFonts.manrope(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                            color: hasNoCars
+                                                ? AppColors.textMuted
+                                                : AppColors.onAccent,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 );
