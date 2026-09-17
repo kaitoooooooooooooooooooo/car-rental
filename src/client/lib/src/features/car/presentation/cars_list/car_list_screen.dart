@@ -1,7 +1,6 @@
 import 'package:car_rent_client/src/constants/colors.dart';
 import 'package:car_rent_client/src/features/car/presentation/cars_list/brand_card.dart';
 import 'package:car_rent_client/src/features/car/presentation/cars_list/car_card.dart';
-import 'package:car_rent_client/src/features/car/presentation/cars_list/cars_results.dart';
 import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/car_filter_provider.dart';
 import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/filter_bottomSheet.dart';
 import 'package:flutter/material.dart';
@@ -252,7 +251,6 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                             const Center(child: CircularProgressIndicator()),
                       ),
                     ),
-                    const Expanded(child: CarsResults()),
                   ],
                 ),
               ),
