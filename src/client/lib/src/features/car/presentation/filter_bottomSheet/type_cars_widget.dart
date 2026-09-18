@@ -16,6 +16,9 @@ class CarTypeToggle extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selected = ref.watch(draftFilterProvider).carType;
     final notifier = ref.read(draftFilterProvider.notifier);
+    final availableCars = ref.watch(
+      draftCarsIgnoringProvider(FilterFacet.carType),
+    );
 
     return Container(
       width: double.infinity,
@@ -27,31 +30,39 @@ class CarTypeToggle extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: _labels.entries.map((entry) {
           final bool isSelected = selected == entry.key;
+          final bool isAvailable =
+              isSelected ||
+              availableCars == null ||
+              availableCars.any((car) => matchesCarType(car, entry.key));
           return Expanded(
             child: GestureDetector(
-              onTap: () => notifier.setCarType(entry.key),
-              child: AnimatedContainer(
+              onTap: isAvailable ? () => notifier.setCarType(entry.key) : null,
+              child: AnimatedOpacity(
                 duration: const Duration(milliseconds: 280),
-                curve: Curves.easeInOut,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 6,
-                  vertical: 14,
-                ),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: isSelected ? AppColors.accent : Colors.transparent,
-                  borderRadius: BorderRadius.circular(46),
-                ),
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    entry.value,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: isSelected
-                          ? AppColors.onAccent
-                          : AppColors.textPrimary,
+                opacity: isAvailable ? 1 : 0.35,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 280),
+                  curve: Curves.easeInOut,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 14,
+                  ),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: isSelected ? AppColors.accent : Colors.transparent,
+                    borderRadius: BorderRadius.circular(46),
+                  ),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      entry.value,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: isSelected
+                            ? AppColors.onAccent
+                            : AppColors.textPrimary,
+                      ),
                     ),
                   ),
                 ),
