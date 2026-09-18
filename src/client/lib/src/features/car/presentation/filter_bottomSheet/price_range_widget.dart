@@ -37,6 +37,9 @@ class RangeSelector extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final carsListValue = ref.watch(carsListFutureProvider);
+    final availableCars = ref.watch(
+      draftCarsIgnoringProvider(FilterFacet.price),
+    );
     final filter = ref.watch(draftFilterProvider);
     final notifier = ref.read(draftFilterProvider.notifier);
 
@@ -54,14 +57,13 @@ class RangeSelector extends ConsumerWidget {
         }
 
         final prices =
-            cars
-                .where((car) => matchesCarType(car, filter.carType))
+            (availableCars ?? cars)
                 .map((car) => car.tarifs.jour.toDouble())
                 .toList()
               ..sort();
 
         if (prices.isEmpty) {
-          return const Center(child: Text('Aucune voiture pour ce type'));
+          return const Center(child: Text('Aucune voiture pour ces filtres'));
         }
 
         final scale = PriceScale.fromPrices(prices);
@@ -80,7 +82,9 @@ class RangeSelector extends ConsumerWidget {
             : currentEnd.toStringAsFixed(0);
 
         return Column(
-          key: ValueKey('range-${filter.resetToken}-${filter.carType.name}'),
+          key: ValueKey(
+            'range-${filter.resetToken}-${scale.axisMin}-${scale.axisMax}',
+          ),
           children: [
             SfRangeSelector(
               min: scale.axisMin,

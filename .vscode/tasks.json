@@ -4,7 +4,7 @@
     {
       "label": "iPhone : compiler + installer + lancer (release)",
       "type": "shell",
-      "command": "flutter build ios --release --no-tree-shake-icons --dart-define=API_URL=http://$(ipconfig getifaddr en1):3000 && xcrun devicectl device install app --device 00008130-001405191E2A001C build/ios/iphoneos/Runner.app && xcrun devicectl device process launch --terminate-existing --device 00008130-001405191E2A001C com.mehltom.carRentClient",
+      "command": "flutter build ios --release --no-tree-shake-icons --dart-define=API_URL=http://$(scutil --get LocalHostName).local:3000 && xcrun devicectl device install app --device 00008130-001405191E2A001C build/ios/iphoneos/Runner.app && xcrun devicectl device process launch --terminate-existing --device 00008130-001405191E2A001C com.mehltom.carRentClient",
       "options": { "cwd": "${workspaceFolder}/src/client" },
       "group": { "kind": "build", "isDefault": true },
       "presentation": { "reveal": "always", "panel": "dedicated", "clear": true },

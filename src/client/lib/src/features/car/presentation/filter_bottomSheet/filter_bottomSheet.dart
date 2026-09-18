@@ -34,7 +34,7 @@ class FilterBottomsheet extends ConsumerWidget {
               padding: EdgeInsets.only(bottom: mediaQuery.viewInsets.bottom),
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  maxHeight: mediaQuery.size.height * 0.9,
+                  maxHeight: mediaQuery.size.height * 0.56,
                 ),
                 child: SingleChildScrollView(
                   child: Container(

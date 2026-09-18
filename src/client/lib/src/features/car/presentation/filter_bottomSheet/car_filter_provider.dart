@@ -180,7 +180,25 @@ final draftFilteredCarsProvider = Provider<AsyncValue<List<Car>>>((ref) {
   return carsAsync.whenData((cars) => _applyFilters(cars, filter, query));
 });
 
-List<Car> _applyFilters(List<Car> cars, CarFilterState filter, String query) {
+enum FilterFacet { carType, price, seating, fuel }
+
+final draftCarsIgnoringProvider = Provider.family<List<Car>?, FilterFacet>((
+  ref,
+  facet,
+) {
+  final cars = ref.watch(carsListFutureProvider).value;
+  if (cars == null) return null;
+  final filter = ref.watch(draftFilterProvider);
+  final query = ref.watch(searchQueryProvider);
+  return _applyFilters(cars, filter, query, ignore: facet);
+});
+
+List<Car> _applyFilters(
+  List<Car> cars,
+  CarFilterState filter,
+  String query, {
+  FilterFacet? ignore,
+}) {
   final normalizedQuery = query.trim().toLowerCase();
 
   return cars.where((car) {
@@ -195,13 +213,17 @@ List<Car> _applyFilters(List<Car> cars, CarFilterState filter, String query) {
       return false;
     }
 
-    if (!matchesCarType(car, filter.carType)) return false;
-
-    if (filter.minPrice != null && car.tarifs.jour < filter.minPrice!) {
+    if (ignore != FilterFacet.carType && !matchesCarType(car, filter.carType)) {
       return false;
     }
-    if (filter.maxPrice != null && car.tarifs.jour > filter.maxPrice!) {
-      return false;
+
+    if (ignore != FilterFacet.price) {
+      if (filter.minPrice != null && car.tarifs.jour < filter.minPrice!) {
+        return false;
+      }
+      if (filter.maxPrice != null && car.tarifs.jour > filter.maxPrice!) {
+        return false;
+      }
     }
 
     if (filter.location.trim().isNotEmpty) {
@@ -216,17 +238,16 @@ List<Car> _applyFilters(List<Car> cars, CarFilterState filter, String query) {
       return false;
     }
 
-    if (filter.seatingCapacities.isNotEmpty &&
-        !filter.seatingCapacities.contains(car.caracteristiques.places)) {
+    if (ignore != FilterFacet.seating &&
+        filter.seatingCapacities.isNotEmpty &&
+        !filter.seatingCapacities.any((seats) => matchesSeats(car, seats))) {
       return false;
     }
 
-    if (filter.fuelTypes.isNotEmpty) {
-      final carburant = _normalize(car.caracteristiques.carburant);
-      final matchesFuel = filter.fuelTypes.any(
-        (f) => _fuelMatches(f, carburant),
-      );
-      if (!matchesFuel) return false;
+    if (ignore != FilterFacet.fuel &&
+        filter.fuelTypes.isNotEmpty &&
+        !filter.fuelTypes.any((f) => matchesFuel(car, f))) {
+      return false;
     }
 
     if (filter.rentalType == 'Day' &&
@@ -266,6 +287,18 @@ String _normalize(String s) => s
     .replaceAll('è', 'e')
     .replaceAll('ê', 'e')
     .replaceAll('à', 'a');
+
+const List<int> seatRanges = [2, 4, 6, seatsPlusThreshold];
+const int seatsPlusThreshold = 8;
+
+bool matchesSeats(Car car, int rangeStart) {
+  final places = car.caracteristiques.places;
+  if (rangeStart >= seatsPlusThreshold) return places >= seatsPlusThreshold;
+  return places >= rangeStart && places < rangeStart + 2;
+}
+
+bool matchesFuel(Car car, String uiLabel) =>
+    _fuelMatches(uiLabel, _normalize(car.caracteristiques.carburant));
 
 bool _fuelMatches(String uiLabel, String normalizedCarburant) {
   switch (uiLabel) {
