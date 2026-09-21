@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
-# Regenere la section `assets:` du pubspec.yaml.
-# Flutter n'inclut pas les sous-dossiers de maniere recursive : chaque dossier
-# contenant des fichiers doit etre declare explicitement.
-# Usage : bash tool/gen_assets.sh   (depuis src/client)
+
 set -euo pipefail
 
 BLOCK=$(find assets -type f -not -name '.*' \

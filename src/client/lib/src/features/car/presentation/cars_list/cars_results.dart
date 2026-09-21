@@ -1,3 +1,4 @@
+import 'package:car_rent_client/src/features/car/presentation/car_details/car_detail_screen.dart';
 import 'package:car_rent_client/src/constants/colors.dart';
 import 'package:car_rent_client/src/features/car/presentation/cars_list/car_card.dart';
 import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/car_filter_provider.dart';
@@ -28,7 +29,15 @@ class CarsResults extends ConsumerWidget {
           ),
           itemBuilder: (context, index) {
             final car = cars[index];
-            return CarCard(car: car, onTap: () {});
+            return CarCard(
+              car: car,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CarDetailScreen(car: car),
+                ),
+              ),
+            );
           },
         );
       },

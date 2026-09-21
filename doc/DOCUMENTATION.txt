@@ -8,7 +8,7 @@ CAR RENTAL ("Rivano") - Documentation projet & Suivi Scrum
 
 Auteur : Tom Mehl
 Cours  : 3eme annee - Projet Rivano
-Mise a jour : 11/09/2026 (fin du sprint)
+Mise a jour : 25/09/2026 (rendu final)
 
 
 1. OBJECTIF
@@ -30,7 +30,7 @@ A User Story is Done if :
   D7  cette documentation est a jour
 
 
-3. AVANCEMENT AU 11/09/2026
+3. AVANCEMENT AU 25/09/2026
 
   NO   User Story                                  	Etat
   ---  ------------------------------------------  	----------
@@ -45,20 +45,79 @@ A User Story is Done if :
   9  Ecran liste (cartes + barre de recherche)   	DONE
   14 Tests unitaires serveur (Jest + supertest)  	DONE
   11 Panneau de filtres (UI + filtrage reel)     	DONE
-  12 Reservation (dates + indisponibilites)      	EN COURS (choix des dates fait)
-  10 Ecran detail vehicule                       	A FAIRE
+  10 Ecran detail vehicule                       	DONE
+  12 Reservation (dates + indisponibilites)      	A FAIRE (choix des dates fait)
   13 Gestion des erreurs reseau cote client      	A FAIRE
-  15 Tests de widgets cote client                	A FAIRE
 
-	Avancement : 11 / 15
+	Avancement : 12 / 14
 
-  Etat du code au 11/09/2026 (verifie avant la review) :
-    - flutter analyze : 0 erreur, 0 warning (3 remarques de nommage)
-    - flutter test    : 8 / 8 tests OK (modeles fromJson)
+  Etat du code au 25/09/2026 (verifie avant le rendu) :
+    - flutter analyze : 0 erreur, 0 warning (3 remarques de style)
+    - flutter test    : 25 / 25 tests OK
+                        8 modeles fromJson + 11 filtres + 6 facettes
     - npm test        : 9 / 9 tests OK (API Jest + supertest)
 
+4. FAIT CE SPRINT (11/09 -> 25/09)
 
-4. FAIT CE SPRINT (03/09 -> 11/09)
+  11/09 - Mac, iPhone et recherche graphique
+  - Installation du projet sur le Mac, puis premier build reel sur
+    iPhone. Deux blocages resolus : page blanche au lancement (il a
+    fallu relancer un build complet), et donnees du serveur qui
+    n'arrivaient pas sur le telephone (il faut que le telephone soit
+    sur le meme reseau que le Mac, adresse en 10.x.x.x).
+  - Weekly review avec M. Guerdat : refonte graphique obligatoire,
+    suppression du bouton favoris, filtrage par marque, rappel de la
+    marque selectionnee, rapport Word a rendre pour le 25/09.
+  - Recherche d'un style graphique moins basique.
+
+  14/09 - Refonte graphique et marques
+  - Passage sur un theme sombre avec une seule couleur d'accent
+    (#408B77). Toutes les couleurs sont regroupees dans la classe
+    AppColors (constants/colors.dart), plus aucune couleur en dur.
+  - Cards Brand : nouveau visuel, et surtout filtrage des logos pour
+    n'afficher que les marques reellement presentes en base.
+    Probleme rencontre : certaines marques n'ont pas de logo SVG et
+    l'application plantait. Resolution : si le SVG n'existe pas, on
+    affiche la premiere lettre de la marque a la place (Abarth, Cupra).
+  - Un clic sur une marque filtre la liste sur cette marque.
+  - Mise a jour du Figma.
+
+  17/09 - Sprint review et filtrage dynamique
+  - Sprint review : rappel de la marque selectionnee dans les filtres,
+    bottom sheet moins haute, icones Cupertino, coherence de la page de
+    filtres, ecran de detail.
+  - Le bouton "Show X Cars" affiche en direct le nombre de voitures qui
+    correspondent, mais n'applique les filtres a la liste que lorsqu'on
+    le presse. Si le resultat est vide, un message le signale.
+  - Affichage dynamique des filtres selon la categorie choisie.
+  - Style des barres de l'histogramme des prix rapproche du Figma.
+
+  18/09 - Finition des filtres
+  - Desactivation des options qui ne menent a aucun resultat. Exemple :
+    en selectionnant la marque McLaren, les boutons "4 places et plus"
+    se desactivent, car aucune McLaren du catalogue n'a 4 places.
+  - Bottom sheet raccourcie pour laisser voir les marques derriere.
+
+  24/09 - Ecran de detail
+  - Navigation depuis la carte d'une voiture vers l'ecran de detail
+    (Navigator.push + MaterialPageRoute), branchee sur les deux
+    endroits qui affichent des cartes.
+  - Carrousel de photos (PageView.builder) avec indicateurs de page et
+    legende de la photo courante. La photo marquee "principale" dans le
+    JSON est volontairement exclue du carrousel : c'est le visuel
+    detoure qui sert de vignette sur la carte, il n'a pas d'interet ici.
+  - Affichage des informations du vehicule, regroupees par sections.
+
+  25/09 - Documentation
+  - Finalisation de la documentation Word et de ce fichier.
+  - Gantt repris sur le modele Agile officiel, aux couleurs de
+    l'application, avec uniquement les dates du journal de travail.
+  - Nettoyage : suppression de tous les commentaires du code source
+    (hors directives // ignore: destinees a l'analyseur).
+
+
+  Rappel - sprint precedent (03/09 -> 11/09)
+
 
   03/09 - Organisation des filtres
   - Decoupage du gros fichier car_list_screen.dart : la bottom sheet et
@@ -104,14 +163,28 @@ A User Story is Done if :
 5. FONCTIONNEMENT DES FILTRES
 
   Tout passe par un seul etat : CarFilterState (car_filter_provider.dart).
-  Chaque widget de la bottom sheet lit et modifie cet etat via Riverpod.
-  filteredCarsProvider combine la liste de l'API, les filtres et la
-  barre de recherche ; l'ecran liste affiche uniquement ce resultat.
+  Il en existe deux exemplaires :
+    - draftFilterProvider : ce que l'utilisateur est en train de regler
+      dans la bottom sheet (le brouillon) ;
+    - carFilterProvider   : les filtres reellement appliques a la liste.
+  Le brouillon n'est recopie dans les filtres appliques que lorsqu'on
+  presse "Show X Cars". Le compteur du bouton, lui, se met a jour en
+  direct a partir du brouillon.
+
+  filteredCarsProvider combine la liste de l'API, les filtres appliques
+  et la barre de recherche ; l'ecran liste affiche uniquement ce resultat.
+
+  Options desactivees : draftCarsIgnoringProvider(FilterFacet) recalcule
+  le resultat en ignorant volontairement une facette (carType, price,
+  seating ou fuel). Si plus aucune voiture ne reste pour une valeur
+  donnee, le bouton correspondant est desactive.
 
   Filtre            Regle appliquee sur chaque voiture
   ----------------  ------------------------------------------------------
   Recherche         marque ou modele contient le texte
+  Brands            marque exactement egale a la marque selectionnee
   Types of Cars     Luxury = tarif jour > 1000 CHF, Regular = le reste
+                    (constante luxuryDailyPriceThreshold)
   Price range       tarif jour entre le min et le max du slider
   Rental Time       mode Day : exclut les voitures indisponibles sur la
                     plage de dates choisie (champ indisponibilites)
@@ -153,8 +226,11 @@ CLIENT - src/client (Flutter, Riverpod, http, google_fonts, flutter_svg,
     data/local/    fake_cars_repository 		(donnees de secours / dev, vide)
     presentation/cars_list/
                    car_list_screen.dart    		ecran liste (3 etats)
+                   cars_results.dart       		grille de resultats + cas vide
                    car_card.dart           		carte d'un vehicule
                    brand_card.dart         		liste horizontale des marques
+    presentation/car_details/
+                   car_detail_screen.dart  		ecran detail (carrousel + infos)
     presentation/filter_bottomSheet/
                    filter_bottomSheet.dart 		panneau de filtres (bottom sheet)
                    car_filter_provider.dart		etat des filtres + liste filtree
@@ -168,6 +244,11 @@ CLIENT - src/client (Flutter, Riverpod, http, google_fonts, flutter_svg,
                    fuel_widget.dart        		type de carburant
   constants/colors.dart, app_sizes.dart 		Chartre graphique
 
+  Ecran de detail : la voiture est passee directement au constructeur
+  (CarDetailScreen(car: car)), il n'y a pas de second appel a l'API.
+  Les photos sont lues en asset local, avec repli sur l'URL puis sur une
+  icone si le fichier est absent.
+
 FIGMA
   https://www.figma.com/design/o3gKd2JOmqF7HPEL5zM47Y/Car-Rental-App?node-id=1326-12648
 
@@ -175,13 +256,18 @@ FIGMA
 7. ENVIRONNEMENT MAC / iOS
 
   Machine : iMac Intel (Core i5-10600), macOS 26.6.2
-  Xcode   : 26.6 "Universal" 
+  Xcode   : 26.6 "Universal"
   Projet  : importe depuis GitHub
 
   Attention : Xcode 26 et macOS 26 sont les dernieres versions pour les
   Mac Intel. Si l'iPhone passe a iOS 27, il ne pourra plus recevoir de
   build depuis ce Mac -> mises a jour automatiques d'iOS desactivees.
   (SVP achetez des nouveaux IMac Mr Guerdat)
+
+  Build sur iPhone reussi le 11/09. Deux points a retenir :
+    - une page blanche au lancement se corrige par un build complet ;
+    - le telephone doit etre sur le meme reseau que le Mac (adresse en
+      10.x.x.x), sinon les donnees du serveur n'arrivent pas.
 
 
 8. UTILISATION DE L'AI
@@ -195,19 +281,24 @@ Au Cours de ce project j ai eu recours a l'utilisation de l'ia pour :
 
 9. LIMITES CONNUES / DETTE TECHNIQUE
 
-  - Brands : visuel uniquement, le meme logo (Ferrari) est repete 10 fois
-    et un clic ne filtre pas encore par marque.
   - Rental Time en mode Hour : les heures sont choisies mais ne filtrent
-    pas encore la liste (seul le mode Day verifie les indisponibilites).
-  - "View All" et le clic sur une carte ne font encore rien (ecran
-    detail a faire).
+    pas la liste. Seul le mode Day verifie les indisponibilites.
+  - Le bouton "Book now" des cartes et le lien "View All" de l'accueil
+    ne font rien pour l'instant.
+  - Ecran de detail : consultation seule, aucune action de reservation.
+  - Aucune gestion specifique des erreurs reseau cote client : si l'API
+    ne repond pas, le message d'erreur brut est affiche.
+  - Tests cote client limites aux modeles et aux providers : le rendu
+    des ecrans n'est pas couvert automatiquement, il est verifie a la
+    main sur emulateur.
+  - Trois remarques de style restent dans flutter analyze (noms de
+    fichiers filter_bottomSheet.dart et Siting_widget.dart).
 
 
 10. RESTE A FAIRE (sprint suivant)
 
-  - section (Widget) Brands : vrais logos + filtre par marque
-  - ecran detail vehicule (navigation depuis la carte)
   - reservation avec verification des indisponibilites (aussi en heures)
-  - tests de widgets cote client (module ICH-426)
-  - premier build et test sur iPhone depuis le Mac
+  - filtrage par heures en mode Hour
+  - gestion des erreurs reseau cote client
+  - brancher le bouton "Book now" et le lien "View All"
   - passe UI finale + mise a jour de la doc
