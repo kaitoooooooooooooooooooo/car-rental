@@ -8,13 +8,11 @@ void main() {
       'legende': 'Vue avant',
       'principale': true,
       'ordre': 1,
-      'asset': 'assets/images/car-1.jpg',
     });
 
     expect(photo.url, 'https://cdn.example.com/car-1.jpg');
     expect(photo.legende, 'Vue avant');
     expect(photo.principale, isTrue);
     expect(photo.ordre, 1);
-    expect(photo.asset, 'assets/images/car-1.jpg');
   });
 }

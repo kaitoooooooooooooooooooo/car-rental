@@ -1,36 +1,69 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:car_rent_client/src/features/car/data/remote/car_service.dart';
 import 'package:car_rent_client/src/features/car/domain/car.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
 enum CarTypeFilter { all, regular, luxury }
 
-const Object _unset = Object();
+enum FilterFacet { carType, price, seating, fuel }
 
-@immutable
+const int luxuryDailyPriceThreshold = 1000;
+
+const Map<String, String> fuelValues = {
+  'Petrol': 'essence',
+  'Hybrid': 'hybride',
+  'Electric': 'electrique',
+  'Diesel': 'diesel',
+};
+
+const List<String> seatingOptions = ['2', '4', '5-6', '7+'];
+
+String seatingLabel(int places) {
+  if (places >= 7) return '7+';
+  if (places >= 5) return '5-6';
+  if (places >= 4) return '4';
+  return '2';
+}
+
+bool matchesCarType(Car car, CarTypeFilter type) {
+  final isLuxury = car.tarifs.jour > luxuryDailyPriceThreshold;
+  switch (type) {
+    case CarTypeFilter.all:
+      return true;
+    case CarTypeFilter.luxury:
+      return isLuxury;
+    case CarTypeFilter.regular:
+      return !isLuxury;
+  }
+}
+
+bool matchesSeats(Car car, String label) =>
+    seatingLabel(car.caracteristiques.places) == label;
+
+bool matchesFuel(Car car, String label) =>
+    fuelValues[label] == car.caracteristiques.carburant;
+
 class CarFilterState {
-  final String? brand;
+  final String brand;
   final CarTypeFilter carType;
-  final double? minPrice;
-  final double? maxPrice;
+  final double minPrice;
+  final double maxPrice;
   final String rentalType;
   final List<DateTime?> selectedDates;
   final TimeOfDay? startTime;
   final TimeOfDay? endTime;
   final String location;
   final double minRating;
-  final Set<int> seatingCapacities;
+  final Set<String> seatingCapacities;
   final Set<String> fuelTypes;
-
   final int resetToken;
 
   const CarFilterState({
-    this.brand,
+    this.brand = '',
     this.carType = CarTypeFilter.all,
-    this.minPrice,
-    this.maxPrice,
+    this.minPrice = 0,
+    this.maxPrice = double.infinity,
     this.rentalType = 'Day',
     this.selectedDates = const [],
     this.startTime,
@@ -43,28 +76,24 @@ class CarFilterState {
   });
 
   CarFilterState copyWith({
-    Object? brand = _unset,
+    String? brand,
     CarTypeFilter? carType,
-    Object? minPrice = _unset,
-    Object? maxPrice = _unset,
+    double? minPrice,
+    double? maxPrice,
     String? rentalType,
     List<DateTime?>? selectedDates,
     TimeOfDay? startTime,
     TimeOfDay? endTime,
     String? location,
     double? minRating,
-    Set<int>? seatingCapacities,
+    Set<String>? seatingCapacities,
     Set<String>? fuelTypes,
   }) {
     return CarFilterState(
-      brand: identical(brand, _unset) ? this.brand : brand as String?,
+      brand: brand ?? this.brand,
       carType: carType ?? this.carType,
-      minPrice: identical(minPrice, _unset)
-          ? this.minPrice
-          : minPrice as double?,
-      maxPrice: identical(maxPrice, _unset)
-          ? this.maxPrice
-          : maxPrice as double?,
+      minPrice: minPrice ?? this.minPrice,
+      maxPrice: maxPrice ?? this.maxPrice,
       rentalType: rentalType ?? this.rentalType,
       selectedDates: selectedDates ?? this.selectedDates,
       startTime: startTime ?? this.startTime,
@@ -76,31 +105,24 @@ class CarFilterState {
       resetToken: resetToken,
     );
   }
-
-  bool get hasActiveFilters =>
-      brand != null ||
-      carType != CarTypeFilter.all ||
-      minPrice != null ||
-      maxPrice != null ||
-      location.trim().isNotEmpty ||
-      minRating > 0 ||
-      seatingCapacities.isNotEmpty ||
-      fuelTypes.isNotEmpty ||
-      (selectedDates.isNotEmpty && selectedDates.first != null);
 }
 
 class CarFilterNotifier extends StateNotifier<CarFilterState> {
   CarFilterNotifier() : super(const CarFilterState());
 
   void toggleBrand(String brand) =>
-      state = state.copyWith(brand: state.brand == brand ? null : brand);
+      state = state.copyWith(brand: state.brand == brand ? '' : brand);
 
   void setCarType(CarTypeFilter type) {
     if (type == state.carType) return;
-    state = state.copyWith(carType: type, minPrice: null, maxPrice: null);
+    state = state.copyWith(
+      carType: type,
+      minPrice: 0,
+      maxPrice: double.infinity,
+    );
   }
 
-  void setPriceRange(double? min, double? max) =>
+  void setPriceRange(double min, double max) =>
       state = state.copyWith(minPrice: min, maxPrice: max);
 
   void setRentalType(String type) {
@@ -110,9 +132,6 @@ class CarFilterNotifier extends StateNotifier<CarFilterState> {
       minPrice: state.minPrice,
       maxPrice: state.maxPrice,
       rentalType: type,
-      selectedDates: const [],
-      startTime: null,
-      endTime: null,
       location: state.location,
       minRating: state.minRating,
       seatingCapacities: state.seatingCapacities,
@@ -133,8 +152,8 @@ class CarFilterNotifier extends StateNotifier<CarFilterState> {
 
   void setMinRating(double rating) => state = state.copyWith(minRating: rating);
 
-  void toggleSeating(int seats) {
-    final updated = Set<int>.from(state.seatingCapacities);
+  void toggleSeating(String seats) {
+    final updated = Set<String>.from(state.seatingCapacities);
     updated.contains(seats) ? updated.remove(seats) : updated.add(seats);
     state = state.copyWith(seatingCapacities: updated);
   }
@@ -180,8 +199,6 @@ final draftFilteredCarsProvider = Provider<AsyncValue<List<Car>>>((ref) {
   return carsAsync.whenData((cars) => _applyFilters(cars, filter, query));
 });
 
-enum FilterFacet { carType, price, seating, fuel }
-
 final draftCarsIgnoringProvider = Provider.family<List<Car>?, FilterFacet>((
   ref,
   facet,
@@ -199,17 +216,17 @@ List<Car> _applyFilters(
   String query, {
   FilterFacet? ignore,
 }) {
-  final normalizedQuery = query.trim().toLowerCase();
+  final search = query.trim().toLowerCase();
+  final location = filter.location.trim().toLowerCase();
 
   return cars.where((car) {
-    if (normalizedQuery.isNotEmpty) {
-      final matchesText =
-          car.marque.toLowerCase().contains(normalizedQuery) ||
-          car.modele.toLowerCase().contains(normalizedQuery);
-      if (!matchesText) return false;
+    if (search.isNotEmpty &&
+        !car.marque.toLowerCase().contains(search) &&
+        !car.modele.toLowerCase().contains(search)) {
+      return false;
     }
 
-    if (filter.brand != null && car.marque.trim() != filter.brand) {
+    if (filter.brand.isNotEmpty && car.marque.trim() != filter.brand) {
       return false;
     }
 
@@ -217,26 +234,19 @@ List<Car> _applyFilters(
       return false;
     }
 
-    if (ignore != FilterFacet.price) {
-      if (filter.minPrice != null && car.tarifs.jour < filter.minPrice!) {
-        return false;
-      }
-      if (filter.maxPrice != null && car.tarifs.jour > filter.maxPrice!) {
-        return false;
-      }
-    }
-
-    if (filter.location.trim().isNotEmpty) {
-      final loc = filter.location.trim().toLowerCase();
-      final matchesLocation =
-          car.localisation.ville.toLowerCase().contains(loc) ||
-          car.localisation.canton.toLowerCase().contains(loc);
-      if (!matchesLocation) return false;
-    }
-
-    if (filter.minRating > 0 && car.note.moyenne < filter.minRating) {
+    if (ignore != FilterFacet.price &&
+        (car.tarifs.jour < filter.minPrice ||
+            car.tarifs.jour > filter.maxPrice)) {
       return false;
     }
+
+    if (location.isNotEmpty &&
+        !car.localisation.ville.toLowerCase().contains(location) &&
+        !car.localisation.canton.toLowerCase().contains(location)) {
+      return false;
+    }
+
+    if (car.note.moyenne < filter.minRating) return false;
 
     if (ignore != FilterFacet.seating &&
         filter.seatingCapacities.isNotEmpty &&
@@ -246,72 +256,21 @@ List<Car> _applyFilters(
 
     if (ignore != FilterFacet.fuel &&
         filter.fuelTypes.isNotEmpty &&
-        !filter.fuelTypes.any((f) => matchesFuel(car, f))) {
+        !filter.fuelTypes.any((fuel) => matchesFuel(car, fuel))) {
       return false;
     }
 
+    final dates = filter.selectedDates;
     if (filter.rentalType == 'Day' &&
-        filter.selectedDates.isNotEmpty &&
-        filter.selectedDates.first != null &&
-        filter.selectedDates.length > 1 &&
-        filter.selectedDates[1] != null) {
-      final start = filter.selectedDates.first!;
-      final end = filter.selectedDates[1]!;
+        dates.length > 1 &&
+        dates[0] != null &&
+        dates[1] != null) {
       final hasConflict = car.indisponibilites.any(
-        (i) => start.isBefore(i.fin) && end.isAfter(i.debut),
+        (i) => dates[0]!.isBefore(i.fin) && dates[1]!.isAfter(i.debut),
       );
       if (hasConflict) return false;
     }
 
     return true;
   }).toList();
-}
-
-const int luxuryDailyPriceThreshold = 1000;
-
-bool matchesCarType(Car car, CarTypeFilter type) {
-  final isLuxury = car.tarifs.jour > luxuryDailyPriceThreshold;
-  switch (type) {
-    case CarTypeFilter.all:
-      return true;
-    case CarTypeFilter.luxury:
-      return isLuxury;
-    case CarTypeFilter.regular:
-      return !isLuxury;
-  }
-}
-
-String _normalize(String s) => s
-    .toLowerCase()
-    .replaceAll('é', 'e')
-    .replaceAll('è', 'e')
-    .replaceAll('ê', 'e')
-    .replaceAll('à', 'a');
-
-const List<int> seatRanges = [2, 4, 6, seatsPlusThreshold];
-const int seatsPlusThreshold = 8;
-
-bool matchesSeats(Car car, int rangeStart) {
-  final places = car.caracteristiques.places;
-  if (rangeStart >= seatsPlusThreshold) return places >= seatsPlusThreshold;
-  return places >= rangeStart && places < rangeStart + 2;
-}
-
-bool matchesFuel(Car car, String uiLabel) =>
-    _fuelMatches(uiLabel, _normalize(car.caracteristiques.carburant));
-
-bool _fuelMatches(String uiLabel, String normalizedCarburant) {
-  switch (uiLabel) {
-    case 'Petrol':
-      return normalizedCarburant.contains('essence') ||
-          normalizedCarburant.contains('petrol');
-    case 'Hybrid':
-      return normalizedCarburant.contains('hybrid');
-    case 'Electric':
-      return normalizedCarburant.contains('electr');
-    case 'Diesel':
-      return normalizedCarburant.contains('diesel');
-    default:
-      return false;
-  }
 }

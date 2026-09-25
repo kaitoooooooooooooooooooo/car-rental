@@ -1,4 +1,3 @@
-import 'package:car_rent_client/src/utils/json_parsers.dart';
 import 'package:equatable/equatable.dart';
 
 class Conditions extends Equatable {
@@ -20,12 +19,12 @@ class Conditions extends Equatable {
 
   factory Conditions.fromJson(Map<String, dynamic> json) {
     return Conditions(
-      ageMinimum: parseInt(json['ageMinimum']),
-      anneesPermisMinimum: parseInt(json['anneesPermisMinimum']),
-      kilometrageMaxParJour: parseInt(json['kilometrageMaxParJour']),
-      conduiteEtrangerAutorisee: json['conduiteEtrangerAutorisee'] ?? false,
-      animauxAutorises: json['animauxAutorises'] ?? false,
-      fumeurAutorise: json['fumeurAutorise'] ?? false,
+      ageMinimum: json['ageMinimum'] as int,
+      anneesPermisMinimum: json['anneesPermisMinimum'] as int,
+      kilometrageMaxParJour: json['kilometrageMaxParJour'] as int,
+      conduiteEtrangerAutorisee: json['conduiteEtrangerAutorisee'] as bool,
+      animauxAutorises: json['animauxAutorises'] as bool,
+      fumeurAutorise: json['fumeurAutorise'] as bool,
     );
   }
 

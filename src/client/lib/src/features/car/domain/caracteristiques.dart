@@ -1,4 +1,3 @@
-import 'package:car_rent_client/src/utils/json_parsers.dart';
 import 'package:equatable/equatable.dart';
 
 class Caracteristiques extends Equatable {
@@ -28,16 +27,16 @@ class Caracteristiques extends Equatable {
 
   factory Caracteristiques.fromJson(Map<String, dynamic> json) {
     return Caracteristiques(
-      transmission: json['transmission'] ?? '',
-      carburant: json['carburant'] ?? '',
-      places: parseInt(json['places']),
-      portes: parseInt(json['portes']),
-      puissanceCh: parseInt(json['puissanceCh']),
-      cylindree: parseInt(json['cylindree']),
-      consommationMixte: parseDouble(json['consommationMixte']),
-      coffreLitres: parseInt(json['coffreLitres']),
-      couleur: json['couleur'] ?? '',
-      kilometrage: parseInt(json['kilometrage']),
+      transmission: json['transmission'] as String,
+      carburant: json['carburant'] as String,
+      places: json['places'] as int,
+      portes: json['portes'] as int,
+      puissanceCh: json['puissanceCh'] as int,
+      cylindree: json['cylindree'] as int,
+      consommationMixte: (json['consommationMixte'] as num).toDouble(),
+      coffreLitres: json['coffreLitres'] as int,
+      couleur: json['couleur'] as String,
+      kilometrage: json['kilometrage'] as int,
     );
   }
 

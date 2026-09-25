@@ -1,5 +1,5 @@
 import 'package:car_rent_client/src/constants/app_sizes.dart';
-import 'package:car_rent_client/src/constants/colors.dart';
+import 'package:car_rent_client/src/theme/theme.dart';
 import 'package:car_rent_client/src/features/car/data/remote/car_service.dart';
 import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/car_filter_provider.dart';
 import 'package:flutter/material.dart';
@@ -69,15 +69,17 @@ class RangeSelector extends ConsumerWidget {
         final scale = PriceScale.fromPrices(prices);
         final chartData = scale.buildHistogram(prices);
 
-        final double currentStart = (filter.minPrice ?? scale.axisMin)
-            .clamp(scale.axisMin, scale.axisMax)
-            .toDouble();
-        final double currentEnd = (filter.maxPrice ?? scale.axisMax)
-            .clamp(scale.axisMin, scale.axisMax)
-            .toDouble();
+        final double currentStart = filter.minPrice.clamp(
+          scale.axisMin,
+          scale.axisMax,
+        );
+        final double currentEnd = filter.maxPrice.clamp(
+          scale.axisMin,
+          scale.axisMax,
+        );
 
         final minLabel = currentStart.toStringAsFixed(0);
-        final maxLabel = filter.maxPrice == null
+        final maxLabel = filter.maxPrice == double.infinity
             ? '${scale.axisMax.toStringAsFixed(0)}+'
             : currentEnd.toStringAsFixed(0);
 
@@ -106,8 +108,8 @@ class RangeSelector extends ConsumerWidget {
                 final double start = (values.start as num).toDouble();
                 final double end = (values.end as num).toDouble();
                 notifier.setPriceRange(
-                  start <= scale.axisMin ? null : start,
-                  end >= scale.axisMax ? null : end,
+                  start <= scale.axisMin ? 0 : start,
+                  end >= scale.axisMax ? double.infinity : end,
                 );
               },
               child: SizedBox(

@@ -212,8 +212,7 @@ SERVEUR - src/server (Node.js, 		Express 5, Mongoose, Swagger)
   controller/carController.js  		logique (validation ObjectId, 400/404)
   models/car.js                		schema Mongoose
   swagger.yaml + /docs         		documentation testable
-  db.js                        		connexion BDD reelle ou en memoire
-  test/app.test.js             		9 tests Jest + supertest
+  test/app.test.js             		9 tests Jest + supertest (BDD en memoire)
   Routes : 	GET /cars
 			GET /cars/:id
 

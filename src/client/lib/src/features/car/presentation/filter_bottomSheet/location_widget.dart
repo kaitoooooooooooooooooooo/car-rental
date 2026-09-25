@@ -1,4 +1,4 @@
-import 'package:car_rent_client/src/constants/colors.dart';
+import 'package:car_rent_client/src/theme/theme.dart';
 import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/car_filter_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,18 +12,14 @@ class LocationWidget extends ConsumerStatefulWidget {
 }
 
 class _LocationWidgetState extends ConsumerState<LocationWidget> {
-  late final SearchController _searchController;
+  late final TextEditingController _searchController;
 
   @override
   void initState() {
     super.initState();
-    _searchController = SearchController();
-    _searchController.text = ref.read(draftFilterProvider).location;
-    _searchController.addListener(() {
-      ref
-          .read(draftFilterProvider.notifier)
-          .setLocation(_searchController.text);
-    });
+    _searchController = TextEditingController(
+      text: ref.read(draftFilterProvider).location,
+    );
   }
 
   @override
@@ -45,6 +41,8 @@ class _LocationWidgetState extends ConsumerState<LocationWidget> {
     return Expanded(
       child: SearchBar(
         controller: _searchController,
+        onChanged: (value) =>
+            ref.read(draftFilterProvider.notifier).setLocation(value),
         hintText: 'Choose your location',
         textStyle: WidgetStatePropertyAll(
           GoogleFonts.manrope(
@@ -62,7 +60,7 @@ class _LocationWidgetState extends ConsumerState<LocationWidget> {
         ),
         leading: const Icon(
           Icons.location_on_outlined,
-          color: AppColors.icon,
+          color: AppColors.textSecondary,
           size: 22,
         ),
         padding: const WidgetStatePropertyAll<EdgeInsets>(
@@ -79,8 +77,15 @@ class _LocationWidgetState extends ConsumerState<LocationWidget> {
         trailing: [
           if (location.isNotEmpty)
             IconButton(
-              icon: const Icon(Icons.clear, color: AppColors.icon, size: 20),
-              onPressed: () => _searchController.clear(),
+              icon: const Icon(
+                Icons.clear,
+                color: AppColors.textSecondary,
+                size: 20,
+              ),
+              onPressed: () {
+                _searchController.clear();
+                ref.read(draftFilterProvider.notifier).setLocation('');
+              },
             ),
         ],
       ),

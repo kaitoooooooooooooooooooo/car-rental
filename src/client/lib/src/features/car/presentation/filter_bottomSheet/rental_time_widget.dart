@@ -1,11 +1,10 @@
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:car_rent_client/src/constants/app_sizes.dart';
-import 'package:car_rent_client/src/constants/colors.dart';
+import 'package:car_rent_client/src/theme/theme.dart';
 import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/car_filter_provider.dart';
-import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/custom_time_picker.dart';
+import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/option_chips.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 const int _minDurationMinutes = 60;
 
@@ -20,6 +19,21 @@ bool _hasMinDuration(TimeOfDay start, TimeOfDay end) {
   var diff = _toMinutes(end) - _toMinutes(start);
   if (diff <= 0) diff += 24 * 60;
   return diff >= _minDurationMinutes;
+}
+
+Future<TimeOfDay?> _showTimePicker(
+  BuildContext context,
+  TimeOfDay? initialTime,
+) {
+  return showTimePicker(
+    context: context,
+    initialTime: initialTime ?? TimeOfDay.now(),
+    initialEntryMode: TimePickerEntryMode.inputOnly,
+    builder: (context, child) => MediaQuery(
+      data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+      child: child!,
+    ),
+  );
 }
 
 String _formatDate(DateTime? date) {
@@ -92,10 +106,7 @@ class DatePicker extends ConsumerWidget {
 
   Future<void> _openStartTimeDialog(BuildContext context, WidgetRef ref) async {
     final filter = ref.read(draftFilterProvider);
-    final time = await showCustomTimePicker(
-      context,
-      initialTime: filter.startTime,
-    );
+    final time = await _showTimePicker(context, filter.startTime);
     if (time == null) return;
 
     final notifier = ref.read(draftFilterProvider.notifier);
@@ -111,9 +122,9 @@ class DatePicker extends ConsumerWidget {
         ? _addMinutes(filter.startTime!, _minDurationMinutes)
         : null;
 
-    final time = await showCustomTimePicker(
+    final time = await _showTimePicker(
       context,
-      initialTime: filter.endTime ?? defaultInitial,
+      filter.endTime ?? defaultInitial,
     );
     if (time == null) return;
 
@@ -223,61 +234,12 @@ class RentalTimeWidget extends ConsumerWidget {
     final selected = ref.watch(draftFilterProvider).rentalType;
     final notifier = ref.read(draftFilterProvider.notifier);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Rental Time',
-          style: GoogleFonts.manrope(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        gapH8,
-        Row(
-          children: options.map((option) {
-            final bool isSelected = selected == option;
-            return Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2),
-                child: GestureDetector(
-                  onTap: () => notifier.setRentalType(option),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 280),
-                      curve: Curves.easeInOut,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? AppColors.accent
-                            : Colors.transparent,
-                        border: Border.all(color: AppColors.stoke, width: 1),
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          option,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: isSelected
-                                ? AppColors.onAccent
-                                : AppColors.textSecondary,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
+    return OptionChips(
+      title: 'Rental Time',
+      options: options,
+      selected: {selected},
+      available: options.toSet(),
+      onTap: notifier.setRentalType,
     );
   }
 }
