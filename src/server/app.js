@@ -1,32 +1,30 @@
-import express from "express";
-import swaggerUI from "swagger-ui-express";
+const express = require("express");
+const mongoose = require("mongoose");
+const swaggerUI = require("swagger-ui-express");
 
-import CarRoutes from "./routes/carRoutes.js";
-import swaggerDocument from "./swagger.js";
-import { connectToDatabase, disconnectFromDatabase } from "./db.js";
+const CarRoutes = require("./routes/carRoutes");
+const swaggerDocument = require("./swagger");
 
-export const app = express();
-app.use(express.json());
+const app = express();
 
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET");
-  next();
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET");
+    next();
 });
 
 app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 app.use("/cars", CarRoutes);
 
-if (process.env.NODE_ENV !== "test") {
-  await connectToDatabase();
-  app.listen(3000, () => {
-    console.log("Server running on port 3000");
-  });
-  process.on("SIGINT", async () => {
-    await disconnectFromDatabase();
-    process.exit();
-  });
+if (require.main === module) {
+    mongoose
+        .connect("mongodb://localhost:27017/car_rental")
+        .then(() => {
+            console.log("server started");
+            app.listen(3000);
+        })
+        .catch(err => console.log(err));
 }
 
-export default app;
+module.exports = app;

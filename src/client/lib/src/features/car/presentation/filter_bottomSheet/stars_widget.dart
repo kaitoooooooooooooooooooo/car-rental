@@ -1,36 +1,32 @@
-import 'package:car_rent_client/src/constants/colors.dart';
+import 'package:car_rent_client/src/theme/theme.dart';
 import 'package:flutter/material.dart';
 
 class StarRatingWidget extends StatelessWidget {
-  final int starCount;
-  final double rating;
-  final Color? color;
-  final ValueChanged<double>? onRatingChanged;
-
   const StarRatingWidget({
     super.key,
-    this.starCount = 5,
-    this.rating = 0,
-    this.color,
-    this.onRatingChanged,
+    required this.rating,
+    required this.onRatingChanged,
   });
+
+  final double rating;
+  final ValueChanged<double> onRatingChanged;
 
   Widget _buildStar(int index) {
     final double starValue = index + 1;
     IconData icon;
 
     if (rating >= starValue) {
-      icon = IconData(0xf01d4, fontFamily: 'MaterialIcons');
+      icon = Icons.star_rounded;
     } else if (rating >= starValue - 0.5) {
-      icon = IconData(0xf01d0, fontFamily: 'MaterialIcons');
+      icon = Icons.star_half_rounded;
     } else {
-      icon = IconData(0xf01d1, fontFamily: 'MaterialIcons');
+      icon = Icons.star_outline_rounded;
     }
 
     return GestureDetector(
-      onTap: () => onRatingChanged?.call(starValue),
-      onLongPress: () => onRatingChanged?.call(starValue - 0.5),
-      child: Icon(icon, size: 32, color: color ?? AppColors.accent),
+      onTap: () => onRatingChanged(starValue),
+      onLongPress: () => onRatingChanged(starValue - 0.5),
+      child: Icon(icon, size: 32, color: AppColors.accent),
     );
   }
 
@@ -38,7 +34,7 @@ class StarRatingWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
-      children: List.generate(starCount, (index) => _buildStar(index)),
+      children: List.generate(5, (index) => _buildStar(index)),
     );
   }
 }

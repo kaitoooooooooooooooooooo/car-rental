@@ -2,16 +2,12 @@
   "name": "server",
   "version": "1.0.0",
   "main": "app.js",
-  "type": "module",
   "license": "ISC",
   "author": "cp-24tom",
-  "description": "",
+  "description": "Api Car Rental",
   "scripts": {
     "start": "nodemon app",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand"
-  },
-  "jest": {
-    "testEnvironment": "node"
+    "test": "jest --runInBand"
   },
   "dependencies": {
     "express": "^5.2.1",

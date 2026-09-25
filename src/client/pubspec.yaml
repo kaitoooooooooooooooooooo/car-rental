@@ -18,13 +18,9 @@ dependencies:
   equatable: ^2.0.8
   google_fonts: ^8.2.1
   flutter_svg: ^2.3.0
-  sliding_segmented_control: ^1.1.0
-  material_ui: ^1.1.0
   syncfusion_flutter_sliders: ^34.2.5
   syncfusion_flutter_charts: ^34.2.5
   calendar_date_picker2: ^3.0.0
-  five_pointed_star: ^1.0.4
-  custom_time_picker: ^0.0.2
 
 dev_dependencies:
   flutter_test:
@@ -38,7 +34,6 @@ flutter:
 
   assets:
     - assets/brands-icons/
-    - assets/data/
     - assets/images/app/
     - assets/images/cars/
     - assets/images/cars/abarth-124-spider-1/

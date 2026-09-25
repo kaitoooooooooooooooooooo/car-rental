@@ -10,11 +10,54 @@ Car voiture(int id, String marque, int places, String carburant, int prix) {
     'marque': marque,
     'modele': 'Modele $id',
     'annee': 2023,
+    'categorie': 'sport',
+    'statut': 'valide',
     'proprietaireId': '68a1f0000000000000000001',
+    'immatriculation': 'VD 123 456',
+    'description': 'Voiture de test',
+    'localisation': {
+      'ville': 'Lausanne',
+      'canton': 'VD',
+      'codePostal': '1003',
+      'adresse': 'Rue de Bourg 12',
+      'pointRetrait': 'Gare CFF',
+    },
+    'caracteristiques': {
+      'transmission': 'automatique',
+      'carburant': carburant,
+      'places': places,
+      'portes': 4,
+      'puissanceCh': 300,
+      'cylindree': 2998,
+      'consommationMixte': 8,
+      'coffreLitres': 400,
+      'couleur': 'noir',
+      'kilometrage': 10000,
+    },
+    'equipements': ['gps'],
+    'tarifs': {
+      'devise': 'CHF',
+      'jour': prix,
+      'semaine': prix * 6,
+      'mois': prix * 20,
+      'caution': 3000,
+      'kilometrageInclusParJour': 200,
+      'prixKmSupplementaire': 1,
+    },
+    'conditions': {
+      'ageMinimum': 25,
+      'anneesPermisMinimum': 3,
+      'kilometrageMaxParJour': 300,
+      'conduiteEtrangerAutorisee': false,
+      'animauxAutorises': false,
+      'fumeurAutorise': false,
+    },
+    'indisponibilites': [],
+    'photos': [],
+    'note': {'moyenne': 4, 'nombre': 10},
+    'nombreLocations': 5,
     'createdAt': '2024-01-01T00:00:00.000Z',
     'updatedAt': '2024-01-01T00:00:00.000Z',
-    'caracteristiques': {'places': places, 'carburant': carburant},
-    'tarifs': {'jour': prix},
   });
 }
 
@@ -53,35 +96,32 @@ void main() {
     expect(voitures.any((c) => matchesCarType(c, CarTypeFilter.regular)), true);
   });
 
-  test('pas de BMW 2 ou 8 places', () {
-    final places = dispo(FilterFacet.seating)
-        .map((c) => c.caracteristiques.places);
-    expect(places.contains(8), false);
-    expect(places.contains(2), false);
-    expect(places.contains(4), true);
+  test('pas de BMW 2 places ni 5-6 places', () {
+    final voitures = dispo(FilterFacet.seating);
+    expect(voitures.any((c) => matchesSeats(c, '2')), false);
+    expect(voitures.any((c) => matchesSeats(c, '5-6')), false);
+    expect(voitures.any((c) => matchesSeats(c, '4')), true);
+    expect(voitures.any((c) => matchesSeats(c, '7+')), true);
   });
 
   test('les autres filtres grisent aussi le carburant', () {
-    container.read(draftFilterProvider.notifier).toggleSeating(4);
+    container.read(draftFilterProvider.notifier).toggleSeating('4');
     final voitures = dispo(FilterFacet.fuel);
     expect(voitures.any((c) => matchesFuel(c, 'Petrol')), true);
     expect(voitures.any((c) => matchesFuel(c, 'Diesel')), false);
   });
 
-  test('tranches de places : 2, 4-5, 6-7, 8+', () {
-    Car places(int n) => voiture(9, 'Mercedes', n, 'diesel', 250);
-    expect(matchesSeats(places(2), 2), true);
-    expect(matchesSeats(places(4), 4), true);
-    expect(matchesSeats(places(5), 4), true);
-    expect(matchesSeats(places(6), 4), false);
-    expect(matchesSeats(places(6), 6), true);
-    expect(matchesSeats(places(7), 6), true);
-    expect(matchesSeats(places(8), 6), false);
-    expect(matchesSeats(places(9), seatsPlusThreshold), true);
+  test('tranches de places : 2, 4, 5-6, 7+', () {
+    expect(seatingLabel(2), '2');
+    expect(seatingLabel(4), '4');
+    expect(seatingLabel(5), '5-6');
+    expect(seatingLabel(6), '5-6');
+    expect(seatingLabel(7), '7+');
+    expect(seatingLabel(9), '7+');
   });
 
   test('un groupe ne se grise pas lui-meme', () {
-    container.read(draftFilterProvider.notifier).toggleSeating(4);
+    container.read(draftFilterProvider.notifier).toggleSeating('4');
     final places = dispo(FilterFacet.seating)
         .map((c) => c.caracteristiques.places);
     expect(places, containsAll([4, 7]));

@@ -1,4 +1,3 @@
-import 'package:car_rent_client/src/utils/json_parsers.dart';
 import 'package:equatable/equatable.dart';
 
 class Photo extends Equatable {
@@ -7,26 +6,22 @@ class Photo extends Equatable {
   final bool principale;
   final int ordre;
 
-  final String? asset;
-
   const Photo({
     required this.url,
     required this.legende,
     required this.principale,
     required this.ordre,
-    this.asset,
   });
 
   factory Photo.fromJson(Map<String, dynamic> json) {
     return Photo(
-      url: json['url'] ?? '',
-      legende: json['legende'] ?? '',
-      principale: json['principale'] ?? false,
-      ordre: parseInt(json['ordre']),
-      asset: json['asset'],
+      url: json['url'] as String,
+      legende: json['legende'] as String,
+      principale: json['principale'] as bool,
+      ordre: json['ordre'] as int,
     );
   }
 
   @override
-  List<Object?> get props => [url, legende, principale, ordre, asset];
+  List<Object?> get props => [url, legende, principale, ordre];
 }

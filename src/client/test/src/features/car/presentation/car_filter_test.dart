@@ -12,27 +12,24 @@ void main() {
 
     test('valeurs par defaut', () {
       expect(filtre.state.carType, CarTypeFilter.all);
-      expect(filtre.state.minPrice, null);
-      expect(filtre.state.maxPrice, null);
+      expect(filtre.state.minPrice, 0);
+      expect(filtre.state.maxPrice, double.infinity);
       expect(filtre.state.rentalType, 'Day');
       expect(filtre.state.location, '');
       expect(filtre.state.minRating, 0);
       expect(filtre.state.seatingCapacities, isEmpty);
       expect(filtre.state.fuelTypes, isEmpty);
-      expect(filtre.state.hasActiveFilters, false);
     });
 
     test('filtre type de voiture', () {
       filtre.setCarType(CarTypeFilter.luxury);
       expect(filtre.state.carType, CarTypeFilter.luxury);
-      expect(filtre.state.hasActiveFilters, true);
     });
 
     test('filtre prix', () {
       filtre.setPriceRange(100, 500);
       expect(filtre.state.minPrice, 100);
       expect(filtre.state.maxPrice, 500);
-      expect(filtre.state.hasActiveFilters, true);
     });
 
     test('filtre type de location', () {
@@ -43,7 +40,6 @@ void main() {
     test('filtre dates', () {
       filtre.setSelectedDates([DateTime(2026, 9, 1), DateTime(2026, 9, 5)]);
       expect(filtre.state.selectedDates.length, 2);
-      expect(filtre.state.hasActiveFilters, true);
     });
 
     test('filtre heures', () {
@@ -56,20 +52,18 @@ void main() {
     test('filtre localisation', () {
       filtre.setLocation('Lausanne');
       expect(filtre.state.location, 'Lausanne');
-      expect(filtre.state.hasActiveFilters, true);
     });
 
     test('filtre note', () {
       filtre.setMinRating(4);
       expect(filtre.state.minRating, 4);
-      expect(filtre.state.hasActiveFilters, true);
     });
 
     test('filtre places (ajouter puis enlever)', () {
-      filtre.toggleSeating(5);
-      expect(filtre.state.seatingCapacities, {5});
+      filtre.toggleSeating('5-6');
+      expect(filtre.state.seatingCapacities, {'5-6'});
 
-      filtre.toggleSeating(5);
+      filtre.toggleSeating('5-6');
       expect(filtre.state.seatingCapacities, isEmpty);
     });
 
@@ -91,7 +85,6 @@ void main() {
       expect(filtre.state.carType, CarTypeFilter.all);
       expect(filtre.state.location, '');
       expect(filtre.state.fuelTypes, isEmpty);
-      expect(filtre.state.hasActiveFilters, false);
     });
   });
 }

@@ -1,4 +1,3 @@
-import 'package:car_rent_client/src/utils/json_parsers.dart';
 import 'package:equatable/equatable.dart';
 
 class Note extends Equatable {
@@ -9,8 +8,8 @@ class Note extends Equatable {
 
   factory Note.fromJson(Map<String, dynamic> json) {
     return Note(
-      moyenne: parseDouble(json['moyenne']),
-      nombre: parseInt(json['nombre']),
+      moyenne: (json['moyenne'] as num).toDouble(),
+      nombre: json['nombre'] as int,
     );
   }
 

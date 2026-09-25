@@ -1,4 +1,4 @@
-import 'package:car_rent_client/src/constants/colors.dart';
+import 'package:car_rent_client/src/theme/theme.dart';
 import 'package:car_rent_client/src/features/car/domain/car.dart';
 import 'package:car_rent_client/src/features/car/domain/photo.dart';
 import 'package:flutter/material.dart';
@@ -21,31 +21,6 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
     return photos.isEmpty ? widget.car.photos : photos;
   }
 
-  Widget _onImageError(BuildContext context, Object error, StackTrace? stack) {
-    return const Icon(Icons.directions_car, size: 80, color: AppColors.icon);
-  }
-
-  Widget _buildPhoto(int index) {
-    final photo = _photos[index];
-    final asset = photo.asset;
-
-    if (asset != null && asset.isNotEmpty) {
-      return Image.asset(
-        asset,
-        fit: BoxFit.contain,
-        errorBuilder: _onImageError,
-      );
-    }
-    if (photo.url.isNotEmpty) {
-      return Image.network(
-        photo.url,
-        fit: BoxFit.contain,
-        errorBuilder: _onImageError,
-      );
-    }
-    return const Icon(Icons.directions_car, size: 80, color: AppColors.icon);
-  }
-
   Widget _buildCarousel() {
     final photos = _photos;
 
@@ -53,7 +28,11 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
       return const SizedBox(
         height: 240,
         child: Center(
-          child: Icon(Icons.directions_car, size: 100, color: AppColors.icon),
+          child: Icon(
+            Icons.directions_car,
+            size: 100,
+            color: AppColors.textSecondary,
+          ),
         ),
       );
     }
@@ -67,7 +46,7 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
             onPageChanged: (value) => setState(() => currentPage = value),
             itemBuilder: (context, index) => Padding(
               padding: const EdgeInsets.all(12),
-              child: _buildPhoto(index),
+              child: Image.asset(photos[index].url, fit: BoxFit.contain),
             ),
           ),
         ),

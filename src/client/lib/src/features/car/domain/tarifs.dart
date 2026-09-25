@@ -1,4 +1,3 @@
-import 'package:car_rent_client/src/utils/json_parsers.dart';
 import 'package:equatable/equatable.dart';
 
 class Tarifs extends Equatable {
@@ -22,13 +21,13 @@ class Tarifs extends Equatable {
 
   factory Tarifs.fromJson(Map<String, dynamic> json) {
     return Tarifs(
-      devise: json['devise'] ?? 'CHF',
-      jour: parseInt(json['jour']),
-      semaine: parseInt(json['semaine']),
-      mois: parseInt(json['mois']),
-      caution: parseInt(json['caution']),
-      kilometrageInclusParJour: parseInt(json['kilometrageInclusParJour']),
-      prixKmSupplementaire: parseDouble(json['prixKmSupplementaire']),
+      devise: json['devise'] as String,
+      jour: json['jour'] as int,
+      semaine: json['semaine'] as int,
+      mois: json['mois'] as int,
+      caution: json['caution'] as int,
+      kilometrageInclusParJour: json['kilometrageInclusParJour'] as int,
+      prixKmSupplementaire: (json['prixKmSupplementaire'] as num).toDouble(),
     );
   }
 

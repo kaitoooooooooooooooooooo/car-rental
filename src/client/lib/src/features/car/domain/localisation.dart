@@ -17,11 +17,11 @@ class Localisation extends Equatable {
 
   factory Localisation.fromJson(Map<String, dynamic> json) {
     return Localisation(
-      ville: json['ville'] ?? '',
-      canton: json['canton'] ?? '',
-      codePostal: json['codePostal']?.toString() ?? '',
-      adresse: json['adresse'] ?? '',
-      pointRetrait: json['pointRetrait'] ?? '',
+      ville: json['ville'] as String,
+      canton: json['canton'] as String,
+      codePostal: json['codePostal'] as String,
+      adresse: json['adresse'] as String,
+      pointRetrait: json['pointRetrait'] as String,
     );
   }
 

@@ -1,9 +1,8 @@
-import 'package:car_rent_client/src/features/car/presentation/car_details/car_detail_screen.dart';
-import 'package:car_rent_client/src/constants/colors.dart';
+import 'package:car_rent_client/src/theme/theme.dart';
 import 'package:car_rent_client/src/features/car/presentation/cars_list/brand_card.dart';
-import 'package:car_rent_client/src/features/car/presentation/cars_list/car_card.dart';
+import 'package:car_rent_client/src/features/car/presentation/cars_list/cars_results.dart';
 import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/car_filter_provider.dart';
-import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/filter_bottomSheet.dart';
+import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/filter_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,17 +15,7 @@ class CarsListScreen extends ConsumerStatefulWidget {
 }
 
 class _CarsListScreenState extends ConsumerState<CarsListScreen> {
-  late final SearchController _searchController;
-
-  @override
-  void initState() {
-    super.initState();
-    _searchController = SearchController();
-    _searchController.text = ref.read(searchQueryProvider);
-    _searchController.addListener(() {
-      ref.read(searchQueryProvider.notifier).state = _searchController.text;
-    });
-  }
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void dispose() {
@@ -36,7 +25,6 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredCarsValue = ref.watch(filteredCarsProvider);
     final searchText = ref.watch(searchQueryProvider);
 
     final Widget logo = CircleAvatar(
@@ -60,15 +48,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                   children: [
                     Row(
                       children: [
-                        Container(
-                          margin: const EdgeInsets.only(
-                            left: 10.0,
-                            right: 10.0,
-                            top: 10.0,
-                            bottom: 10.0,
-                          ),
-                          child: logo,
-                        ),
+                        Padding(padding: const EdgeInsets.all(10), child: logo),
                         SizedBox(width: 4),
                         Text(
                           'Rivano',
@@ -105,6 +85,9 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                     Expanded(
                       child: SearchBar(
                         controller: _searchController,
+                        onChanged: (value) =>
+                            ref.read(searchQueryProvider.notifier).state =
+                                value,
                         hintText: 'Search your dream car...',
                         textStyle: WidgetStatePropertyAll(
                           GoogleFonts.manrope(
@@ -122,7 +105,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                         ),
                         leading: const Icon(
                           Icons.search,
-                          color: AppColors.icon,
+                          color: AppColors.textSecondary,
                           size: 22,
                         ),
                         padding: const WidgetStatePropertyAll<EdgeInsets>(
@@ -143,10 +126,14 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                             IconButton(
                               icon: const Icon(
                                 Icons.clear,
-                                color: AppColors.icon,
+                                color: AppColors.textSecondary,
                                 size: 20,
                               ),
-                              onPressed: () => _searchController.clear(),
+                              onPressed: () {
+                                _searchController.clear();
+                                ref.read(searchQueryProvider.notifier).state =
+                                    '';
+                              },
                             ),
                         ],
                       ),
@@ -219,47 +206,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                       ),
                     ),
                     SizedBox(height: 20),
-                    Expanded(
-                      child: filteredCarsValue.when(
-                        data: (cars) {
-                          if (cars.isEmpty) {
-                            return const Center(
-                              child: Text(
-                                'Aucune voiture trouvée',
-                                style: TextStyle(fontSize: 18),
-                              ),
-                            );
-                          }
-                          return GridView.builder(
-                            padding: const EdgeInsets.only(bottom: 90),
-                            itemCount: cars.length,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  mainAxisSpacing: 16,
-                                  crossAxisSpacing: 16,
-                                  mainAxisExtent: 255,
-                                ),
-                            itemBuilder: (context, index) {
-                              final car = cars[index];
-                              return CarCard(
-              car: car,
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CarDetailScreen(car: car),
-                ),
-              ),
-            );
-                            },
-                          );
-                        },
-                        error: (error, _) =>
-                            Center(child: Text(error.toString())),
-                        loading: () =>
-                            const Center(child: CircularProgressIndicator()),
-                      ),
-                    ),
+                    const Expanded(child: CarsResults()),
                   ],
                 ),
               ),

@@ -1,7 +1,6 @@
-// ignore: file_names
 import 'package:car_rent_client/src/constants/app_sizes.dart';
-import 'package:car_rent_client/src/constants/colors.dart';
-import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/Siting_widget.dart';
+import 'package:car_rent_client/src/theme/theme.dart';
+import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/seating_widget.dart';
 import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/car_filter_provider.dart';
 import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/fuel_widget.dart';
 import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/location_widget.dart';
@@ -60,7 +59,7 @@ class FilterBottomsheet extends ConsumerWidget {
                                 highlightColor: Colors.transparent,
                                 icon: const Icon(
                                   Icons.clear,
-                                  color: AppColors.buttons,
+                                  color: AppColors.textPrimary,
                                   size: 20,
                                 ),
                                 onPressed: () => Navigator.pop(context),
@@ -213,7 +212,7 @@ class FilterBottomsheet extends ConsumerWidget {
                           },
                         ),
                         gapH28,
-                        const SitingWidget(),
+                        const SeatingWidget(),
                         gapH28,
                         const FuelWidget(),
                         gapH28,
@@ -257,7 +256,7 @@ class FilterBottomsheet extends ConsumerWidget {
                                       ? 'No Cars Found'
                                       : 'Show ${cars.length} Cars',
                                   loading: () => 'Show Cars',
-                                  error: (_, __) => 'Show Cars',
+                                  error: (_, _) => 'Show Cars',
                                 );
                                 return ElevatedButton(
                                   style: ElevatedButton.styleFrom(

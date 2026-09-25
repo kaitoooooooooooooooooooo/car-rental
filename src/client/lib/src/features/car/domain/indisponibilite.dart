@@ -1,4 +1,3 @@
-import 'package:car_rent_client/src/utils/json_parsers.dart';
 import 'package:equatable/equatable.dart';
 
 class Indisponibilite extends Equatable {
@@ -14,9 +13,9 @@ class Indisponibilite extends Equatable {
 
   factory Indisponibilite.fromJson(Map<String, dynamic> json) {
     return Indisponibilite(
-      debut: parseDate(json['debut']),
-      fin: parseDate(json['fin']),
-      motif: json['motif'] ?? '',
+      debut: DateTime.parse(json['debut']),
+      fin: DateTime.parse(json['fin']),
+      motif: json['motif'] as String,
     );
   }
 

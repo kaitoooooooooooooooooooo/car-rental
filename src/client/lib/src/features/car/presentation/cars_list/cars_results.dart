@@ -1,5 +1,5 @@
 import 'package:car_rent_client/src/features/car/presentation/car_details/car_detail_screen.dart';
-import 'package:car_rent_client/src/constants/colors.dart';
+import 'package:car_rent_client/src/theme/theme.dart';
 import 'package:car_rent_client/src/features/car/presentation/cars_list/car_card.dart';
 import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/car_filter_provider.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +25,7 @@ class CarsResults extends ConsumerWidget {
             crossAxisCount: 2,
             mainAxisSpacing: 16,
             crossAxisSpacing: 16,
-            childAspectRatio: 0.85,
+            mainAxisExtent: 255,
           ),
           itemBuilder: (context, index) {
             final car = cars[index];

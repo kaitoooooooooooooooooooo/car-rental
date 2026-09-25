@@ -1,36 +1,25 @@
-import 'package:car_rent_client/src/constants/colors.dart';
 import 'package:car_rent_client/src/features/car/domain/car.dart';
+import 'package:car_rent_client/src/theme/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class CarCard extends ConsumerWidget {
+const _border = BorderSide(width: 2, color: AppColors.borderSubtle);
+
+class CarCard extends StatelessWidget {
   const CarCard({super.key, required this.car, required this.onTap});
 
   final Car car;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final photo = car.photos.isEmpty ? null : car.photos.first;
-    final asset = photo?.asset;
-
-    // ignore: dead_null_aware_expression, dead_code
-    final marque = (car.marque ?? '').toUpperCase();
-
-    // ignore: dead_null_aware_expression
-    final model = (car.modele ?? '').toUpperCase();
-
-    final title = '$marque $model'.trim();
-
-    final location = '${car.localisation.ville} ${car.localisation.canton}'
-        .trim();
-
+  Widget build(BuildContext context) {
+    final title = '${car.marque} ${car.modele}'.toUpperCase();
+    final location = '${car.localisation.ville} ${car.localisation.canton}';
     final price = '${car.tarifs.devise}  ${car.tarifs.jour} / Day';
 
     return Card(
       margin: EdgeInsets.zero,
-      shadowColor: const Color.fromARGB(0, 255, 193, 7),
+      shadowColor: Colors.transparent,
       clipBehavior: Clip.antiAlias,
       child: GestureDetector(
         onTap: onTap,
@@ -40,72 +29,43 @@ class CarCard extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(
+              Container(
                 height: 105,
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
+                padding: const EdgeInsets.all(10),
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20),
                   ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border(
-                        top: BorderSide(
-                          width: 2,
-                          color: AppColors.borderSubtle,
-                        ),
-                        left: BorderSide(
-                          width: 2,
-                          color: AppColors.borderSubtle,
-                        ),
-                        right: BorderSide(
-                          width: 2,
-                          color: AppColors.borderSubtle,
-                        ),
-                      ),
-                      color: AppColors.gradientDark,
-                      gradient: const RadialGradient(
-                        center: Alignment(0.0, 1.45),
-                        radius: 1.4,
-                        colors: [
-                          AppColors.gradientYellow,
-                          AppColors.gradientYellow,
-                          AppColors.gradientDark,
-                        ],
-                        stops: [0.0, 0.10, 1.0],
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: asset != null && asset.isNotEmpty
-                          ? Image.asset(asset, fit: BoxFit.contain)
-                          : photo != null
-                          ? Image.network(photo.url, fit: BoxFit.contain)
-                          : const SizedBox.shrink(),
-                    ),
+                  border: Border(top: _border, left: _border, right: _border),
+                  gradient: RadialGradient(
+                    center: Alignment(0.0, 1.45),
+                    radius: 1.4,
+                    colors: [
+                      AppColors.gradientGreen,
+                      AppColors.gradientGreen,
+                      AppColors.gradientDark,
+                    ],
+                    stops: [0.0, 0.10, 1.0],
                   ),
                 ),
+                child: car.photos.isEmpty
+                    ? null
+                    : Image.asset(car.photos.first.url, fit: BoxFit.contain),
               ),
-
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(12, 7, 12, 7),
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: AppColors.surface,
-                    borderRadius: const BorderRadius.only(
+                    borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(20),
                       bottomRight: Radius.circular(20),
                     ),
                     border: Border(
-                      bottom: BorderSide(
-                        width: 2,
-                        color: AppColors.borderSubtle,
-                      ),
-                      left: BorderSide(width: 2, color: AppColors.borderSubtle),
-                      right: BorderSide(
-                        width: 2,
-                        color: AppColors.borderSubtle,
-                      ),
+                      bottom: _border,
+                      left: _border,
+                      right: _border,
                     ),
                   ),
                   child: Column(
@@ -116,97 +76,44 @@ class CarCard extends ConsumerWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.manrope(
-                          textStyle: const TextStyle(
-                            color: AppColors.textPrimary,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: -0.3,
-                          ),
+                          color: AppColors.textPrimary,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.3,
                         ),
                       ),
-
                       const SizedBox(height: 3),
-
                       Row(
                         children: [
-                          Flexible(
-                            child: Text(
-                              car.note.moyenne.toString(),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.manrope(
-                                textStyle: const TextStyle(
-                                  color: AppColors.textSecondary,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: -0.3,
-                                ),
-                              ),
+                          Text(
+                            car.note.moyenne.toString(),
+                            style: GoogleFonts.manrope(
+                              color: AppColors.textSecondary,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: -0.3,
                             ),
                           ),
                           const SizedBox(width: 5),
                           const Icon(
-                            IconData(0xf01d4, fontFamily: 'MaterialIcons'),
+                            Icons.star_rounded,
                             size: 18,
                             color: AppColors.accent,
                           ),
                         ],
                       ),
-
                       const SizedBox(height: 2),
-                      Row(
-                        children: [
-                          const Icon(
-                            IconData(0xf193, fontFamily: 'MaterialIcons'),
-                            size: 17,
-                            color: AppColors.textSecondary,
-                          ),
-                          const SizedBox(width: 5),
-                          Expanded(
-                            child: Text(
-                              location,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.manrope(
-                                textStyle: const TextStyle(
-                                  color: AppColors.textSecondary,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  letterSpacing: -0.3,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                      _InfoRow(
+                        icon: Icons.location_on_outlined,
+                        text: location,
+                        fontWeight: FontWeight.w400,
                       ),
-
                       const SizedBox(height: 2),
-                      Row(
-                        children: [
-                          const Icon(
-                            IconData(0xf24e, fontFamily: 'MaterialIcons'),
-                            size: 17,
-                            color: AppColors.textSecondary,
-                          ),
-                          const SizedBox(width: 5),
-                          Expanded(
-                            child: Text(
-                              price,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.manrope(
-                                textStyle: const TextStyle(
-                                  color: AppColors.textSecondary,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  letterSpacing: -0.3,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                      _InfoRow(
+                        icon: Icons.paid_outlined,
+                        text: price,
+                        fontWeight: FontWeight.w500,
                       ),
-
                       const Spacer(),
                       SizedBox(
                         width: double.infinity,
@@ -218,13 +125,9 @@ class CarCard extends ConsumerWidget {
                           ),
                           child: Text(
                             'Book now',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.manrope(
-                              textStyle: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                              ),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),
@@ -237,6 +140,41 @@ class CarCard extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  const _InfoRow({
+    required this.icon,
+    required this.text,
+    required this.fontWeight,
+  });
+
+  final IconData icon;
+  final String text;
+  final FontWeight fontWeight;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 17, color: AppColors.textSecondary),
+        const SizedBox(width: 5),
+        Expanded(
+          child: Text(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.manrope(
+              color: AppColors.textSecondary,
+              fontSize: 14,
+              fontWeight: fontWeight,
+              letterSpacing: -0.3,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
