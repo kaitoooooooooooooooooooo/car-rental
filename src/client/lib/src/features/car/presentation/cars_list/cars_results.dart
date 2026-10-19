@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CarsResults extends ConsumerWidget {
-  const CarsResults({super.key});
+  const CarsResults({super.key, this.topRated});
+
+  final int? topRated;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -14,11 +16,24 @@ class CarsResults extends ConsumerWidget {
     final query = ref.watch(searchQueryProvider).trim();
 
     return filteredCarsValue.when(
-      data: (cars) {
+      data: (allCars) {
+        final cars = topRated == null
+            ? allCars
+            : ([...allCars]..sort(
+                    (a, b) => b.note.moyenne != a.note.moyenne
+                        ? b.note.moyenne.compareTo(a.note.moyenne)
+                        : b.note.nombre.compareTo(a.note.nombre),
+                  ))
+                  .take(topRated!)
+                  .toList();
         if (cars.isEmpty) {
           return NoCarsFound(query: query);
         }
         return GridView.builder(
+          shrinkWrap: topRated != null,
+          physics: topRated != null
+              ? const NeverScrollableScrollPhysics()
+              : null,
           padding: const EdgeInsets.only(bottom: 90),
           itemCount: cars.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
