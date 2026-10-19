@@ -1,4 +1,4 @@
-import 'package:car_rent_client/src/features/car/presentation/cars_list/car_list_screen.dart';
+import 'package:car_rent_client/src/app_shell.dart';
 import 'package:car_rent_client/src/theme/theme.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +11,7 @@ class App extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Car Rental',
       theme: primaryTheme,
-      home: const CarsListScreen(),
+      home: const AppShell(),
     );
   }
 }

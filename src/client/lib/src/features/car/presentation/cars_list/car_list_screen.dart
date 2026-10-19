@@ -36,6 +36,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
     );
 
     return Scaffold(
+      extendBody: true,
       backgroundColor: AppColors.background,
       body: Column(
         children: [
@@ -202,7 +203,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                       style: GoogleFonts.manrope(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
-                        color: AppColors.textSecondary,
+                        color: AppColors.accent,
                       ),
                     ),
                     SizedBox(height: 20),
