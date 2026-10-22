@@ -5,33 +5,30 @@ import 'package:car_rent_client/src/features/profile/profile_screen.dart';
 import 'package:car_rent_client/src/theme/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
-class AppShell extends StatefulWidget {
+const searchTab = 2;
+
+final tabIndexProvider = StateProvider<int>((ref) => 0);
+
+class AppShell extends ConsumerWidget {
   const AppShell({super.key});
 
   @override
-  State<AppShell> createState() => _AppShellState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tabIndex = ref.watch(tabIndexProvider);
 
-class _AppShellState extends State<AppShell> {
-  int _tabIndex = 0;
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
       backgroundColor: AppColors.background,
       body: IndexedStack(
-        index: _tabIndex,
-        children: [
-          HomePageScreen(onSearch: () => setState(() => _tabIndex = 2)),
-          const ProfileScreen(),
-          const CarsListScreen(),
-        ],
+        index: tabIndex,
+        children: const [HomePageScreen(), ProfileScreen(), CarsListScreen()],
       ),
       bottomNavigationBar: LiquidGlassTabBar(
-        selectedIndex: _tabIndex,
-        onTap: (index) => setState(() => _tabIndex = index),
+        selectedIndex: tabIndex,
+        onTap: (index) => ref.read(tabIndexProvider.notifier).state = index,
         items: const [
           LiquidGlassTabItem(
             icon: CupertinoIcons.house,
