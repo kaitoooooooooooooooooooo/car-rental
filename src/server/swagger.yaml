@@ -53,7 +53,29 @@ components:
           type: string
         updatedAt:
           type: string
-      required: [id, marque, modele, annee, categorie, statut, proprietaireId, immatriculation, description, localisation, caracteristiques, equipements, tarifs, conditions, indisponibilites, photos, note, nombreLocations, createdAt, updatedAt]
+      required:
+        [
+          id,
+          marque,
+          modele,
+          annee,
+          categorie,
+          statut,
+          proprietaireId,
+          immatriculation,
+          description,
+          localisation,
+          caracteristiques,
+          equipements,
+          tarifs,
+          conditions,
+          indisponibilites,
+          photos,
+          note,
+          nombreLocations,
+          createdAt,
+          updatedAt,
+        ]
 
 tags:
   - name: Car
@@ -67,6 +89,13 @@ paths:
       responses:
         "200":
           description: Succès - La liste est récupérée ou liste vide
+  /cars/featured:
+    get:
+      summary: Afficher les voitures recommandées
+      tags: [Car]
+      responses:
+        "200":
+          description: Succès - La liste des 10 véhicules les mieux notés est récupérée ou vide
   /cars/{id}:
     get:
       summary: Rechercher un véhicule selon son id

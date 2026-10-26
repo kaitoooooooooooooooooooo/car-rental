@@ -86,9 +86,9 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                     Expanded(
                       child: SearchBar(
                         controller: _searchController,
-                        onChanged: (value) =>
-                            ref.read(searchQueryProvider.notifier).state =
-                                value,
+                        onChanged: (value) => ref
+                            .read(searchQueryProvider.notifier)
+                            .setQuery(value),
                         hintText: 'Search your dream car...',
                         textStyle: WidgetStatePropertyAll(
                           GoogleFonts.manrope(
@@ -132,8 +132,9 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                               ),
                               onPressed: () {
                                 _searchController.clear();
-                                ref.read(searchQueryProvider.notifier).state =
-                                    '';
+                                ref
+                                    .read(searchQueryProvider.notifier)
+                                    .setQuery('');
                               },
                             ),
                         ],

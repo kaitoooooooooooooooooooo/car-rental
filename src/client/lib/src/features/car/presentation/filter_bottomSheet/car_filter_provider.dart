@@ -2,7 +2,6 @@ import 'package:car_rent_client/src/features/car/data/remote/car_service.dart';
 import 'package:car_rent_client/src/features/car/domain/car.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 
 enum CarTypeFilter { all, regular, luxury }
 
@@ -107,8 +106,11 @@ class CarFilterState {
   }
 }
 
-class CarFilterNotifier extends StateNotifier<CarFilterState> {
-  CarFilterNotifier() : super(const CarFilterState());
+class CarFilterNotifier extends Notifier<CarFilterState> {
+  @override
+  CarFilterState build() {
+    return const CarFilterState();
+  }
 
   void toggleBrand(String brand) =>
       state = state.copyWith(brand: state.brand == brand ? '' : brand);
@@ -171,17 +173,30 @@ class CarFilterNotifier extends StateNotifier<CarFilterState> {
   void replaceWith(CarFilterState filter) => state = filter;
 }
 
-final carFilterProvider =
-    StateNotifierProvider<CarFilterNotifier, CarFilterState>(
-      (ref) => CarFilterNotifier(),
-    );
+final carFilterProvider = NotifierProvider<CarFilterNotifier, CarFilterState>(
+  () {
+    return CarFilterNotifier();
+  },
+);
 
-final draftFilterProvider =
-    StateNotifierProvider<CarFilterNotifier, CarFilterState>(
-      (ref) => CarFilterNotifier(),
-    );
+final draftFilterProvider = NotifierProvider<CarFilterNotifier, CarFilterState>(
+  () {
+    return CarFilterNotifier();
+  },
+);
 
-final searchQueryProvider = StateProvider<String>((ref) => '');
+class SearchQueryNotifier extends Notifier<String> {
+  @override
+  String build() {
+    return '';
+  }
+
+  void setQuery(String query) => state = query;
+}
+
+final searchQueryProvider = NotifierProvider<SearchQueryNotifier, String>(() {
+  return SearchQueryNotifier();
+});
 
 final filteredCarsProvider = Provider<AsyncValue<List<Car>>>((ref) {
   final carsAsync = ref.watch(carsListFutureProvider);

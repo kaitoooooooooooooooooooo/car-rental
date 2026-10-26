@@ -1,28 +1,30 @@
+import 'package:car_rent_client/src/features/car/data/remote/car_service.dart';
 import 'package:car_rent_client/src/theme/theme.dart';
 import 'package:car_rent_client/src/features/car/domain/car.dart';
 import 'package:car_rent_client/src/features/car/domain/photo.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class CarDetailScreen extends StatefulWidget {
-  const CarDetailScreen({super.key, required this.car});
+class CarDetailScreen extends ConsumerStatefulWidget {
+  const CarDetailScreen({super.key, required this.carId});
 
-  final Car car;
+  final String carId;
 
   @override
-  State<CarDetailScreen> createState() => _CarDetailScreenState();
+  ConsumerState<CarDetailScreen> createState() => _CarDetailScreenState();
 }
 
-class _CarDetailScreenState extends State<CarDetailScreen> {
+class _CarDetailScreenState extends ConsumerState<CarDetailScreen> {
   int currentPage = 0;
 
-  List<Photo> get _photos {
-    final photos = widget.car.photos.where((p) => !p.principale).toList();
-    return photos.isEmpty ? widget.car.photos : photos;
+  List<Photo> _photosOf(Car car) {
+    final photos = car.photos.where((p) => !p.principale).toList();
+    return photos.isEmpty ? car.photos : photos;
   }
 
-  Widget _buildCarousel() {
-    final photos = _photos;
+  Widget _buildCarousel(Car car) {
+    final photos = _photosOf(car);
 
     if (photos.isEmpty) {
       return const SizedBox(
@@ -129,7 +131,23 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final car = widget.car;
+    final carsListValue = ref.watch(carsListFutureProvider);
+
+    return carsListValue.when(
+      data: (cars) =>
+          _buildDetail(cars.firstWhere((car) => car.id == widget.carId)),
+      error: (error, stackTrace) => Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(child: Text(error.toString())),
+      ),
+      loading: () => const Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(child: CircularProgressIndicator()),
+      ),
+    );
+  }
+
+  Widget _buildDetail(Car car) {
     final caracteristiques = car.caracteristiques;
     final tarifs = car.tarifs;
     final conditions = car.conditions;
@@ -148,7 +166,7 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
         children: [
-          _buildCarousel(),
+          _buildCarousel(car),
 
           _buildSectionTitle('Véhicule'),
           _buildInfoRow('Marque', car.marque),

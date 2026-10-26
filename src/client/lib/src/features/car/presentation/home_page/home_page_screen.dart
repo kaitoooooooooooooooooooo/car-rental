@@ -130,9 +130,9 @@ class _HomePageScreenState extends ConsumerState<HomePageScreen> {
                         ),
                       ),
                       TextButton(
-                        onPressed: () =>
-                            ref.read(tabIndexProvider.notifier).state =
-                                searchTab,
+                        onPressed: () => ref
+                            .read(tabIndexProvider.notifier)
+                            .select(searchTab),
                         style: TextButton.styleFrom(
                           foregroundColor: AppColors.accent,
                         ),
@@ -146,6 +146,7 @@ class _HomePageScreenState extends ConsumerState<HomePageScreen> {
                       ),
                     ],
                   ),
+                  const RecommendedCarsCard(),
                 ],
               ),
             ),
