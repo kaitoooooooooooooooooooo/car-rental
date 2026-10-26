@@ -1,9 +1,10 @@
-import 'package:car_rent_client/src/features/car/presentation/car_details/car_detail_screen.dart';
+import 'package:car_rent_client/src/routing/app_router.dart';
 import 'package:car_rent_client/src/theme/theme.dart';
 import 'package:car_rent_client/src/features/car/presentation/cars_list/car_card.dart';
 import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/car_filter_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class CarsResults extends ConsumerWidget {
   const CarsResults({super.key, this.topRated});
@@ -46,11 +47,9 @@ class CarsResults extends ConsumerWidget {
             final car = cars[index];
             return CarCard(
               car: car,
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CarDetailScreen(car: car),
-                ),
+              onTap: () => context.goNamed(
+                AppRoute.carDetail.name,
+                pathParameters: {'id': car.id},
               ),
             );
           },

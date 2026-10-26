@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 Car voiture(int id, String marque, int places, String carburant, int prix) {
   return Car.fromJson({
-    'id': id,
+    '_id': 'car-$id',
     'marque': marque,
     'modele': 'Modele $id',
     'annee': 2023,

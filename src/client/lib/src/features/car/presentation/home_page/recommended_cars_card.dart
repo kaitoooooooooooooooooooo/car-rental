@@ -1,70 +1,43 @@
-import 'package:car_rent_client/src/theme/theme.dart';
+import 'package:car_rent_client/src/features/car/data/remote/car_service.dart';
+import 'package:car_rent_client/src/features/car/presentation/cars_list/car_card.dart';
+import 'package:car_rent_client/src/features/car/presentation/home_page/featured_car_card.dart';
+import 'package:car_rent_client/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-class RecommendedCarsCard extends StatefulWidget {
+class RecommendedCarsCard extends ConsumerWidget {
   const RecommendedCarsCard({super.key});
 
   @override
-  State<RecommendedCarsCard> createState() => _RecommendedCarsCardState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final featuredCarsValue = ref.watch(featuredCarsListFutureProvider);
 
-class _RecommendedCarsCardState extends State<RecommendedCarsCard> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 45, 16, 0),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.borderSubtle),
-                        ),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            const Icon(
-                              Icons.notifications_none_rounded,
-                              color: AppColors.textPrimary,
-                              size: 24,
-                            ),
-                            Positioned(
-                              top: 12,
-                              right: 13,
-                              child: Container(
-                                width: 8,
-                                height: 8,
-                                decoration: BoxDecoration(
-                                  color: AppColors.accent,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: AppColors.surface,
-                                    width: 1.5,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+    return featuredCarsValue.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => Text(error.toString()),
+      data: (cars) => ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: cars.length,
+        itemBuilder: (context, index) {
+          final car = cars[index];
+          return Padding(
+            padding: const EdgeInsets.only(
+              bottom: 15.0,
+              top: 8.0,
+              left: 8.0,
+              right: 8.0,
+            ),
+            child: FeaturedCarCard(
+              car: car,
+              onTap: () => context.goNamed(
+                AppRoute.carDetail.name,
+                pathParameters: {'id': car.id},
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

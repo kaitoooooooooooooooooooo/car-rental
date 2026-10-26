@@ -8,7 +8,7 @@ import 'package:car_rent_client/src/features/car/domain/tarifs.dart';
 import 'package:equatable/equatable.dart';
 
 class Car extends Equatable {
-  final int id;
+  final String id;
   final String marque;
   final String modele;
   final int annee;
@@ -54,7 +54,7 @@ class Car extends Equatable {
 
   factory Car.fromJson(Map<String, dynamic> json) {
     return Car(
-      id: json['id'] as int,
+      id: json['_id'] as String,
       marque: json['marque'] as String,
       modele: json['modele'] as String,
       annee: json['annee'] as int,

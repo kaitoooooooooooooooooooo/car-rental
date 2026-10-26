@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('Car.fromJson pour tous les champs', () {
     final car = Car.fromJson(<String, dynamic>{
-      'id': 12,
+      '_id': '68a1f0000000000000000112',
       'marque': 'Volkswagen',
       'modele': 'Golf 8',
       'annee': 2022,
@@ -72,7 +72,7 @@ void main() {
       'updatedAt': '2026-08-01T14:45:00Z',
     });
 
-    expect(car.id, 12);
+    expect(car.id, '68a1f0000000000000000112');
     expect(car.marque, 'Volkswagen');
     expect(car.modele, 'Golf 8');
     expect(car.annee, 2022);

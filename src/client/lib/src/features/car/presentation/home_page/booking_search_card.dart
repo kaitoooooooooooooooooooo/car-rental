@@ -28,7 +28,7 @@ class _BookingSearchCardState extends ConsumerState<BookingSearchCard> {
     ref.read(carFilterProvider.notifier)
       ..setLocation(_location.trim())
       ..setSelectedDates(_dates == null ? [] : [_dates!.start, _dates!.end]);
-    ref.read(tabIndexProvider.notifier).state = searchTab;
+    ref.read(tabIndexProvider.notifier).select(searchTab);
   }
 
   @override

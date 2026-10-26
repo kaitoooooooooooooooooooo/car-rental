@@ -1,78 +1,89 @@
 import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/car_filter_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('CarFilter', () {
+    late ProviderContainer container;
     late CarFilterNotifier filtre;
 
     setUp(() {
-      filtre = CarFilterNotifier();
+      container = ProviderContainer();
+      filtre = container.read(carFilterProvider.notifier);
     });
 
+    tearDown(() => container.dispose());
+
     test('valeurs par defaut', () {
-      expect(filtre.state.carType, CarTypeFilter.all);
-      expect(filtre.state.minPrice, 0);
-      expect(filtre.state.maxPrice, double.infinity);
-      expect(filtre.state.rentalType, 'Day');
-      expect(filtre.state.location, '');
-      expect(filtre.state.minRating, 0);
-      expect(filtre.state.seatingCapacities, isEmpty);
-      expect(filtre.state.fuelTypes, isEmpty);
+      expect(container.read(carFilterProvider).carType, CarTypeFilter.all);
+      expect(container.read(carFilterProvider).minPrice, 0);
+      expect(container.read(carFilterProvider).maxPrice, double.infinity);
+      expect(container.read(carFilterProvider).rentalType, 'Day');
+      expect(container.read(carFilterProvider).location, '');
+      expect(container.read(carFilterProvider).minRating, 0);
+      expect(container.read(carFilterProvider).seatingCapacities, isEmpty);
+      expect(container.read(carFilterProvider).fuelTypes, isEmpty);
     });
 
     test('filtre type de voiture', () {
       filtre.setCarType(CarTypeFilter.luxury);
-      expect(filtre.state.carType, CarTypeFilter.luxury);
+      expect(container.read(carFilterProvider).carType, CarTypeFilter.luxury);
     });
 
     test('filtre prix', () {
       filtre.setPriceRange(100, 500);
-      expect(filtre.state.minPrice, 100);
-      expect(filtre.state.maxPrice, 500);
+      expect(container.read(carFilterProvider).minPrice, 100);
+      expect(container.read(carFilterProvider).maxPrice, 500);
     });
 
     test('filtre type de location', () {
       filtre.setRentalType('Hour');
-      expect(filtre.state.rentalType, 'Hour');
+      expect(container.read(carFilterProvider).rentalType, 'Hour');
     });
 
     test('filtre dates', () {
       filtre.setSelectedDates([DateTime(2026, 9, 1), DateTime(2026, 9, 5)]);
-      expect(filtre.state.selectedDates.length, 2);
+      expect(container.read(carFilterProvider).selectedDates.length, 2);
     });
 
     test('filtre heures', () {
       filtre.setStartTime(const TimeOfDay(hour: 8, minute: 0));
       filtre.setEndTime(const TimeOfDay(hour: 18, minute: 30));
-      expect(filtre.state.startTime, const TimeOfDay(hour: 8, minute: 0));
-      expect(filtre.state.endTime, const TimeOfDay(hour: 18, minute: 30));
+      expect(
+        container.read(carFilterProvider).startTime,
+        const TimeOfDay(hour: 8, minute: 0),
+      );
+      expect(
+        container.read(carFilterProvider).endTime,
+        const TimeOfDay(hour: 18, minute: 30),
+      );
     });
 
     test('filtre localisation', () {
       filtre.setLocation('Lausanne');
-      expect(filtre.state.location, 'Lausanne');
+      expect(container.read(carFilterProvider).location, 'Lausanne');
     });
 
     test('filtre note', () {
       filtre.setMinRating(4);
-      expect(filtre.state.minRating, 4);
+      expect(container.read(carFilterProvider).minRating, 4);
     });
 
     test('filtre places (ajouter puis enlever)', () {
       filtre.toggleSeating('5-6');
-      expect(filtre.state.seatingCapacities, {'5-6'});
+      expect(container.read(carFilterProvider).seatingCapacities, {'5-6'});
 
       filtre.toggleSeating('5-6');
-      expect(filtre.state.seatingCapacities, isEmpty);
+      expect(container.read(carFilterProvider).seatingCapacities, isEmpty);
     });
 
     test('filtre carburant (ajouter puis enlever)', () {
       filtre.toggleFuel('Electric');
-      expect(filtre.state.fuelTypes, {'Electric'});
+      expect(container.read(carFilterProvider).fuelTypes, {'Electric'});
 
       filtre.toggleFuel('Electric');
-      expect(filtre.state.fuelTypes, isEmpty);
+      expect(container.read(carFilterProvider).fuelTypes, isEmpty);
     });
 
     test('effacer tous les filtres', () {
@@ -82,9 +93,9 @@ void main() {
 
       filtre.clearAll();
 
-      expect(filtre.state.carType, CarTypeFilter.all);
-      expect(filtre.state.location, '');
-      expect(filtre.state.fuelTypes, isEmpty);
+      expect(container.read(carFilterProvider).carType, CarTypeFilter.all);
+      expect(container.read(carFilterProvider).location, '');
+      expect(container.read(carFilterProvider).fuelTypes, isEmpty);
     });
   });
 }

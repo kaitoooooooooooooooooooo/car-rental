@@ -6,11 +6,21 @@ import 'package:car_rent_client/src/theme/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 
 const searchTab = 2;
 
-final tabIndexProvider = StateProvider<int>((ref) => 0);
+class TabIndexNotifier extends Notifier<int> {
+  @override
+  int build() {
+    return 0;
+  }
+
+  void select(int index) => state = index;
+}
+
+final tabIndexProvider = NotifierProvider<TabIndexNotifier, int>(() {
+  return TabIndexNotifier();
+});
 
 class AppShell extends ConsumerWidget {
   const AppShell({super.key});
@@ -28,7 +38,7 @@ class AppShell extends ConsumerWidget {
       ),
       bottomNavigationBar: LiquidGlassTabBar(
         selectedIndex: tabIndex,
-        onTap: (index) => ref.read(tabIndexProvider.notifier).state = index,
+        onTap: (index) => ref.read(tabIndexProvider.notifier).select(index),
         items: const [
           LiquidGlassTabItem(
             icon: CupertinoIcons.house,

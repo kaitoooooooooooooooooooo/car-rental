@@ -1,4 +1,4 @@
-import 'package:car_rent_client/src/app_shell.dart';
+import 'package:car_rent_client/src/routing/app_router.dart';
 import 'package:car_rent_client/src/theme/theme.dart';
 import 'package:flutter/material.dart';
 
@@ -7,11 +7,11 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Car Rental',
       theme: primaryTheme,
-      home: const AppShell(),
+      routerConfig: goRouter,
     );
   }
 }
