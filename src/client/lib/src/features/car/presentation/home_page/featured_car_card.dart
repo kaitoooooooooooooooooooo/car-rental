@@ -3,8 +3,6 @@ import 'package:car_rent_client/src/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-const _border = BorderSide(width: 2, color: AppColors.borderSubtle);
-
 class FeaturedCarCard extends StatelessWidget {
   const FeaturedCarCard({super.key, required this.car, required this.onTap});
 
@@ -13,75 +11,140 @@ class FeaturedCarCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = '${car.marque} ${car.modele}'.toUpperCase();
-    final location = '${car.localisation.ville} ${car.localisation.canton}';
-    final review = ' ${car.note.moyenne}  ${car.note.nombre} Reviews ';
-    final price = '${car.tarifs.devise}  ${car.tarifs.jour} / Day';
-    final specs =
-        ' Specs : ${car.caracteristiques.places} seats ● ${car.caracteristiques.carburant} ● ${car.categorie}';
+    final specs = car.caracteristiques;
 
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: SizedBox(
-        width: 400,
-        height: 200,
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            children: [
-              Expanded(
-                child: Row(
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 210,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Stack(
+          children: [
+            Positioned.fill(
+              top: 40,
+              bottom: 16,
+              child: car.photos.isEmpty
+                  ? const Icon(
+                      Icons.directions_car,
+                      size: 100,
+                      color: AppColors.textMuted,
+                    )
+                  : Image.asset(car.photos.first.url, fit: BoxFit.contain),
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${car.marque} ${car.modele}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.manrope(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${car.tarifs.devise} ${car.tarifs.jour} / day',
+                        style: GoogleFonts.manrope(
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  spacing: 6,
                   children: [
-                    Expanded(
-                      child: car.photos.isEmpty
-                          ? const SizedBox(
-                              height: 240,
-                              child: Center(
-                                child: Icon(
-                                  Icons.directions_car,
-                                  size: 100,
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                            )
-                          : Image.asset(
-                              car.photos.first.url,
-                              fit: BoxFit.contain,
-                            ),
+                    SpecBadge(
+                      icon: Icons.speed_rounded,
+                      label: '${specs.puissanceCh} ch',
                     ),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [Text(price), Text(title)],
+                    SpecBadge(
+                      icon: Icons.local_gas_station_outlined,
+                      label: specs.carburant,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.accent,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: Row(
+                  spacing: 6,
+                  children: [
+                    const Icon(
+                      Icons.my_location_rounded,
+                      size: 14,
+                      color: AppColors.onAccent,
+                    ),
+                    Text(
+                      car.localisation.ville,
+                      style: GoogleFonts.manrope(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.onAccent,
                       ),
                     ),
                   ],
                 ),
               ),
-              Row(children: [Text(specs)]),
-              // Row(children: [Text()]),
-              const Divider(),
-              Row(
-                children: [
-                  const Icon(
-                    Icons.location_on_outlined,
-                    size: 20,
-                    color: AppColors.accent,
-                  ),
-                  Text(location),
-                  SizedBox(width: 16),
-                  const Icon(
-                    Icons.star_rounded,
-                    size: 20,
-                    color: AppColors.accent,
-                  ),
-                  Text(review),
-                ],
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
+      ),
+    );
+  }
+}
+
+class SpecBadge extends StatelessWidget {
+  const SpecBadge({super.key, required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceLow,
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 6,
+        children: [
+          Icon(icon, size: 14, color: AppColors.textSecondary),
+          Text(
+            label,
+            style: GoogleFonts.manrope(
+              fontSize: 12,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ],
       ),
     );
   }

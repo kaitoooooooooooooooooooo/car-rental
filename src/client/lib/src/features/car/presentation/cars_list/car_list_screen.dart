@@ -161,7 +161,8 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
             ),
           ),
           const SizedBox(height: 10),
-          BrandCard(),
+          const BrandCard(),
+          const SizedBox(height: 20),
           Expanded(
             child: Container(
               decoration: BoxDecoration(
