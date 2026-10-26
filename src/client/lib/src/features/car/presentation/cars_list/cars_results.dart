@@ -39,9 +39,9 @@ class CarsResults extends ConsumerWidget {
           itemCount: cars.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 16,
-            mainAxisExtent: 255,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            mainAxisExtent: 210,
           ),
           itemBuilder: (context, index) {
             final car = cars[index];
