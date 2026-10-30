@@ -26,7 +26,7 @@ class StarRatingWidget extends StatelessWidget {
     return GestureDetector(
       onTap: () => onRatingChanged(starValue),
       onLongPress: () => onRatingChanged(starValue - 0.5),
-      child: Icon(icon, size: 32, color: AppColors.accent),
+      child: Icon(icon, size: 32, color: AppColors.accentLight),
     );
   }
 

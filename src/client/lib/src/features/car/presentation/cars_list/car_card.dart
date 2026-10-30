@@ -38,10 +38,10 @@ class CarCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                const Icon(
+                Icon(
                   Icons.star_rounded,
                   size: 16,
-                  color: AppColors.accent,
+                  color: AppColors.accentLight,
                 ),
                 const SizedBox(width: 2),
                 Text(

@@ -1,3 +1,4 @@
+import 'package:car_rent_client/src/common_widgets/notification_button.dart';
 import 'package:car_rent_client/src/features/car/presentation/home_page/recommended_cars_card.dart';
 import 'package:car_rent_client/src/theme/theme.dart';
 import 'package:car_rent_client/src/app_shell.dart';
@@ -43,7 +44,7 @@ class _HomePageScreenState extends ConsumerState<HomePageScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Good morning, $_firstName',
+                              'Good morning, $_firstName 👋',
                               style: GoogleFonts.manrope(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
@@ -62,41 +63,7 @@ class _HomePageScreenState extends ConsumerState<HomePageScreen> {
                           ],
                         ),
                       ),
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.borderSubtle),
-                        ),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            const Icon(
-                              Icons.notifications_none_rounded,
-                              color: AppColors.textPrimary,
-                              size: 24,
-                            ),
-                            Positioned(
-                              top: 12,
-                              right: 13,
-                              child: Container(
-                                width: 8,
-                                height: 8,
-                                decoration: BoxDecoration(
-                                  color: AppColors.accent,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: AppColors.surface,
-                                    width: 1.5,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      const NotificationButton(),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -129,23 +96,32 @@ class _HomePageScreenState extends ConsumerState<HomePageScreen> {
                           ],
                         ),
                       ),
-                      TextButton(
+                      TextButton.icon(
                         onPressed: () => ref
                             .read(tabIndexProvider.notifier)
                             .select(searchTab),
                         style: TextButton.styleFrom(
-                          foregroundColor: AppColors.accent,
+                          backgroundColor: AppColors.accent,
+                          foregroundColor: AppColors.onAccent,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
+                          shape: const StadiumBorder(),
                         ),
-                        child: Text(
+                        iconAlignment: IconAlignment.end,
+                        icon: const Icon(Icons.arrow_forward_rounded, size: 16),
+                        label: Text(
                           'See all',
                           style: GoogleFonts.manrope(
-                            fontSize: 15,
+                            fontSize: 14,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
                     ],
                   ),
+                  const SizedBox(height: 28),
                   const RecommendedCarsCard(),
                 ],
               ),

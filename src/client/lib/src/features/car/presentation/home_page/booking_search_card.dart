@@ -36,7 +36,7 @@ class _BookingSearchCardState extends ConsumerState<BookingSearchCard> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceLow,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(24),
       ),
       child: Column(
@@ -89,7 +89,7 @@ class _BookingSearchCardState extends ConsumerState<BookingSearchCard> {
     hintText: hint,
     prefixIcon: Icon(icon, size: 20),
     filled: true,
-    fillColor: AppColors.surface,
+    fillColor: AppColors.surfaceLow,
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(14),
       borderSide: BorderSide.none,

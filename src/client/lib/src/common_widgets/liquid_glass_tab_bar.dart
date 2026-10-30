@@ -107,12 +107,37 @@ class _LiquidGlassTabBarState extends State<LiquidGlassTabBar>
                 child: SizedBox.square(
                   dimension: _height,
                   child: LiquidGlass(
-                    child: Icon(
-                      widget.items[_search].icon,
-                      size: 26,
-                      color: _searchSelected
-                          ? AppColors.accent
-                          : AppColors.textPrimary,
+                    child: SizedBox.expand(
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Positioned.fill(
+                            child: Padding(
+                              padding: const EdgeInsets.all(_pad),
+                              child: AnimatedOpacity(
+                                duration: const Duration(milliseconds: 200),
+                                opacity: _searchSelected ? 1 : 0,
+                                child: CustomPaint(
+                                  painter: GlassRimPainter(intensity: 0.5),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: AppColors.accentSoft,
+                                      borderRadius: BorderRadius.circular(100),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Icon(
+                            widget.items[_search].icon,
+                            size: 26,
+                            color: _searchSelected
+                                ? AppColors.accentLight
+                                : AppColors.textPrimary,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -199,7 +224,7 @@ class _LiquidGlassTabBarState extends State<LiquidGlassTabBar>
   }
 
   Widget _tab(LiquidGlassTabItem item, double t, VoidCallback onTap) {
-    final color = Color.lerp(AppColors.textPrimary, AppColors.accent, t)!;
+    final color = Color.lerp(AppColors.textPrimary, AppColors.accentLight, t)!;
     final selected = t > 0.5;
 
     return GestureDetector(

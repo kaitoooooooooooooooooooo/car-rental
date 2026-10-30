@@ -1,0 +1,243 @@
+DOC AU KILOMETRE - SPRINT 3 - Rivano
+Tom Mehl
+
+
+19.10.2026
+- Organisation du sprint (4 recits, Trello, mail).
+- Creation de la tab bar (liquid glass) et de la navigation entre les onglets.
+- Premiere version de la page Home.
+
+22.10.2026
+- Passage a Notifier / NotifierProvider (Riverpod).
+- Navigation avec go_router : route /car/:id vers la page de detail.
+
+22.10.2026
+- Ajout de la section Recommended cars sur la page Home.
+- Simplification de la page Home.
+- Revue du projet et planification.
+
+26.10.2026
+- Nouvelle route API GET /cars/featured (+ Swagger).
+- Affichage des voitures recommandees cote client.
+- Nouvelle car card et nouvelle couleur principale (bordeaux).
+
+29.10.2026
+- Refonte de la page de detail : photo pleine largeur, prix,
+  conditions, Car Features, Rental Plan, bouton Book Now.
+
+30.10.2026
+- Section Reviews sur la page de detail.
+- Nouveaux logos Rivano + icones de l'app et favicon.
+- En-tete de la page de recherche aligne sur la page Home.
+- Bouton See all mis en valeur.
+- App renommee "Rivano".
+- Correction de la bulle de recherche dans la tab bar.
+
+A faire
+- Carte de localisation sur la page de detail (lundi).
+
+
+========================================================================
+COMPOSANTS
+========================================================================
+
+
+1. Onglet actif - tabIndexProvider (app_shell.dart)
+
+  Garde l'index de l'onglet affiche (0 = Home, 1 = Profile, 2 = Search).
+
+    class TabIndexNotifier extends Notifier<int> {
+      @override
+      int build() => 0;
+
+      void select(int index) => state = index;
+    }
+
+    final tabIndexProvider = NotifierProvider<TabIndexNotifier, int>(() {
+      return TabIndexNotifier();
+    });
+
+  Changer d'onglet depuis n'importe quel ecran (ex : bouton See all) :
+
+    ref.read(tabIndexProvider.notifier).select(searchTab);
+
+
+2. Navigation - app_router.dart
+
+  "/" affiche l'AppShell, "/car/:id" la page de detail.
+
+    GoRoute(
+      path: '/',
+      name: AppRoute.home.name,
+      builder: (context, state) => const AppShell(),
+      routes: [
+        GoRoute(
+          path: 'car/:id',
+          name: AppRoute.carDetail.name,
+          builder: (context, state) {
+            final carId = state.pathParameters['id']!;
+            return CarDetailScreen(carId: carId);
+          },
+        ),
+      ],
+    ),
+
+  Ouvrir le detail d'une voiture :
+
+    context.goNamed(
+      AppRoute.carDetail.name,
+      pathParameters: {'id': car.id},
+    );
+
+
+3. API - GET /cars/featured (serveur)
+
+  Les 10 voitures les mieux notees.
+
+    exports.getFeaturedCars = (req, res, next) => {
+      Car.find()
+        .sort({ "note.moyenne": -1, "note.nombre": -1 })
+        .limit(10)
+        .then((cars) => res.status(200).json(cars))
+        .catch(next);
+    };
+
+  /featured doit etre AVANT /:id, sinon "featured" est lu comme un id :
+
+    router.get("/", carController.getCars);
+    router.get("/featured", carController.getFeaturedCars);
+    router.get("/:id", carController.getCarById);
+
+
+4. Voitures recommandees - RecommendedCarsCard (home_page/)
+
+  Lit le provider et gere les 3 etats avec .when().
+
+    final featuredCarsValue = ref.watch(featuredCarsListFutureProvider);
+
+    return featuredCarsValue.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => Text(error.toString()),
+      data: (cars) => ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: cars.length,
+        itemBuilder: (context, index) => FeaturedCarCard(...),
+      ),
+    );
+
+
+5. Page de detail - car_details/
+
+  a) Photo + bouton retour par-dessus (Stack)
+
+    Stack(
+      children: [
+        CarPhotoCarousel(photos: _photosOf(car)),
+        Positioned(
+          top: MediaQuery.of(context).padding.top + 8,
+          left: 16,
+          child: IconButton(
+            onPressed: () => context.pop(),
+            icon: const Icon(Icons.chevron_left),
+          ),
+        ),
+      ],
+    ),
+
+  b) CarPhotoCarousel : StatefulWidget car il garde la page affichee
+
+    int currentPage = 0;
+
+    PageView.builder(
+      itemCount: photos.length,
+      onPageChanged: (value) => setState(() => currentPage = value),
+      itemBuilder: (context, index) => Image.asset(
+        photos[index].url,
+        width: double.infinity,
+        fit: BoxFit.cover,
+      ),
+    ),
+
+  c) Car Features : grille de 2 colonnes de CarFeatureCard
+
+    GridView.count(
+      crossAxisCount: 2,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      childAspectRatio: 2.6,
+      children: [
+        CarFeatureCard(
+          icon: Icons.event_seat_outlined,
+          label: 'Capacity',
+          value: '${caracteristiques.places} Seats',
+        ),
+        ...
+      ],
+    ),
+
+  d) CarReviewsCard : etoile pleine, demi ou vide selon la note
+
+    if (note.moyenne >= starValue) {
+      icon = Icons.star_rounded;
+    } else if (note.moyenne >= starValue - 0.5) {
+      icon = Icons.star_half_rounded;
+    } else {
+      icon = Icons.star_outline_rounded;
+    }
+
+
+6. Bulle de recherche selectionnee - liquid_glass_tab_bar.dart
+
+  SizedBox.expand oblige le Stack a remplir la bulle.
+  Sans lui, le Stack faisait la taille de l'icone (26 px)
+  et la pastille etait cachee dessous.
+
+    SizedBox.expand(
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned.fill(
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 200),
+              opacity: _searchSelected ? 1 : 0,
+              child: Container(...),   // pastille bordeaux
+            ),
+          ),
+          Icon(widget.items[_search].icon),
+        ],
+      ),
+    ),
+
+
+7. NotificationButton (common_widgets/notification_button.dart)
+
+  Meme cloche sur Home et Search :
+
+    const NotificationButton(),
+
+
+8. Logo et icones de l'app
+
+  Logo dans l'en-tete :
+
+    SvgPicture.asset(
+      'assets/images/app/rivano-logo-blanc.svg',
+      height: 28,
+    ),
+
+  Config des icones dans pubspec.yaml :
+
+    flutter_launcher_icons:
+      image_path: "assets/icon/app_icon.png"
+      android: true
+      adaptive_icon_background: "#1D1D1D"
+      adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
+      ios: true
+      remove_alpha_ios: true
+      web:
+        generate: true
+
+  Regenerer apres un changement de logo :
+
+    dart run flutter_launcher_icons
