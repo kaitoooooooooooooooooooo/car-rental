@@ -2,25 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
-  static const Color accent = Color(0xFF408b77);
-  static const Color accentSoft = Color(0x33408B77);
-  static const Color onAccent = Color(0xFFF2F4F3);
+  static const Color accent = Color(0xFF7B1B38);
+  static final Color accentLight = Color.fromARGB(172, 252, 251, 252);
+  static final Color accentSoft = accent.withValues(alpha: 0.2);
+  static const Color onAccent = textPrimary;
 
-  static const Color background = Color(0xFF444946);
-  static const Color surfaceLow = Color(0xFF1B1D1C);
-  static const Color surface = Color(0xFF2C302E);
+  static const Color background = Color(0xFF484848);
+  static const Color surfaceLow = Color(0xFF1D1D1D);
+  static const Color surface = Color(0xFF2F2F2F);
 
-  static const Color textPrimary = Color(0xFFF2F4F3);
-  static const Color textSecondary = Color(0xFFB4BAB6);
-  static const Color textMuted = Color(0xFF7D8480);
+  static const Color textPrimary = Color(0xFFF4F4F4);
+  static const Color textSecondary = Color(0xFFB8B8B8);
+  static const Color textMuted = Color(0xFF828282);
 
-  static const Color stoke = Color(0xFF5A605C);
-  static const Color borderSubtle = Color(0xFF3A3F3C);
+  static const Color stoke = Color(0xFF5E5E5E);
+  static const Color borderSubtle = Color(0xFF3E3E3E);
 
   static const Color error = Color(0xFFD96868);
-
-  static const Color gradientDark = Color(0xFF292929);
-  static const Color gradientGreen = Color(0xFF2e685a);
 }
 
 ThemeData primaryTheme = ThemeData(
@@ -43,9 +41,9 @@ ThemeData primaryTheme = ThemeData(
     error: AppColors.error,
     onError: AppColors.onAccent,
   ),
-  textSelectionTheme: const TextSelectionThemeData(
-    cursorColor: AppColors.accent,
+  textSelectionTheme: TextSelectionThemeData(
+    cursorColor: AppColors.accentLight,
     selectionColor: AppColors.accentSoft,
-    selectionHandleColor: AppColors.accent,
+    selectionHandleColor: AppColors.accentLight,
   ),
 );
