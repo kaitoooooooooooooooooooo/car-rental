@@ -8,12 +8,7 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: AppColors.background,
-      body: Center(
-        child: Text(
-          'SA ARRIVE BIENTOT',
-          style: TextStyle(color: AppColors.textPrimary),
-        ),
-      ),
+      body: Center(child: Placeholder(color: AppColors.textSecondary)),
     );
   }
 }
