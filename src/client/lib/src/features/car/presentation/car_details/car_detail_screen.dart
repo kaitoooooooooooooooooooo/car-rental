@@ -1,5 +1,6 @@
 import 'package:car_rent_client/src/features/car/data/remote/car_service.dart';
 import 'package:car_rent_client/src/features/car/presentation/car_details/car_feature_card.dart';
+import 'package:car_rent_client/src/features/car/presentation/car_details/car_location_map.dart';
 import 'package:car_rent_client/src/features/car/presentation/car_details/car_photo_carousel.dart';
 import 'package:car_rent_client/src/features/car/presentation/car_details/car_reviews_card.dart';
 import 'package:car_rent_client/src/features/car/presentation/car_details/rental_plan_tile.dart';
@@ -306,6 +307,9 @@ class CarDetailScreen extends ConsumerWidget {
                   title: 'Monthly Plan',
                   price: '${tarifs.devise} ${tarifs.mois}/month',
                 ),
+
+                _buildSectionTitle('Location'),
+                CarLocationMap(carId: car.id, localisation: car.localisation),
 
                 _buildSectionTitle('Reviews'),
                 CarReviewsCard(
