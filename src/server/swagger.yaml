@@ -115,3 +115,24 @@ paths:
           description: L'id reçu est invalide
         "404":
           description: Aucun véhicule ne correspond à cet id
+  /cars/{id}/location:
+    get:
+      summary: Récupérer les coordonnées GPS d'un véhicule
+      tags: [Car]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: L'id du véhicule à localiser
+          example: 68a1f0000000000000000001
+      responses:
+        "200":
+          description: Coordonnées trouvées (lat, lng)
+        "400":
+          description: L'id reçu est invalide ou l'adresse est introuvable
+        "404":
+          description: Aucun véhicule ne correspond à cet id
+        "500":
+          description: Clé API manquante

@@ -153,7 +153,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Best Cars',
+                          'All Cars',
                           style: GoogleFonts.manrope(
                             fontSize: 20,
                             fontWeight: FontWeight.w700,
