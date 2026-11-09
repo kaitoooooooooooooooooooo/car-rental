@@ -33,19 +33,28 @@ class BrandCard extends ConsumerWidget {
           ..sort();
 
     return SizedBox(
-      height: 120,
-      child: ListView.builder(
+      height: 44,
+      child: ListView(
         scrollDirection: Axis.horizontal,
-        itemCount: brands.length,
-        itemBuilder: (context, index) {
-          final brand = brands[index];
-          return _BrandItem(
-            brand: brand,
-            isSelected: brand == selectedBrand,
-            onTap: () =>
-                ref.read(carFilterProvider.notifier).toggleBrand(brand),
-          );
-        },
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        children: [
+          _BrandItem(
+            brand: 'All',
+            isSelected: selectedBrand.isEmpty,
+            onTap: () {
+              if (selectedBrand.isNotEmpty) {
+                ref.read(carFilterProvider.notifier).toggleBrand(selectedBrand);
+              }
+            },
+          ),
+          for (final brand in brands)
+            _BrandItem(
+              brand: brand,
+              isSelected: brand == selectedBrand,
+              onTap: () =>
+                  ref.read(carFilterProvider.notifier).toggleBrand(brand),
+            ),
+        ],
       ),
     );
   }
@@ -65,53 +74,39 @@ class _BrandItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final iconName = _iconNames[brand] ?? brand;
+    final hasIcon = brand != 'All' && !_brandsWithoutIcon.contains(brand);
 
     return GestureDetector(
       onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        width: 88,
-        margin: const EdgeInsets.only(right: 12),
-        child: Column(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+        margin: const EdgeInsets.only(right: 8),
+        padding: EdgeInsets.symmetric(horizontal: hasIcon ? 14 : 22),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.accent : AppColors.surface,
+          borderRadius: BorderRadius.circular(100),
+          border: Border.all(
+            color: isSelected ? AppColors.accent : AppColors.stoke,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 8,
           children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeOut,
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.surface,
-                border: Border.all(
-                  color: isSelected ? AppColors.accent : Colors.transparent,
-                  width: 2,
+            if (hasIcon)
+              SizedBox.square(
+                dimension: 20,
+                child: SvgPicture.asset(
+                  'assets/brands-icons/$iconName Icon Dark.svg',
                 ),
               ),
-              padding: const EdgeInsets.all(16),
-              child: _brandsWithoutIcon.contains(brand)
-                  ? Center(
-                      child: Text(
-                        brand[0].toUpperCase(),
-                        style: GoogleFonts.manrope(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                    )
-                  : SvgPicture.asset(
-                      'assets/brands-icons/$iconName Icon Dark.svg',
-                    ),
-            ),
-            const SizedBox(height: 8),
             Text(
               brand,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
               style: GoogleFonts.manrope(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: isSelected ? AppColors.accent : AppColors.textSecondary,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? AppColors.onAccent : AppColors.textPrimary,
               ),
             ),
           ],

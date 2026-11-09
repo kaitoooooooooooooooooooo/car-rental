@@ -52,7 +52,7 @@ A User Story is Done if :
 	Avancement : 12 / 14
 
   Etat du code au 25/09/2026 (verifie avant le rendu) :
-    - flutter analyze : 0 erreur, 0 warning (3 remarques de style)
+    - flutter analyze : 0 erreur, 0 warning, 0 remarque
     - flutter test    : 25 / 25 tests OK
                         8 modeles fromJson + 11 filtres + 6 facettes
     - npm test        : 9 / 9 tests OK (API Jest + supertest)
@@ -108,15 +108,24 @@ A User Story is Done if :
     detoure qui sert de vignette sur la carte, il n'a pas d'interet ici.
   - Affichage des informations du vehicule, regroupees par sections.
 
-  25/09 - Documentation
-  - Finalisation de la documentation Word et de ce fichier.
-  - Gantt repris sur le modele Agile officiel, aux couleurs de
-    l'application, avec uniquement les dates du journal de travail.
-  - Nettoyage : suppression de tous les commentaires du code source
-    (hors directives // ignore: destinees a l'analyseur).
+  25/09 - Simplification du code et documentation
+  - Serveur repris sur le modele du projet Pokemon : require /
+    module.exports et .then() au lieu des modules ES et d'async/await,
+    connexion MongoDB directement dans app.js (db.js supprime), base de
+    test en memoire geree dans test/app.test.js.
+  - Client nettoye : theme regroupe dans theme/theme.dart, modeles lus
+    avec "as int" comme dans Pokemon (utils/json_parsers.dart supprime),
+    paquets et fichiers inutilises retires, widget commun OptionChips
+    pour les rangees de boutons, fichiers renommes
+    (filter_bottom_sheet.dart, seating_widget.dart).
+  - Places : boutons 2 / 4 / 5-6 / 7+ pour qu'aucune voiture ne soit
+    exclue (le catalogue contient des voitures de 5, 6, 7, 8 et 9 places).
+  - Suppression de tous les commentaires du code source.
+  - Finalisation de la documentation Word (serveur et client presentes
+    fichier par fichier) et de ce fichier ; Gantt mis a jour.
 
 
-  Rappel - sprint precedent (03/09 -> 11/09)
+  Rappel - sprint precedent (03/09 -> 10/09)
 
 
   03/09 - Organisation des filtres
@@ -160,6 +169,48 @@ A User Story is Done if :
   - Mise en forme de la documentation et du Gantt de fin de sprint.
 
 
+  Rappel - premier sprint (17/08 -> 31/08)
+
+
+  17/08 - Mise en place
+  - Installation de l'environnement (Node, SDK Flutter, MongoDB,
+    Compass) et test de la chaine avec le projet Pokemon comme reference.
+  - Presentation du planning par le formateur, puis decoupage du projet
+    en 9 recits (R0 base technique -> R8 documentation finale) sur Trello.
+  - Socle technique : serveur Express (models/, routes/, controller/),
+    projet Flutter car_rent_client, modele Mongoose Car (20 champs).
+  - Decisions : pas de script de seed (le JSON est importe avec
+    mongoimport) et MongoDB en local, comme pour le projet Pokemon.
+  - Maquette Figma et charte graphique.
+
+  20/08 - API
+  - Controleur (getCars, getCarById avec validation de l'ObjectId),
+    routes GET /cars et GET /cars/:id, documentation Swagger sur /docs.
+  - Reinstallation imposee des postes : 1h20 perdue.
+  - Premier affichage de la liste a partir du JSON local.
+
+  21/08 - Architecture et branchement sur l'API
+  - Arborescence features/car/{data,domain,presentation} et modeles
+    Dart types (Equatable + fromJson).
+  - CarService HTTP : la chaine MongoDB -> API -> Flutter est bouclee.
+
+  24/08 - Depot unique, ecran liste et tests
+  - Regroupement du serveur et du client dans un seul depot git.
+  - Ecran de liste selon la maquette.
+  - Tests unitaires des 8 modeles Dart (fromJson).
+
+  27/08 et 28/08 - Review et rattrapage du CIE
+  - Review avec M. Guerdat.
+  - Rattrapage du CIE (module ICH-335).
+  - Recuperation, rangement et renommage des photos des voitures.
+
+  31/08 - Debut des filtres
+  - Fin du rattrapage du CIE.
+  - Bottom sheet de filtres : bouton de fermeture, choix du type de
+    voiture, slider des prix avec histogramme.
+  - Nouveau logo de l'application.
+
+
 5. FONCTIONNEMENT DES FILTRES
 
   Tout passe par un seul etat : CarFilterState (car_filter_provider.dart).
@@ -190,7 +241,8 @@ A User Story is Done if :
                     plage de dates choisie (champ indisponibilites)
   Car location      ville ou canton contient le texte
   Rating            note moyenne >= note minimale
-  Seating Capacity  nombre de places dans la selection
+  Seating Capacity  tranche de places dans la selection
+                    (2, 4, 5-6 ou 7+, fonction seatingLabel)
   Fuel Type         carburant dans la selection (essence = Petrol)
   Clear All         remet tous les filtres a zero
 
@@ -222,7 +274,6 @@ CLIENT - src/client (Flutter, Riverpod, http, google_fonts, flutter_svg,
     domain/        modeles Dart 				(Car, Localisation, Caracteristiques,
                    Tarifs, Conditions, Note, Photo, Indisponibilite)
     data/remote/   CarService  					seul point d'appel a l'API + providers
-    data/local/    fake_cars_repository 		(donnees de secours / dev, vide)
     presentation/cars_list/
                    car_list_screen.dart    		ecran liste (3 etats)
                    cars_results.dart       		grille de resultats + cas vide
@@ -231,22 +282,22 @@ CLIENT - src/client (Flutter, Riverpod, http, google_fonts, flutter_svg,
     presentation/car_details/
                    car_detail_screen.dart  		ecran detail (carrousel + infos)
     presentation/filter_bottomSheet/
-                   filter_bottomSheet.dart 		panneau de filtres (bottom sheet)
+                   filter_bottom_sheet.dart		panneau de filtres (bottom sheet)
                    car_filter_provider.dart		etat des filtres + liste filtree
+                   option_chips.dart       		rangee de boutons reutilisable
                    type_cars_widget.dart   		filtre par categorie
                    price_range_widget.dart 		slider + histogramme des prix
                    rental_time_widget.dart 		Hour / Day + dates ou heures
-                   custom_time_picker.dart 		selecteur d'heure
                    location_widget.dart    		filtre par lieu
                    stars_widget.dart       		note minimale (etoiles)
-                   Siting_widget.dart      		nombre de places
+                   seating_widget.dart     		nombre de places
                    fuel_widget.dart        		type de carburant
-  constants/colors.dart, app_sizes.dart 		Chartre graphique
+  lib/src/theme/theme.dart              		charte graphique (AppColors + theme)
+  lib/src/constants/app_sizes.dart      		espacements
 
   Ecran de detail : la voiture est passee directement au constructeur
   (CarDetailScreen(car: car)), il n'y a pas de second appel a l'API.
-  Les photos sont lues en asset local, avec repli sur l'URL puis sur une
-  icone si le fichier est absent.
+  Les photos sont lues en asset local (Image.asset).
 
 FIGMA
   https://www.figma.com/design/o3gKd2JOmqF7HPEL5zM47Y/Car-Rental-App?node-id=1326-12648
@@ -275,6 +326,8 @@ Au Cours de ce project j ai eu recours a l'utilisation de l'ia pour :
   - Création du fichier cars.json
   - Récupération et organisation des photos des voitures
   - Génération du logo de l'application
+  - Simplification du code sur le modele du projet Pokemon
+  - Aide a la redaction et a la relecture de la documentation Word
 
 
 
@@ -290,8 +343,6 @@ Au Cours de ce project j ai eu recours a l'utilisation de l'ia pour :
   - Tests cote client limites aux modeles et aux providers : le rendu
     des ecrans n'est pas couvert automatiquement, il est verifie a la
     main sur emulateur.
-  - Trois remarques de style restent dans flutter analyze (noms de
-    fichiers filter_bottomSheet.dart et Siting_widget.dart).
 
 
 10. RESTE A FAIRE (sprint suivant)

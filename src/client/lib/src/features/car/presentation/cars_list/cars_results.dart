@@ -1,12 +1,15 @@
-import 'package:car_rent_client/src/features/car/presentation/car_details/car_detail_screen.dart';
+import 'package:car_rent_client/src/routing/app_router.dart';
 import 'package:car_rent_client/src/theme/theme.dart';
 import 'package:car_rent_client/src/features/car/presentation/cars_list/car_card.dart';
 import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/car_filter_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class CarsResults extends ConsumerWidget {
-  const CarsResults({super.key});
+  const CarsResults({super.key, this.topRated});
+
+  final int? topRated;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -14,28 +17,39 @@ class CarsResults extends ConsumerWidget {
     final query = ref.watch(searchQueryProvider).trim();
 
     return filteredCarsValue.when(
-      data: (cars) {
+      data: (allCars) {
+        final cars = topRated == null
+            ? allCars
+            : ([...allCars]..sort(
+                    (a, b) => b.note.moyenne != a.note.moyenne
+                        ? b.note.moyenne.compareTo(a.note.moyenne)
+                        : b.note.nombre.compareTo(a.note.nombre),
+                  ))
+                  .take(topRated!)
+                  .toList();
         if (cars.isEmpty) {
           return NoCarsFound(query: query);
         }
         return GridView.builder(
+          shrinkWrap: topRated != null,
+          physics: topRated != null
+              ? const NeverScrollableScrollPhysics()
+              : null,
           padding: const EdgeInsets.only(bottom: 90),
           itemCount: cars.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 16,
-            mainAxisExtent: 255,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            mainAxisExtent: 210,
           ),
           itemBuilder: (context, index) {
             final car = cars[index];
             return CarCard(
               car: car,
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CarDetailScreen(car: car),
-                ),
+              onTap: () => context.goNamed(
+                AppRoute.carDetail.name,
+                pathParameters: {'id': car.id},
               ),
             );
           },

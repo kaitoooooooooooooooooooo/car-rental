@@ -53,7 +53,29 @@ components:
           type: string
         updatedAt:
           type: string
-      required: [id, marque, modele, annee, categorie, statut, proprietaireId, immatriculation, description, localisation, caracteristiques, equipements, tarifs, conditions, indisponibilites, photos, note, nombreLocations, createdAt, updatedAt]
+      required:
+        [
+          id,
+          marque,
+          modele,
+          annee,
+          categorie,
+          statut,
+          proprietaireId,
+          immatriculation,
+          description,
+          localisation,
+          caracteristiques,
+          equipements,
+          tarifs,
+          conditions,
+          indisponibilites,
+          photos,
+          note,
+          nombreLocations,
+          createdAt,
+          updatedAt,
+        ]
 
 tags:
   - name: Car
@@ -67,6 +89,13 @@ paths:
       responses:
         "200":
           description: Succès - La liste est récupérée ou liste vide
+  /cars/featured:
+    get:
+      summary: Afficher les voitures recommandées
+      tags: [Car]
+      responses:
+        "200":
+          description: Succès - La liste des 10 véhicules les mieux notés est récupérée ou vide
   /cars/{id}:
     get:
       summary: Rechercher un véhicule selon son id
@@ -86,3 +115,24 @@ paths:
           description: L'id reçu est invalide
         "404":
           description: Aucun véhicule ne correspond à cet id
+  /cars/{id}/location:
+    get:
+      summary: Récupérer les coordonnées GPS d'un véhicule
+      tags: [Car]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: L'id du véhicule à localiser
+          example: 68a1f0000000000000000001
+      responses:
+        "200":
+          description: Coordonnées trouvées (lat, lng)
+        "400":
+          description: L'id reçu est invalide ou l'adresse est introuvable
+        "404":
+          description: Aucun véhicule ne correspond à cet id
+        "500":
+          description: Clé API manquante

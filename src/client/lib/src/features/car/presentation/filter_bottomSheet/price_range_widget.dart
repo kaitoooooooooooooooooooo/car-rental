@@ -91,7 +91,7 @@ class RangeSelector extends ConsumerWidget {
             SfRangeSelector(
               min: scale.axisMin,
               max: scale.axisMax,
-              activeColor: AppColors.accent,
+              activeColor: AppColors.accentLight,
               initialValues: SfRangeValues(currentStart, currentEnd),
               interval: scale.labelStep,
               stepSize: _sliderStep,

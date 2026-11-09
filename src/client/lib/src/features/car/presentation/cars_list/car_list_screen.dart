@@ -1,3 +1,4 @@
+import 'package:car_rent_client/src/common_widgets/notification_button.dart';
 import 'package:car_rent_client/src/theme/theme.dart';
 import 'package:car_rent_client/src/features/car/presentation/cars_list/brand_card.dart';
 import 'package:car_rent_client/src/features/car/presentation/cars_list/cars_results.dart';
@@ -5,6 +6,7 @@ import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet
 import 'package:car_rent_client/src/features/car/presentation/filter_bottomSheet/filter_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CarsListScreen extends ConsumerStatefulWidget {
@@ -27,15 +29,8 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
   Widget build(BuildContext context) {
     final searchText = ref.watch(searchQueryProvider);
 
-    final Widget logo = CircleAvatar(
-      backgroundColor: AppColors.surface,
-      child: Container(
-        margin: EdgeInsets.all(3),
-        child: Image.asset('assets/images/app/logo.png'),
-      ),
-    );
-
     return Scaffold(
+      extendBody: true,
       backgroundColor: AppColors.background,
       body: Column(
         children: [
@@ -46,34 +41,11 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Padding(padding: const EdgeInsets.all(10), child: logo),
-                        SizedBox(width: 4),
-                        Text(
-                          'Rivano',
-                          style: GoogleFonts.manrope(
-                            fontSize: 30,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
+                    SvgPicture.asset(
+                      'assets/images/app/rivano-logo-blanc.svg',
+                      height: 28,
                     ),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.circle_notifications,
-                          color: AppColors.textPrimary,
-                          size: 45,
-                        ),
-                        SizedBox(width: 10),
-                        Icon(
-                          Icons.account_circle,
-                          color: AppColors.textPrimary,
-                          size: 45,
-                        ),
-                      ],
-                    ),
+                    const NotificationButton(),
                   ],
                 ),
                 SizedBox(
@@ -85,9 +57,9 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                     Expanded(
                       child: SearchBar(
                         controller: _searchController,
-                        onChanged: (value) =>
-                            ref.read(searchQueryProvider.notifier).state =
-                                value,
+                        onChanged: (value) => ref
+                            .read(searchQueryProvider.notifier)
+                            .setQuery(value),
                         hintText: 'Search your dream car...',
                         textStyle: WidgetStatePropertyAll(
                           GoogleFonts.manrope(
@@ -131,8 +103,9 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                               ),
                               onPressed: () {
                                 _searchController.clear();
-                                ref.read(searchQueryProvider.notifier).state =
-                                    '';
+                                ref
+                                    .read(searchQueryProvider.notifier)
+                                    .setQuery('');
                               },
                             ),
                         ],
@@ -159,7 +132,8 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
             ),
           ),
           const SizedBox(height: 10),
-          BrandCard(),
+          const BrandCard(),
+          const SizedBox(height: 20),
           Expanded(
             child: Container(
               decoration: BoxDecoration(
@@ -179,7 +153,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Best Cars',
+                          'All Cars',
                           style: GoogleFonts.manrope(
                             fontSize: 20,
                             fontWeight: FontWeight.w700,
@@ -202,7 +176,7 @@ class _CarsListScreenState extends ConsumerState<CarsListScreen> {
                       style: GoogleFonts.manrope(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
-                        color: AppColors.textSecondary,
+                        color: AppColors.accentLight,
                       ),
                     ),
                     SizedBox(height: 20),
