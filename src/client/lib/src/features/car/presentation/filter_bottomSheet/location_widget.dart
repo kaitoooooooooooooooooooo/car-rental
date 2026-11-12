@@ -70,7 +70,7 @@ class _LocationWidgetState extends ConsumerState<LocationWidget> {
         elevation: const WidgetStatePropertyAll(0),
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(12),
             side: BorderSide(color: AppColors.stoke),
           ),
         ),

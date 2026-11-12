@@ -131,9 +131,7 @@ class DatePicker extends ConsumerWidget {
     if (filter.startTime != null && !_hasMinDuration(filter.startTime!, time)) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('La durée minimale de location est de 1 heure'),
-          ),
+          const SnackBar(content: Text('The minimum rental time is 1 hour')),
         );
       }
       return;

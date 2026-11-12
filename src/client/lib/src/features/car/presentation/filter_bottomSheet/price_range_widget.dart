@@ -47,13 +47,13 @@ class RangeSelector extends ConsumerWidget {
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stackTrace) => Center(
         child: Text(
-          'Erreur : $error',
+          'Error: $error',
           style: const TextStyle(color: AppColors.error),
         ),
       ),
       data: (cars) {
         if (cars.isEmpty) {
-          return const Center(child: Text('Aucune donnée disponible'));
+          return const Center(child: Text('No data available'));
         }
 
         final prices =

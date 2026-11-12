@@ -23,7 +23,7 @@ class RentalPlanTile extends StatelessWidget {
             height: 36,
             decoration: BoxDecoration(
               color: AppColors.accentSoft,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(
               Icons.calendar_month_outlined,

@@ -7,16 +7,16 @@ class AppColors {
   static final Color accentSoft = accent.withValues(alpha: 0.2);
   static const Color onAccent = textPrimary;
 
-  static const Color background = Color(0xFF484848);
-  static const Color surfaceLow = Color(0xFF1D1D1D);
-  static const Color surface = Color(0xFF2F2F2F);
+  static const Color background = Color(0xFF121212);
+  static const Color surfaceLow = Color(0xFF1A1A1A);
+  static const Color surface = Color(0xFF242424);
 
   static const Color textPrimary = Color(0xFFF4F4F4);
   static const Color textSecondary = Color(0xFFB8B8B8);
   static const Color textMuted = Color(0xFF828282);
 
-  static const Color stoke = Color(0xFF5E5E5E);
-  static const Color borderSubtle = Color(0xFF3E3E3E);
+  static const Color stoke = Color(0xFF444444);
+  static const Color borderSubtle = Color(0xFF2E2E2E);
 
   static const Color error = Color(0xFFD96868);
 }

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-const _firstName = 'Tom Tom';
+const _firstName = 'Tom';
 
 class HomePageScreen extends ConsumerStatefulWidget {
   const HomePageScreen({super.key});

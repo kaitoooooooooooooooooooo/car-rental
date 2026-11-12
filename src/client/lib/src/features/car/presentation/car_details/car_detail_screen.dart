@@ -1,6 +1,8 @@
+import 'package:car_rent_client/src/features/car/presentation/favorites/favorite_button.dart';
+import 'package:car_rent_client/src/utils/car_labels.dart';
 import 'package:car_rent_client/src/features/car/data/remote/car_service.dart';
 import 'package:car_rent_client/src/features/car/presentation/car_details/car_feature_card.dart';
-import 'package:car_rent_client/src/features/car/presentation/car_details/car_location_map.dart';
+// import 'package:car_rent_client/src/features/car/presentation/car_details/car_location_map.dart';
 import 'package:car_rent_client/src/features/car/presentation/car_details/car_photo_carousel.dart';
 import 'package:car_rent_client/src/features/car/presentation/car_details/car_reviews_card.dart';
 import 'package:car_rent_client/src/features/car/presentation/car_details/rental_plan_tile.dart';
@@ -20,11 +22,6 @@ class CarDetailScreen extends ConsumerWidget {
   List<Photo> _photosOf(Car car) {
     final photos = car.photos.where((p) => !p.principale).toList();
     return photos.isEmpty ? car.photos : photos;
-  }
-
-  String _capitalize(String text) {
-    if (text.isEmpty) return text;
-    return text[0].toUpperCase() + text.substring(1);
   }
 
   Widget _buildSectionTitle(String title) {
@@ -162,6 +159,11 @@ class CarDetailScreen extends ConsumerWidget {
                   ),
                 ),
               ),
+              Positioned(
+                top: MediaQuery.of(context).padding.top + 8,
+                right: 16,
+                child: FavoriteButton(carId: car.id, size: 22),
+              ),
             ],
           ),
 
@@ -220,7 +222,7 @@ class CarDetailScreen extends ConsumerWidget {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: AppColors.accentSoft,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                     child: Row(
                       children: [
@@ -272,12 +274,12 @@ class CarDetailScreen extends ConsumerWidget {
                     CarFeatureCard(
                       icon: Icons.local_gas_station_outlined,
                       label: 'Fuel',
-                      value: _capitalize(caracteristiques.carburant),
+                      value: carLabel(caracteristiques.carburant),
                     ),
                     CarFeatureCard(
                       icon: Icons.settings_outlined,
                       label: 'Gearbox',
-                      value: _capitalize(caracteristiques.transmission),
+                      value: carLabel(caracteristiques.transmission),
                     ),
                     CarFeatureCard(
                       icon: Icons.water_drop_outlined,
@@ -308,8 +310,8 @@ class CarDetailScreen extends ConsumerWidget {
                   price: '${tarifs.devise} ${tarifs.mois}/month',
                 ),
 
-                _buildSectionTitle('Location'),
-                CarLocationMap(carId: car.id, localisation: car.localisation),
+                // _buildSectionTitle('Location'),
+                // CarLocationMap(carId: car.id, localisation: car.localisation),
 
                 _buildSectionTitle('Reviews'),
                 CarReviewsCard(

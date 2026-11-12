@@ -19,10 +19,29 @@ class ProfileMenu extends StatelessWidget {
     );
   }
 
-  Widget buildTile(IconData icon, String label) {
+  void comingSoon(BuildContext context) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: AppColors.surface,
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 110),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          content: Text(
+            'Coming soon',
+            style: GoogleFonts.manrope(color: AppColors.textPrimary),
+          ),
+        ),
+      );
+  }
+
+  Widget buildTile(IconData icon, String label, VoidCallback onTap) {
     return InkWell(
-      onTap: () {},
-      borderRadius: BorderRadius.circular(12),
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
@@ -52,22 +71,28 @@ class ProfileMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void soon() => comingSoon(context);
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           buildSectionTitle('General'),
-          buildTile(Icons.favorite_border, 'Favorite Cars'),
-          buildTile(Icons.history, 'Previous Rent'),
-          buildTile(Icons.notifications_none, 'Notification'),
-          buildTile(Icons.handshake_outlined, 'Connected to Rivano Partnerships'),
+          buildTile(Icons.favorite_border, 'Favorite Cars', soon),
+          buildTile(Icons.history, 'Previous Rent', soon),
+          buildTile(Icons.notifications_none, 'Notification', soon),
+          buildTile(
+            Icons.handshake_outlined,
+            'Connected to Rivano Partnerships',
+            soon,
+          ),
           buildSectionTitle('Support'),
-          buildTile(Icons.settings_outlined, 'Appearance Settings'),
-          buildTile(Icons.translate, 'Languages'),
-          buildTile(Icons.person_add_alt, 'Invite Friends'),
-          buildTile(Icons.headset_mic_outlined, 'Help Support'),
-          buildTile(Icons.logout, 'Log out'),
+          buildTile(Icons.settings_outlined, 'Appearance Settings', soon),
+          buildTile(Icons.translate, 'Languages', soon),
+          buildTile(Icons.person_add_alt, 'Invite Friends', soon),
+          buildTile(Icons.headset_mic_outlined, 'Help Support', soon),
+          buildTile(Icons.logout, 'Log out', soon),
         ],
       ),
     );

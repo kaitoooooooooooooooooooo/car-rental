@@ -92,7 +92,7 @@ class _CarLocationMapState extends State<CarLocationMap> {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.borderSubtle),
       ),
       clipBehavior: Clip.antiAlias,
