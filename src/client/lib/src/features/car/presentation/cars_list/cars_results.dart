@@ -64,7 +64,7 @@ class CarsResults extends ConsumerWidget {
 class NoCarsFound extends StatelessWidget {
   const NoCarsFound({super.key, this.query = ''});
 
-  static const String title = 'Aucune voiture pour votre recherche';
+  static const String title = 'No cars match your search';
 
   final String query;
 
@@ -72,9 +72,9 @@ class NoCarsFound extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final subtitle = query.isEmpty
-        ? 'Essayez de modifier vos filtres.'
-        : 'Aucun résultat pour « $query ». '
-              'Essayez un autre mot-clé ou modifiez vos filtres.';
+        ? 'Try changing your filters.'
+        : 'No results for "$query". '
+              'Try another keyword or change your filters.';
 
     return Center(
       child: Padding(

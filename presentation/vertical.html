@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Rivano – Vertical</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #121212;
+    --accent: #7B1B38;
+    --accent-light: #C24A6E;
+    --text: #F5F5F5;
+    --muted: #A0A0A0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; font-family: 'Manrope', sans-serif; color: var(--text); }
+  #stage {
+    position: relative; width: 1080px; height: 1920px; overflow: hidden; flex-shrink: 0;
+    background: radial-gradient(900px 900px at 50% 45%, rgba(123,27,56,0.35), transparent 65%),
+                radial-gradient(700px 600px at 0% 100%, rgba(123,27,56,0.18), transparent 60%),
+                var(--bg);
+  }
+  .logo { position: absolute; top: 110px; left: 50%; width: 440px; margin-left: -220px; }
+  .phone {
+    position: absolute; left: 50%; top: 290px; width: 660px; height: 1416px; margin-left: -330px;
+    border-radius: 96px; background: #050505; border: 4px solid #333; padding: 20px;
+    box-shadow: 0 60px 160px rgba(0,0,0,0.75), 0 0 0 14px #161616;
+  }
+  .screen { position: relative; width: 100%; height: 100%; border-radius: 76px; overflow: hidden; background: var(--bg); }
+  .group { position: absolute; inset: 0; opacity: 0; background: var(--bg); will-change: opacity, transform; }
+  .group img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+  .label { position: absolute; left: 0; right: 0; top: 1745px; text-align: center; opacity: 0; }
+  .label h2 { font-size: 76px; font-weight: 800; letter-spacing: -1.5px; line-height: 1; }
+  .label p { margin-top: 18px; font-size: 34px; font-weight: 600; color: var(--muted); }
+  .dots { position: absolute; left: 50%; top: 1720px; display: flex; gap: 12px; transform: translateX(-50%); }
+  .dots div { width: 54px; height: 6px; border-radius: 3px; background: #333; }
+  #fade { position: absolute; inset: 0; background: var(--bg); opacity: 0; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <img class="logo" src="assets/rivano-logo-blanc.svg" alt="Rivano">
+  <div class="phone" id="phone">
+    <div class="screen" id="screen"></div>
+  </div>
+  <div class="label" id="l0"><h2>Trouver</h2><p>Les voitures les mieux notées</p></div>
+  <div class="label" id="l1"><h2>Rechercher</h2><p>Par marque, prix et lieu</p></div>
+  <div class="label" id="l2"><h2>Découvrir</h2><p>Photos, caractéristiques et tarifs</p></div>
+  <div class="label" id="l3"><h2>Personnaliser</h2><p>Un profil pensé pour l'utilisateur</p></div>
+  <div id="fade"></div>
+</div>
+
+<script>
+  const DURATION = 30;
+  const seq = (dir, n) => Array.from({ length: n }, (_, k) => `captures/${dir}/${String(k).padStart(2, '0')}.jpg`);
+  const GROUPS = [
+    { a: 0, b: 7.2, dir: 'x', frames: seq('home', 30), scroll: [2.6, 4.4] },
+    { a: 7.2, b: 10.6, dir: 'x', frames: ['captures/03-search.png'] },
+    { a: 10.6, b: 14, dir: 'fade', frames: ['captures/09-search-720.png'] },
+    { a: 14, b: 24.2, dir: 'x', frames: seq('detail', 40), scroll: [16.2, 18.8] },
+    { a: 24.2, b: 30, dir: 'x', frames: ['captures/08-profile.png'] },
+  ];
+  const LABELS = [[0, 7.2], [7.2, 14], [14, 24.2], [24.2, 30]];
+  const T = 0.6;
+  const $ = (id) => document.getElementById(id);
+  const clamp = (v) => Math.max(0, Math.min(1, v));
+  const ease = (x) => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+  const seg = (t, a, b) => ease(clamp((t - a) / (b - a)));
+
+  function render(t) {
+    t = ((t % DURATION) + DURATION) % DURATION;
+
+    GROUPS.forEach((g, i) => {
+      const el = g.el;
+      const last = i === GROUPS.length - 1;
+      const enter = i === 0 ? 1 : seg(t, g.a, g.a + T);
+      const visible = t >= g.a && (last || t < g.b + T);
+      const next = GROUPS[i + 1];
+      const out = next && next.dir === 'x' ? seg(t, next.a, next.a + T) : 0;
+      el.style.zIndex = i;
+      if (g.dir === 'x') {
+        el.style.opacity = visible ? 1 : 0;
+        el.style.transform = `translateX(${(1 - enter) * 100 - out * 30}%)`;
+      } else {
+        el.style.opacity = visible ? enter : 0;
+        el.style.transform = `translateX(${-out * 30}%)`;
+      }
+      el.style.filter = out > 0 ? `brightness(${1 - 0.5 * out})` : 'none';
+      const k = g.scroll ? Math.round(seg(t, g.scroll[0], g.scroll[1]) * (g.frames.length - 1)) : 0;
+      if (g.shown !== k) {
+        if (g.shown !== undefined) g.imgs[g.shown].style.opacity = 0;
+        g.imgs[k].style.opacity = 1;
+        g.shown = k;
+      }
+    });
+
+    LABELS.forEach(([a, b], i) => {
+      const k = Math.min(seg(t, a + 0.1, a + 0.7), 1 - seg(t, b - 0.4, b));
+      $('l' + i).style.opacity = k;
+      $('l' + i).style.transform = `translateY(${30 * (1 - seg(t, a + 0.1, a + 0.7))}px)`;
+    });
+
+    $('phone').style.transform = `translateY(${Math.sin(t / DURATION * Math.PI * 4) * 10}px)`;
+    $('fade').style.opacity = Math.max(seg(t, 29.2, 30), 1 - seg(t, 0, 0.6));
+  }
+
+  function fit() {
+    const s = Math.min(innerWidth / 1080, innerHeight / 1920);
+    $('stage').style.transform = `scale(${s})`;
+  }
+
+  GROUPS.forEach((g) => {
+    g.el = document.createElement('div');
+    g.el.className = 'group';
+    g.imgs = g.frames.map((src) => {
+      const img = document.createElement('img');
+      img.src = src;
+      g.el.appendChild(img);
+      return img;
+    });
+    $('screen').appendChild(g.el);
+  });
+
+  window.ready = Promise.all([...document.images].map((img) => img.decode().catch(() => {})));
+  window.render = render;
+  window.addEventListener('resize', fit);
+  if (!new URLSearchParams(location.search).has('capture')) fit();
+  render(0);
+
+  if (!new URLSearchParams(location.search).has('capture')) {
+    const start = performance.now();
+    const loop = (now) => { render((now - start) / 1000); requestAnimationFrame(loop); };
+    requestAnimationFrame(loop);
+  }
+</script>
+</body>
+</html>

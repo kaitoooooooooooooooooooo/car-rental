@@ -37,7 +37,7 @@ class _BookingSearchCardState extends ConsumerState<BookingSearchCard> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         spacing: 12,
@@ -91,7 +91,7 @@ class _BookingSearchCardState extends ConsumerState<BookingSearchCard> {
     filled: true,
     fillColor: AppColors.surfaceLow,
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(12),
       borderSide: BorderSide.none,
     ),
   );

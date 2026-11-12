@@ -1,3 +1,4 @@
+import 'package:car_rent_client/src/utils/car_labels.dart';
 import 'package:car_rent_client/src/features/car/domain/car.dart';
 import 'package:car_rent_client/src/theme/theme.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class FeaturedCarCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Stack(
           children: [
@@ -69,11 +70,11 @@ class FeaturedCarCard extends StatelessWidget {
                   children: [
                     SpecBadge(
                       icon: Icons.speed_rounded,
-                      label: '${specs.puissanceCh} ch',
+                      label: '${specs.puissanceCh} HP',
                     ),
                     SpecBadge(
                       icon: Icons.local_gas_station_outlined,
-                      label: specs.carburant,
+                      label: carLabel(specs.carburant),
                     ),
                   ],
                 ),
@@ -88,7 +89,7 @@ class FeaturedCarCard extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.accent,
+                  color: AppColors.surfaceLow,
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: Row(
@@ -97,14 +98,14 @@ class FeaturedCarCard extends StatelessWidget {
                     const Icon(
                       Icons.my_location_rounded,
                       size: 14,
-                      color: AppColors.onAccent,
+                      color: AppColors.textSecondary,
                     ),
                     Text(
                       car.localisation.ville,
                       style: GoogleFonts.manrope(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.onAccent,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                   ],

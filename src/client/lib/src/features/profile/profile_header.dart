@@ -47,7 +47,7 @@ class ProfileHeader extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         Text(
-          'Tom Tom',
+          'Tom',
           style: GoogleFonts.manrope(
             color: AppColors.textPrimary,
             fontSize: 26,
