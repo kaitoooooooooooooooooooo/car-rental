@@ -79,7 +79,6 @@ class ProfileMenu extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           buildSectionTitle('General'),
-          buildTile(Icons.favorite_border, 'Favorite Cars', soon),
           buildTile(Icons.history, 'Previous Rent', soon),
           buildTile(Icons.notifications_none, 'Notification', soon),
           buildTile(

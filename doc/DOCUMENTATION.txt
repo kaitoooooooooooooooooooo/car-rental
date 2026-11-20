@@ -47,7 +47,6 @@ A User Story is Done if :
   11 Panneau de filtres (UI + filtrage reel)     	DONE
   10 Ecran detail vehicule                       	DONE
   12 Reservation (dates + indisponibilites)      	A FAIRE (choix des dates fait)
-  13 Gestion des erreurs reseau cote client      	A FAIRE
 
 	Avancement : 12 / 14
 
@@ -326,8 +325,6 @@ Au Cours de ce project j ai eu recours a l'utilisation de l'ia pour :
   - Création du fichier cars.json
   - Récupération et organisation des photos des voitures
   - Génération du logo de l'application
-  - Simplification du code sur le modele du projet Pokemon
-  - Aide a la redaction et a la relecture de la documentation Word
 
 
 

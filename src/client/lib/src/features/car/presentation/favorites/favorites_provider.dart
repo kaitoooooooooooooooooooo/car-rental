@@ -1,3 +1,5 @@
+import 'package:car_rent_client/src/features/car/data/remote/car_service.dart';
+import 'package:car_rent_client/src/features/car/domain/car.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class FavoritesNotifier extends Notifier<Set<String>> {
@@ -17,4 +19,12 @@ class FavoritesNotifier extends Notifier<Set<String>> {
 
 final favoritesProvider = NotifierProvider<FavoritesNotifier, Set<String>>(() {
   return FavoritesNotifier();
+});
+
+final favoriteCarsProvider = Provider<AsyncValue<List<Car>>>((ref) {
+  final favorites = ref.watch(favoritesProvider);
+  final carsValue = ref.watch(carsListFutureProvider);
+  return carsValue.whenData(
+    (cars) => cars.where((car) => favorites.contains(car.id)).toList(),
+  );
 });

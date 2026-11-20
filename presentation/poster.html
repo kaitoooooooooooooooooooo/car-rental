@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Affiche A3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Orbitron:wght@800&display=swap" rel="stylesheet">
+<style>
+  @page { size: 297mm 420mm; margin: 0; }
+  :root { --accent: #7B1B38; --accent-light: #C24A6E; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #555; }
+  body { font-family: 'Manrope', sans-serif; color: #F5F5F5; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .poster {
+    position: relative; width: 297mm; height: 420mm; overflow: hidden; margin: 0 auto;
+    background: radial-gradient(220mm 200mm at 50% 54%, color-mix(in srgb, var(--accent) 42%, transparent), transparent 70%), #111111;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .head { margin-top: 32mm; height: 62mm; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; text-align: center; }
+  .head img { height: 30mm; max-width: 230mm; object-fit: contain; display: block; }
+  .head h1 { font-size: 30mm; font-weight: 800; letter-spacing: -0.8mm; line-height: 1; }
+  .head p { margin-top: 9mm; font-size: 11mm; font-weight: 600; color: #B5B5B5; }
+  .phones { flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8mm; }
+  .phone {
+    width: 80mm; aspect-ratio: 410 / 880; border-radius: 11mm; background: #050505; border: 0.6mm solid #333;
+    padding: 2.2mm; box-shadow: 0 8mm 24mm rgba(0,0,0,0.6), 0 0 0 1.6mm #181818;
+  }
+  .phone.main { width: 98mm; transform: translateY(-6mm); }
+  .phone img { width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 8.8mm; display: block; }
+  .tablets { position: relative; width: 245mm; height: 232mm; }
+  .tablet {
+    position: absolute; width: 205mm; aspect-ratio: 1914 / 1296; border-radius: 7mm; background: #050505;
+    border: 0.6mm solid #333; padding: 3.5mm; box-shadow: 0 10mm 30mm rgba(0,0,0,0.65), 0 0 0 1.6mm #181818;
+  }
+  .tablet img { width: 100%; height: 100%; object-fit: cover; border-radius: 4mm; display: block; }
+  .tablet.back { left: 0; top: 0; }
+  .tablet.front { right: 0; bottom: 0; }
+  .scene { position: relative; width: 297mm; height: 250mm; }
+  .scene .shot { position: absolute; overflow: hidden; background: #050505; box-shadow: 0 10mm 30mm rgba(0,0,0,0.6); }
+  .scene .shot img { width: 100%; display: block; }
+  .scene .card { border-radius: 6mm; padding: 2mm; border: 0.5mm solid #333; }
+  .scene .card img { border-radius: 4.5mm; }
+  .scene .phone-free { border-radius: 12mm; padding: 2.6mm; border: 0.6mm solid #333; box-shadow: 0 12mm 34mm rgba(0,0,0,0.7), 0 0 0 1.6mm #181818; }
+  .scene .phone-free img { border-radius: 9.5mm; }
+  .scene .badge {
+    position: absolute; border-radius: 50%; overflow: hidden; border: 2.2mm solid #fff;
+    box-shadow: 0 0 0 1.4mm var(--accent-light), 0 8mm 20mm rgba(0,0,0,0.5);
+  }
+  .scene .badge img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .scene .chip {
+    position: absolute; background: #fff; color: #1d2b3a; border-radius: 30mm; padding: 3.5mm 7mm 3.5mm 4mm;
+    font-size: 6mm; font-weight: 700; display: flex; align-items: center; gap: 3mm; box-shadow: 0 6mm 16mm rgba(0,0,0,0.45);
+  }
+  .scene .chip i { width: 7mm; height: 7mm; border-radius: 2mm; background: var(--accent-light); display: flex; align-items: center; justify-content: center; color: #fff; font-style: normal; font-size: 5mm; }
+  .scene .photo { position: absolute; -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 55%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 55%, transparent 100%); }
+  .scene .photo img { width: 100%; display: block; }
+  .scene .tag {
+    position: absolute; background: rgba(18,18,18,0.82); border: 0.6mm solid var(--accent-light); color: #fff;
+    border-radius: 30mm; padding: 3.5mm 7mm; font-size: 6.5mm; font-weight: 800; box-shadow: 0 6mm 16mm rgba(0,0,0,0.5); white-space: nowrap;
+  }
+  .scene .tag small { font-size: 4.6mm; font-weight: 600; color: #BDBDBD; margin-left: 1.5mm; }
+  .scene .crop { position: absolute; border-radius: 5mm; overflow: hidden; border: 0.6mm solid #3a3a3a; box-shadow: 0 10mm 28mm rgba(0,0,0,0.65); }
+  .scene .crop img { width: 100%; display: block; }
+  .scene .chrono { position: absolute; font-family: 'Orbitron', sans-serif; font-weight: 800; color: transparent; -webkit-text-stroke: 0.6mm var(--accent-light); letter-spacing: 1mm; white-space: nowrap; }
+  .scene .checker { position: absolute; height: 22mm; background: repeating-conic-gradient(#f2f2f2 0 25%, #141414 0 50%) 0 0 / 11mm 11mm; opacity: 0.16; }
+  .scene .lockers { position: absolute; inset: 0 8mm; display: grid; grid-template-columns: repeat(7, 1fr); gap: 3mm; opacity: 0.85;
+    -webkit-mask-image: radial-gradient(80% 75% at 50% 45%, #000 30%, transparent 95%); mask-image: radial-gradient(80% 75% at 50% 45%, #000 30%, transparent 95%); }
+  .scene .locker { position: relative; height: 58mm; border-radius: 2.5mm; background: #1c1f22; border: 0.5mm solid #2c3238; }
+  .scene .locker::before { content: ''; position: absolute; left: 25%; right: 25%; top: 7mm; height: 6mm; background: repeating-linear-gradient(#2c3238 0 0.7mm, transparent 0.7mm 1.6mm); }
+  .scene .locker::after { content: ''; position: absolute; right: 3mm; top: 50%; width: 1.4mm; height: 9mm; border-radius: 1mm; background: #3d454d; }
+  .scene .locker b { position: absolute; left: 3mm; bottom: 3mm; font-size: 4.5mm; color: #59636d; font-weight: 700; }
+  .scene .locker.on { background: color-mix(in srgb, var(--accent) 35%, #1c1f22); border-color: var(--accent-light); }
+  .scene .locker.on b { color: var(--accent-light); }
+  .scene .stat { position: absolute; text-align: left; }
+  .scene .stat b { display: block; font-size: 15mm; font-weight: 800; line-height: 1; color: var(--accent-light); }
+  .scene .stat span { font-size: 5.5mm; font-weight: 700; color: #D0D0D0; }
+  .scene .step { position: absolute; display: flex; align-items: center; gap: 3mm; z-index: 3; }
+  .scene .step i { width: 13mm; height: 13mm; border-radius: 50%; background: var(--accent); border: 0.6mm solid var(--accent-light); display: flex; align-items: center; justify-content: center; font-style: normal; font-size: 7mm; font-weight: 800; color: #fff; }
+  .scene .step b { display: block; font-size: 7mm; font-weight: 800; line-height: 1.1; }
+  .scene .step span { font-size: 4.4mm; font-weight: 600; color: #B5B5B5; }
+  .scene .arrow-step { position: absolute; z-index: 4; width: 15mm; height: 15mm; border-radius: 50%; background: var(--accent); border: 0.6mm solid var(--accent-light); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11mm; font-weight: 800; line-height: 1; padding-bottom: 1.6mm; box-shadow: 0 4mm 12mm rgba(0,0,0,0.5); }
+  .foot { padding-bottom: 24mm; text-align: center; }
+  .foot .bar { width: 30mm; height: 1.4mm; border-radius: 1mm; background: var(--accent-light); margin: 0 auto 7mm; }
+  .foot .cfc { font-size: 8mm; font-weight: 800; }
+  .foot .cfc span { color: #B5B5B5; font-weight: 600; }
+  .landscape .poster {
+    width: 420mm; height: 297mm; display: grid; grid-template-columns: 140mm 1fr; grid-template-rows: 1fr auto;
+    background: radial-gradient(240mm 200mm at 68% 50%, color-mix(in srgb, var(--accent) 42%, transparent), transparent 70%), #111111;
+  }
+  .landscape .head { grid-column: 1; grid-row: 1; margin: 0; height: auto; padding: 0 0 0 26mm; align-items: flex-start; justify-content: center; text-align: left; }
+  .landscape .head img { width: 112mm !important; height: auto !important; max-width: none; }
+  .landscape .head h1 { font-size: 21mm; letter-spacing: -0.6mm; }
+  .landscape .head p { margin-top: 8mm; font-size: 9mm; line-height: 1.3; max-width: 108mm; }
+  .landscape .phones { grid-column: 2; grid-row: 1 / span 2; overflow: visible; }
+  .landscape .scene { transform: scale(0.9); flex-shrink: 0; }
+  .landscape .foot { grid-column: 1; grid-row: 2; padding: 0 0 26mm 26mm; text-align: left; }
+  .landscape .foot .bar { margin: 0 0 6mm; }
+  .landscape .foot .cfc { font-size: 6mm; line-height: 1.4; }
+  .landscape .foot .cfc span { display: block; }
+  @media screen { .poster { margin: 20px auto; } }
+</style>
+</head>
+<body>
+<div class="poster" id="poster">
+  <div class="head">
+    <div id="brand"></div>
+    <p id="tagline"></p>
+  </div>
+  <div class="phones" id="phones"></div>
+  <div class="foot">
+    <div class="bar"></div>
+    <div class="cfc"><b id="job">Informaticien</b> CFC <span>· Développement d'applications mobile</span></div>
+  </div>
+</div>
+
+<script>
+  const APPS = {
+    rivano: {
+      name: 'Rivano',
+      logo: 'assets/rivano-logo-blanc.svg',
+      tagline: 'Louez la voiture de vos rêves en quelques secondes',
+      accent: '#7B1B38',
+      accentLight: '#C24A6E',
+      screens: [],
+      layout: `
+        <div class="scene">
+          <div class="step" style="left:16mm; top:14mm;"><i>1</i><div><b>Chercher</b><span>Lieu, dates, envie</span></div></div>
+          <div class="step" style="left:109mm; top:34mm;"><i>2</i><div><b>Comparer</b><span>Prix, notes, modèles</span></div></div>
+          <div class="step" style="left:202mm; top:54mm;"><i>3</i><div><b>Réserver</b><span>En un tap</span></div></div>
+          <div class="shot phone-free" style="left:14mm; top:40mm; width:82mm; z-index:2;"><img src="captures/01-home.png"></div>
+          <div class="shot phone-free" style="left:107mm; top:60mm; width:82mm; z-index:2;"><img src="captures/03-search.png"></div>
+          <div class="shot phone-free" style="left:200mm; top:80mm; width:82mm; z-index:2;"><img src="captures/05-detail.png"></div>
+          <div class="arrow-step" style="left:94mm; top:128mm;">›</div>
+          <div class="arrow-step" style="left:187mm; top:148mm;">›</div>
+        </div>`,
+    },
+    lockermanager: {
+      name: 'Locker Manager',
+      logo: '',
+      tagline: "Gérez tous les casiers de l'école en un coup d'œil",
+      accent: '#1E8FC2',
+      accentLight: '#49C5F3',
+      screens: [],
+      layout: `
+        <div class="scene">
+          <div class="lockers">${Array.from({ length: 28 }, (_, i) => `<div class="locker${[3, 9, 12, 17, 22].includes(i) ? ' on' : ''}"><b>${i + 1}</b></div>`).join('')}</div>
+          <div class="shot card" style="left:34mm; top:28mm; width:228mm; transform:rotate(-3deg); z-index:2;"><img src="apps/lockermanager/casiers.png"></div>
+          <div class="crop" style="right:10mm; top:150mm; width:132mm; transform:rotate(4deg); z-index:3;"><img src="apps/lockermanager/row-ko.png"></div>
+          <div class="crop" style="left:14mm; top:132mm; width:74mm; transform:rotate(-7deg); z-index:3; background:#fff;"><img src="apps/lockermanager/card.png"></div>
+          <div class="stat" style="left:112mm; top:196mm; z-index:3;"><b>115</b><span>casiers</span></div>
+          <div class="stat" style="left:160mm; top:196mm; z-index:3;"><b>3</b><span>étages</span></div>
+          <div class="stat" style="left:196mm; top:196mm; z-index:3;"><b>112</b><span>élèves</span></div>
+        </div>`,
+    },
+    kokocare: {
+      name: 'KokoCare',
+      job: 'Informaticienne',
+      logo: '',
+      tagline: 'Bien-être mental, conçu avec des pros de la santé',
+      screens: [],
+      accent: '#3E7FB8',
+      accentLight: '#8CC8F0',
+      layout: `
+        <div class="scene">
+          <div class="shot card" style="left:22mm; top:18mm; width:96mm; transform:rotate(-7deg);"><img src="apps/kokocare/routine.png"></div>
+          <div class="shot phone-free" style="left:95mm; top:6mm; width:112mm; z-index:2;"><img src="apps/kokocare/home.png"></div>
+          <div class="shot card" style="right:16mm; top:118mm; width:104mm; transform:rotate(6deg); z-index:3;"><img src="apps/kokocare/add.png"></div>
+          <div class="badge" style="right:30mm; top:4mm; width:62mm; height:62mm; z-index:4;"><img src="apps/kokocare/koala.png"></div>
+          <div class="chip" style="left:14mm; top:182mm; z-index:4; transform:rotate(-3deg);"><i>✓</i>Boire 2L d'eau par jour</div>
+          <div class="chip" style="left:30mm; top:205mm; z-index:4; transform:rotate(2deg);"><i>✓</i>30 minutes de soleil</div>
+        </div>`,
+    },
+    keeptrack: {
+      name: 'KeepTrack',
+      logo: 'apps/keeptrack/logo.png',
+      logoHeight: 40,
+      tagline: 'Suivez vos chronos et progressez sur chaque circuit',
+      accent: '#B3121F',
+      accentLight: '#E5383B',
+      screens: [],
+      layout: `
+        <div class="scene">
+          <div class="checker" style="left:-30mm; right:-30mm; top:92mm; transform:rotate(-14deg);"></div>
+          <svg viewBox="0 0 297 250" style="position:absolute; inset:0; width:100%; height:100%;" fill="none">
+            <path d="M40 200 C 18 150, 52 112, 96 124 S 150 74, 182 40 S 276 26, 268 92 S 214 136, 244 186 S 168 238, 112 214 S 58 236, 40 200 Z" stroke="#ffffff" stroke-opacity="0.13" stroke-width="9" stroke-linejoin="round"/>
+            <path d="M40 200 C 18 150, 52 112, 96 124 S 150 74, 182 40 S 276 26, 268 92 S 214 136, 244 186 S 168 238, 112 214 S 58 236, 40 200 Z" stroke="#E5383B" stroke-opacity="0.55" stroke-width="1" stroke-dasharray="4 4"/>
+          </svg>
+          <div class="shot phone-free" style="left:20mm; top:44mm; width:84mm; transform:rotate(-7deg); z-index:1;"><img src="apps/keeptrack/circuit.png"></div>
+          <div class="shot phone-free" style="right:20mm; top:44mm; width:84mm; transform:rotate(7deg); z-index:1;"><img src="apps/keeptrack/profile.png"></div>
+          <div class="shot phone-free" style="left:100mm; top:18mm; width:97mm; z-index:2;"><img src="apps/keeptrack/home.png"></div>
+        </div>`,
+    },
+  };
+
+  const APP = APPS[new URLSearchParams(location.search).get('app') || 'rivano'];
+  if (new URLSearchParams(location.search).get('orient') === 'landscape') {
+    document.body.classList.add('landscape');
+    document.querySelector('.cfc span').textContent = "Développement d'applications mobile";
+  }
+  document.documentElement.style.setProperty('--accent', APP.accent);
+  document.documentElement.style.setProperty('--accent-light', APP.accentLight);
+  document.getElementById('brand').innerHTML = APP.logo
+    ? `<img src="${APP.logo}" alt="${APP.name}" style="height:${APP.logoHeight || 30}mm">`
+    : `<h1>${APP.name}</h1>`;
+  document.getElementById('tagline').textContent = APP.tagline;
+  if (APP.job) document.getElementById('job').textContent = APP.job;
+
+  const middle = Math.floor(APP.screens.length / 2);
+  document.getElementById('phones').innerHTML = APP.layout ? APP.layout : APP.device === 'tablet'
+    ? `<div class="tablets">${APP.screens.map((src, i) => `<div class="tablet ${i === 0 ? 'back' : 'front'}"><img src="${src}"></div>`).join('')}</div>`
+    : APP.screens
+    .map((src, i) => `<div class="phone${i === middle && APP.screens.length > 1 ? ' main' : ''}"><img src="${src}"></div>`)
+    .join('');
+</script>
+</body>
+</html>

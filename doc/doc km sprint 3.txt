@@ -11,7 +11,7 @@ Tom Mehl
 - Passage a Notifier / NotifierProvider (Riverpod).
 - Navigation avec go_router : route /car/:id vers la page de detail.
 
-22.10.2026
+23.10.2026
 - Ajout de la section Recommended cars sur la page Home.
 - Simplification de la page Home.
 - Revue du projet et planification.
@@ -33,8 +33,48 @@ Tom Mehl
 - App renommee "Rivano".
 - Correction de la bulle de recherche dans la tab bar.
 
+02.11.2026
+- Rattrapage CIE ICH-335 : partie 3 flutter_bloc (p. 99-123)
+  et partie 4 Repository (p. 124-152).
+- Charte graphique mise en place sur Figma.
+
+05.11.2026
+- Mise au propre de la doc au km.
+- Mise a jour de la doc Word avec les nouvelles fonctionnalites.
+
+06.11.2026
+- Lecture de la doc Google Maps (google_maps_flutter, _web).
+- Analyse du spike spike_google_maps.
+- Weekly review avec M. Guerdat.
+
+09.11.2026
+- Route API GET /cars/:id/location (adresse -> coordonnees GPS).
+- Widget CarLocationMap sur la page de detail.
+- Cle API dans un fichier .env (dotenv), avec S. Lauper.
+- Nettoyage du depot GitHub (messages de commits, branches).
+- Page de profil : ProfileHeader + ProfileMenu.
+
+12.11.2026
+- Splash screen avec le logo Rivano.
+- Bouton favori (FavoriteButton) sur la page de detail.
+
+13.11.2026
+- Preparation et portes ouvertes (videos de presentation, affiches A3).
+
+16.11.2026
+- Rattrapage CIE : partie 5.
+- Sortie ARC.
+- Section Favorite Cars dans le profil.
+
+19.11.2026
+- Review, mise a jour du Gantt et de la doc au km.
+
 A faire
-- Carte de localisation sur la page de detail (lundi).
+- Carte de localisation : Google demande d'activer la facturation
+  du projet Google Cloud. La section Location est en commentaire
+  sur la page de detail en attendant.
+- Favoris enregistres (ils sont perdus au redemarrage de l'app).
+- Reservation (dates + indisponibilites).
 
 
 ========================================================================
@@ -241,3 +281,165 @@ COMPOSANTS
   Regenerer apres un changement de logo :
 
     dart run flutter_launcher_icons
+
+9. Splash screen - splash/splash_screen.dart
+
+  Le logo apparait en fondu et en zoom. Les voitures commencent
+  a se charger pendant l'animation, puis on part sur Home.
+
+    late final AnimationController controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..forward();
+
+    @override
+    void initState() {
+      super.initState();
+      ref.read(featuredCarsListFutureProvider);
+      Future.delayed(const Duration(milliseconds: 1800), () {
+        splashShown = true;
+        if (mounted) context.goNamed(AppRoute.home.name);
+      });
+    }
+
+  Dans app_router.dart, le redirect oblige a passer par /splash,
+  meme si on recharge la page web sur une autre adresse :
+
+    initialLocation: '/splash',
+    redirect: (context, state) {
+      if (!splashShown && state.matchedLocation != '/splash') return '/splash';
+      return null;
+    },
+
+
+10. Localisation - GET /cars/:id/location (serveur)
+
+  Les voitures n'ont pas de latitude/longitude. Le serveur envoie
+  l'adresse a Google Geocoding et renvoie { lat, lng }.
+
+    const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+
+    const { adresse, codePostal, ville, canton } = car.localisation;
+    const address = `${adresse}, ${codePostal} ${ville}, ${canton}, Suisse`;
+    const params = new URLSearchParams({ address: address, key: apiKey });
+
+    fetch(`https://maps.googleapis.com/maps/api/geocode/json?${params}`)
+
+  La cle est dans src/server/.env (ignore par git) :
+
+    GOOGLE_MAPS_API_KEY=...
+
+  et chargee au demarrage dans app.js :
+
+    const dotenv = require("dotenv");
+    dotenv.config();
+
+  /:id/location doit etre declaree avec les autres routes /:id
+  apres /featured, comme pour la route 3.
+
+
+11. Carte - CarLocationMap (car_details/car_location_map.dart)
+
+  StatefulWidget : il appelle la route au demarrage puis place
+  un marqueur et centre la camera dessus.
+
+    final response = await http.get(
+      Uri.parse('$url/cars/${widget.carId}/location'),
+    );
+    final location = jsonDecode(response.body);
+    final position = LatLng(
+      (location['lat'] as num).toDouble(),
+      (location['lng'] as num).toDouble(),
+    );
+
+    mapController?.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(target: position, zoom: 16),
+      ),
+    );
+
+  En cas d'erreur, le widget affiche "Location unavailable".
+
+
+12. Page de profil - ProfileHeader (profile/profile_header.dart)
+
+  La photo chevauche le bas de la banniere : Stack + Positioned.
+  Clip.none laisse la photo depasser du Stack.
+
+    final top = coverHeight - profileHeight / 2;
+
+    Stack(
+      clipBehavior: Clip.none,
+      alignment: Alignment.center,
+      children: [
+        Container(
+          margin: EdgeInsets.only(bottom: profileHeight / 2),
+          child: buildCoverImage(),
+        ),
+        Positioned(top: top, child: buildProfileImage()),
+      ],
+    ),
+
+  ProfileMenu (profile_menu.dart) : une methode buildTile(icone,
+  texte, action) reutilisee pour chaque ligne du menu.
+
+
+13. Favoris - FavoritesNotifier (favorites/favorites_provider.dart)
+
+  Meme logique que le projet Pokemon : un Set d'ids, et toggle
+  ajoute ou retire l'id.
+
+    class FavoritesNotifier extends Notifier<Set<String>> {
+      @override
+      Set<String> build() => {};
+
+      void toggle(String carId) {
+        if (state.contains(carId)) {
+          state = {...state}..remove(carId);
+        } else {
+          state = {...state, carId};
+        }
+      }
+    }
+
+  FavoriteButton ne se reconstruit que si CETTE voiture change,
+  grace a select :
+
+    final isFavorite = ref.watch(
+      favoritesProvider.select((favs) => favs.contains(carId)),
+    );
+
+
+14. Voitures en favori - favoriteCarsProvider
+
+  Provider derive : il combine les ids favoris et la liste de
+  l'API, et garde seulement les favoris.
+
+    final favoriteCarsProvider = Provider<AsyncValue<List<Car>>>((ref) {
+      final favorites = ref.watch(favoritesProvider);
+      final carsValue = ref.watch(carsListFutureProvider);
+      return carsValue.whenData(
+        (cars) => cars.where((car) => favorites.contains(car.id)).toList(),
+      );
+    });
+
+  FavoriteCarsSection (profile/) l'affiche avec .when() :
+  message si la liste est vide, sinon une liste horizontale
+  de CarCard qui ouvrent la page de detail.
+
+
+15. Libelles en anglais - utils/car_labels.dart
+
+  Les donnees sont en francais (essence, automatique...),
+  l'app en anglais :
+
+    const Map<String, String> carLabels = {
+      'essence': 'Petrol',
+      'diesel': 'Diesel',
+      'hybride': 'Hybrid',
+      'electrique': 'Electric',
+      'automatique': 'Automatic',
+      'manuelle': 'Manual',
+    };
+
+    String carLabel(String value) => carLabels[value] ?? value;

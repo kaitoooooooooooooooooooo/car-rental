@@ -1,3 +1,4 @@
+import 'package:car_rent_client/src/features/profile/favorite_cars_section.dart';
 import 'package:car_rent_client/src/features/profile/profile_header.dart';
 import 'package:car_rent_client/src/features/profile/profile_menu.dart';
 import 'package:car_rent_client/src/theme/theme.dart';
@@ -12,7 +13,7 @@ class ProfileScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: ListView(
         padding: EdgeInsets.zero,
-        children: const [ProfileHeader(), ProfileMenu()],
+        children: const [ProfileHeader(), FavoriteCarsSection(), ProfileMenu()],
       ),
     );
   }
