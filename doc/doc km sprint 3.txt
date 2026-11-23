@@ -84,7 +84,8 @@ COMPOSANTS
 
 1. Onglet actif - tabIndexProvider (app_shell.dart)
 
-  Garde l'index de l'onglet affiche (0 = Home, 1 = Profile, 2 = Search).
+  Ca retient sur quel onglet on est en bas de l'ecran
+  (0 = Home, 1 = Profile, 2 = Search).
 
     class TabIndexNotifier extends Notifier<int> {
       @override
@@ -97,14 +98,17 @@ COMPOSANTS
       return TabIndexNotifier();
     });
 
-  Changer d'onglet depuis n'importe quel ecran (ex : bouton See all) :
+  Comme ca on peut changer d'onglet depuis n'importe ou, par exemple
+  le bouton See all qui envoie direct sur la recherche :
 
     ref.read(tabIndexProvider.notifier).select(searchTab);
 
 
 2. Navigation - app_router.dart
 
-  "/" affiche l'AppShell, "/car/:id" la page de detail.
+  C'est la liste des pages de l'app. 
+  "/" c'est l'ecran principal avec les onglets, et
+  "/car/:id" c'est la page d'une voiture (l'id dit laquelle).
 
     GoRoute(
       path: '/',
@@ -122,7 +126,7 @@ COMPOSANTS
       ],
     ),
 
-  Ouvrir le detail d'une voiture :
+  Pour ouvrir la page d'une voiture on donne juste son id :
 
     context.goNamed(
       AppRoute.carDetail.name,
@@ -132,7 +136,9 @@ COMPOSANTS
 
 3. API - GET /cars/featured (serveur)
 
-  Les 10 voitures les mieux notees.
+  Le serveur renvoie les 10 voitures qui ont les meilleurs notes.
+  Si deux voitures ont la meme note, celle avec le plus d'avis passe
+  devant.
 
     exports.getFeaturedCars = (req, res, next) => {
       Car.find()
@@ -142,7 +148,8 @@ COMPOSANTS
         .catch(next);
     };
 
-  /featured doit etre AVANT /:id, sinon "featured" est lu comme un id :
+  Attention : /featured doit etre ecrit AVANT /:id. Sinon le serveur
+  croit que le mot "featured" est l'id d'une voiture :
 
     router.get("/", carController.getCars);
     router.get("/featured", carController.getFeaturedCars);
@@ -151,7 +158,9 @@ COMPOSANTS
 
 4. Voitures recommandees - RecommendedCarsCard (home_page/)
 
-  Lit le provider et gere les 3 etats avec .when().
+  C'est la liste des voitures recommandees sur l'accueil. Les
+  voitures viennent du serveur, donc il y a 3 cas a gerer avec
+  .when() : ca charge, il y a une erreur, ou les voitures sont la.
 
     final featuredCarsValue = ref.watch(featuredCarsListFutureProvider);
 
@@ -169,7 +178,8 @@ COMPOSANTS
 
 5. Page de detail - car_details/
 
-  a) Photo + bouton retour par-dessus (Stack)
+  a) La photo prend toute la largeur, et le bouton retour est pose
+     par dessus (Stack = des elements empiles)
 
     Stack(
       children: [
@@ -185,7 +195,9 @@ COMPOSANTS
       ],
     ),
 
-  b) CarPhotoCarousel : StatefulWidget car il garde la page affichee
+  b) CarPhotoCarousel : on peut glisser entre les photos. Il doit se
+     souvenir de quelle photo est affichee, c'est pour sa que c'est
+     un StatefulWidget
 
     int currentPage = 0;
 
@@ -199,7 +211,8 @@ COMPOSANTS
       ),
     ),
 
-  c) Car Features : grille de 2 colonnes de CarFeatureCard
+  c) Car Features : les caracteristiques de la voiture rangees en
+     2 colonnes, une petite carte par info
 
     GridView.count(
       crossAxisCount: 2,
@@ -216,7 +229,8 @@ COMPOSANTS
       ],
     ),
 
-  d) CarReviewsCard : etoile pleine, demi ou vide selon la note
+  d) CarReviewsCard : affiche la note avec des etoiles. Chaque etoile
+     est pleine, a moitier ou vide selon la note
 
     if (note.moyenne >= starValue) {
       icon = Icons.star_rounded;
@@ -229,9 +243,10 @@ COMPOSANTS
 
 6. Bulle de recherche selectionnee - liquid_glass_tab_bar.dart
 
-  SizedBox.expand oblige le Stack a remplir la bulle.
-  Sans lui, le Stack faisait la taille de l'icone (26 px)
-  et la pastille etait cachee dessous.
+  Un bug : quand on etait sur la recherche, la bulle de la loupe ne
+  se coloriait pas. Le probleme c'est que la zone etait aussi petite
+  que l'icone (26 px), donc le fond colorer etait cache derriere.
+  SizedBox.expand force la zone a prendre toute la bulle.
 
     SizedBox.expand(
       child: Stack(
@@ -252,21 +267,23 @@ COMPOSANTS
 
 7. NotificationButton (common_widgets/notification_button.dart)
 
-  Meme cloche sur Home et Search :
+  Le bouton cloche (notifications) etait recopier sur Home et sur
+  Search. Maintenant c'est un seul widget qu'on reutilise partout :
 
     const NotificationButton(),
 
 
 8. Logo et icones de l'app
 
-  Logo dans l'en-tete :
+  Le logo Rivano en haut de l'ecran, en format SVG :
 
     SvgPicture.asset(
       'assets/images/app/rivano-logo-blanc.svg',
       height: 28,
     ),
 
-  Config des icones dans pubspec.yaml :
+  Les icones de l'app (celle qu'on voit sur l'ecran du telephone)
+  sont reglees dans pubspec.yaml :
 
     flutter_launcher_icons:
       image_path: "assets/icon/app_icon.png"
@@ -278,14 +295,52 @@ COMPOSANTS
       web:
         generate: true
 
-  Regenerer apres un changement de logo :
+  Si on change le logo, cette commande refait toutes les icones
+  d'un coup (Android, iPhone et web) :
 
     dart run flutter_launcher_icons
 
 9. Splash screen - splash/splash_screen.dart
 
-  Le logo apparait en fondu et en zoom. Les voitures commencent
-  a se charger pendant l'animation, puis on part sur Home.
+  C'est le premier ecran qu'on voit quand on ouvre l'app. Le logo
+  apparait doucement et grandit un peu. Pendant ce temps, l'app
+  commence deja a charger les voitures, puis elle va sur Home.
+
+  On utilise un ConsumerStatefulWidget parce que l'ecran doit se
+  souvenir de son animation, et il doit aussi pouvoir lancer le
+  chargment des voitures. SingleTickerProviderStateMixin sert a
+  faire avancer l'animation image par image.
+
+    class _SplashScreenState extends ConsumerState<SplashScreen>
+        with SingleTickerProviderStateMixin {
+
+  Une seule animation (fade, qui va de 0 a 1) fait les deux effets :
+  le logo devient visible, et il passe de 90% a 100% de sa taille
+  grace au Tween.
+
+    late final Animation<double> fade = CurvedAnimation(
+      parent: controller,
+      curve: Curves.easeOut,
+    );
+
+    late final Animation<double> scale = Tween<double>(
+      begin: 0.9,
+      end: 1,
+    ).animate(fade);
+
+    FadeTransition(
+      opacity: fade,
+      child: ScaleTransition(scale: scale, child: ...),
+    ),
+
+  Quand on quitte l'ecran, on arrete l'animation pour pas qu'elle
+  tourne pour rien :
+
+    @override
+    void dispose() {
+      controller.dispose();
+      super.dispose();
+    }
 
     late final AnimationController controller = AnimationController(
       vsync: this,
@@ -302,8 +357,8 @@ COMPOSANTS
       });
     }
 
-  Dans app_router.dart, le redirect oblige a passer par /splash,
-  meme si on recharge la page web sur une autre adresse :
+  Dans app_router.dart, le redirect force l'app a passer par le
+  splash, meme si on recharge la page web sur une autre adresse :
 
     initialLocation: '/splash',
     redirect: (context, state) {
@@ -314,8 +369,9 @@ COMPOSANTS
 
 10. Localisation - GET /cars/:id/location (serveur)
 
-  Les voitures n'ont pas de latitude/longitude. Le serveur envoie
-  l'adresse a Google Geocoding et renvoie { lat, lng }.
+  Pour mettre une voiture sur une carte, il faut sa position GPS.
+  Nos voitures ont seulement une adresse. Donc le serveur envoie
+  l'adresse a Google, et Google repond avec la position { lat, lng }.
 
     const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 
@@ -325,23 +381,29 @@ COMPOSANTS
 
     fetch(`https://maps.googleapis.com/maps/api/geocode/json?${params}`)
 
-  La cle est dans src/server/.env (ignore par git) :
+  Fait en binome avec Simon Lauper. La cle API c'est comme un mot
+  de passe pour utiliser Google : il faut pas l'ecrire dans le code
+  et surtout pas la mettre sur GitHub ou tout le monde peut la voir.
+
+  Donc la cle est rangee dans un fichier a part, src/server/.env,
+  que git ignore (il est jamais envoye sur GitHub) :
 
     GOOGLE_MAPS_API_KEY=...
 
-  et chargee au demarrage dans app.js :
+  Le serveur lit ce fichier au demarrage, dans app.js :
 
     const dotenv = require("dotenv");
     dotenv.config();
 
-  /:id/location doit etre declaree avec les autres routes /:id
-  apres /featured, comme pour la route 3.
+  Attention a l'ordre des routes : /:id/location doit etre mise
+  apres /featured, comme expliquer pour la route 3.
 
 
 11. Carte - CarLocationMap (car_details/car_location_map.dart)
 
-  StatefulWidget : il appelle la route au demarrage puis place
-  un marqueur et centre la camera dessus.
+  C'est la carte sur la page de detail. Quand elle s'affiche, elle
+  demande la position au serveur, puis elle met une epingle a cet
+  endroit et zoom dessus.
 
     final response = await http.get(
       Uri.parse('$url/cars/${widget.carId}/location'),
@@ -358,13 +420,16 @@ COMPOSANTS
       ),
     );
 
-  En cas d'erreur, le widget affiche "Location unavailable".
+  Si ca marche pas (pas de reseau, erreur Google...), la carte
+  affiche juste "Location unavailable".
 
 
 12. Page de profil - ProfileHeader (profile/profile_header.dart)
 
-  La photo chevauche le bas de la banniere : Stack + Positioned.
-  Clip.none laisse la photo depasser du Stack.
+  La photo de profil est posee a moitie sur la banniere. Pour ca on
+  utilise un Stack (des elements empiles les uns sur les autres) et
+  Positioned pour placer la photo. Clip.none permet a la photo de
+  depasser sans etre coupee.
 
     final top = coverHeight - profileHeight / 2;
 
@@ -380,14 +445,16 @@ COMPOSANTS
       ],
     ),
 
-  ProfileMenu (profile_menu.dart) : une methode buildTile(icone,
-  texte, action) reutilisee pour chaque ligne du menu.
+  ProfileMenu (profile_menu.dart) : au lieu de recopier le meme
+  code pour chaque ligne du menu, on a une seule methode buildTile
+  (icone, texte, action) qu'on appelle pour chaque ligne.
 
 
 13. Favoris - FavoritesNotifier (favorites/favorites_provider.dart)
 
-  Meme logique que le projet Pokemon : un Set d'ids, et toggle
-  ajoute ou retire l'id.
+  Meme idee que dans le projet Pokemon : on garde une liste des
+  voitures aimees (un Set d'id). toggle ajoute la voiture si elle
+  y est pas, et l'enleve si elle y est deja.
 
     class FavoritesNotifier extends Notifier<Set<String>> {
       @override
@@ -402,8 +469,8 @@ COMPOSANTS
       }
     }
 
-  FavoriteButton ne se reconstruit que si CETTE voiture change,
-  grace a select :
+  Le coeur se redessine seulement quand CETTE voiture change, et
+  pas a chaque fois qu'on touche une autre voiture, grace a select :
 
     final isFavorite = ref.watch(
       favoritesProvider.select((favs) => favs.contains(carId)),
@@ -412,8 +479,9 @@ COMPOSANTS
 
 14. Voitures en favori - favoriteCarsProvider
 
-  Provider derive : il combine les ids favoris et la liste de
-  l'API, et garde seulement les favoris.
+  Ce provider prend deux choses : la liste des favoris et la liste
+  de toutes les voitures. Il garde seulement les voitures qui sont
+  dans les favoris.
 
     final favoriteCarsProvider = Provider<AsyncValue<List<Car>>>((ref) {
       final favorites = ref.watch(favoritesProvider);
@@ -423,15 +491,16 @@ COMPOSANTS
       );
     });
 
-  FavoriteCarsSection (profile/) l'affiche avec .when() :
-  message si la liste est vide, sinon une liste horizontale
-  de CarCard qui ouvrent la page de detail.
+  FavoriteCarsSection (dans profile/) affiche le resultat. Si y a
+  aucun favori, on affiche un petit message. Sinon on affiche les
+  voitures cote a cote, et un clic ouvre la page de la voiture.
 
 
 15. Libelles en anglais - utils/car_labels.dart
 
-  Les donnees sont en francais (essence, automatique...),
-  l'app en anglais :
+  Dans la base de donnees les mots sont en francais (essence,
+  automatique...) mais l'app est en anglais. Ce petit dictionaire
+  fait la traduction :
 
     const Map<String, String> carLabels = {
       'essence': 'Petrol',
@@ -443,3 +512,192 @@ COMPOSANTS
     };
 
     String carLabel(String value) => carLabels[value] ?? value;
+
+
+========================================================================
+WIDGETS ET UTILISATIONS SPECIALE
+========================================================================
+
+
+16. RawMaterialButton - filter_bottom_sheet.dart
+
+  C'est un bouton tout simple, sans style de base (un ElevatedButton
+  a deja une couleur, une ombre...). On garde juste l'effet quand on
+  appuie dessus. Ici c'est le bouton des filtres : il ouvre le
+  panneau qui monte depuis le bas de l'ecran.
+
+    return RawMaterialButton(
+      splashColor: AppColors.accentSoft,
+      onPressed: () {
+        ref
+            .read(draftFilterProvider.notifier)
+            .replaceWith(ref.read(carFilterProvider));
+        showModalBottomSheet(
+          backgroundColor: AppColors.surfaceLow,
+          context: context,
+          isScrollControlled: true,
+          builder: (context) => ...,
+        );
+      },
+      ...
+    );
+
+
+17. InkWell - profile_menu.dart
+
+  Ca rend n'importe quoi cliquable, avec une petite vague qui
+  apparait quand on appuie. GestureDetector detecte aussi le clic
+  mais on voit rien, donc l'utilisateur sait pas si ca a marcher.
+  borderRadius arrondi la vague pour qu'elle suive la forme de la
+  ligne.
+
+    Widget buildTile(IconData icon, String label, VoidCallback onTap) {
+      return InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(...),
+      );
+    }
+
+
+18. WidgetStatePropertyAll - car_list_screen.dart
+
+  Certains widgets comme la barre de recherche peuvent changer
+  d'apparence selon ce qu'on fait (souris dessus, appuye, desactive...).
+  Nous on veut le meme style tout le temps, donc on utilise
+  WidgetStatePropertyAll qui met la MEME valeur dans tous les cas.
+
+    SearchBar(
+      hintText: 'Search your dream car...',
+      textStyle: WidgetStatePropertyAll(
+        GoogleFonts.manrope(fontSize: 14, color: AppColors.textPrimary),
+      ),
+      backgroundColor: WidgetStatePropertyAll(AppColors.surface),
+      elevation: const WidgetStatePropertyAll(0),
+      padding: const WidgetStatePropertyAll<EdgeInsets>(
+        EdgeInsets.symmetric(horizontal: 16),
+      ),
+    ),
+
+
+19. StadiumBorder - home_page_screen.dart (bouton See all)
+
+  Ca donne une forme de pilule : les deux bouts sont bien ronds,
+  peu importe la taille du bouton. On a pas besoin de calculer
+  l'arrondi nous meme.
+
+    style: TextButton.styleFrom(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      shape: const StadiumBorder(),
+    ),
+    iconAlignment: IconAlignment.end,
+
+
+20. SnackBarBehavior.floating - profile_menu.dart
+
+  Le petit message "Coming soon" flotte au dessus de l'ecran au lieu
+  d'etre colle tout en bas. La marge de 110 en bas le met au dessus
+  de la barre de navigation. hideCurrentSnackBar enleve l'ancien
+  message, comme ca si on clique plusieur fois ils s'empilent pas.
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: AppColors.surface,
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 110),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          content: Text('Coming soon'),
+        ),
+      );
+
+
+21. Brightness - theme/theme.dart
+
+  Ca dit a Flutter que l'app a un fond sombre. Du coup tout ce qu'on
+  a pas colorie nous meme (textes, icones, champs) sera en couleur
+  claire pour qu'on puisse le lire. Ca va avec ColorScheme.dark et
+  ThemeData.dark().textTheme.
+
+    ThemeData primaryTheme = ThemeData(
+      brightness: Brightness.dark,
+      textTheme: GoogleFonts.manropeTextTheme(ThemeData.dark().textTheme),
+      colorScheme: const ColorScheme.dark(
+        primary: AppColors.accent,
+        ...
+      ),
+    );
+
+
+22. TextSelectionThemeData - theme/theme.dart
+
+  C'est la couleur de la petite barre qui clignote quand on ecrit,
+  et du surlignage quand on selectionne du texte. On la met une
+  seule fois dans le theme et ca marche dans TOUT les champs.
+
+    textSelectionTheme: TextSelectionThemeData(
+      cursorColor: AppColors.accentLight,
+      selectionColor: AppColors.accentSoft,
+      selectionHandleColor: AppColors.accentLight,
+    ),
+
+
+23. whenData - car_filter_provider.dart / favorites_provider.dart
+
+  Les voitures arrivent du serveur, donc au debut ca charge, et des
+  fois il y a une erreur. whenData permet de modifier la liste (ici
+  la filtrer) seulement quand elle est arrivee, sans s'occuper du
+  chargement ni de l'erreur. L'ecran affiche ensuite comme d'hab
+  avec .when().
+
+    final filteredCarsProvider = Provider<AsyncValue<List<Car>>>((ref) {
+      final carsAsync = ref.watch(carsListFutureProvider);
+      final filter = ref.watch(carFilterProvider);
+      final query = ref.watch(searchQueryProvider);
+
+      return carsAsync.whenData((cars) => _applyFilters(cars, filter, query));
+    });
+
+  C'est pareil pour favoriteCarsProvider (composant 14).
+
+
+24. context.pop() - car_detail_screen.dart
+
+  C'est le bouton retour. Il ramene a l'ecran d'avant (Home ou
+  Search), comme la fleche retour d'un navigateur.
+
+    IconButton(
+      onPressed: () => context.pop(),
+      icon: const Icon(Icons.chevron_left),
+    ),
+
+
+25. ValueChanged - option_chips.dart / stars_widget.dart
+
+  ValueChanged c'est une fonction qu'on donne au widget, et le widget
+  l'appelle avec la valeur choisie (par ex. "Electric"). Le widget
+  lui sait pas quoi en faire, c'est l'ecran au dessus qui decide.
+  Comme ca on peut reutiliser le meme widget pour differents filtres.
+
+    final ValueChanged<String> onTap;
+
+    onTap: isAvailable ? () => onTap(option) : null,
+
+  Exemple avec le filtre carburant : on donne directement la
+  fonction qui ajoute ou enleve le carburant.
+
+    OptionChips(
+      title: 'Fuel Type',
+      options: options,
+      selected: selected,
+      onTap: notifier.toggleFuel,
+    ),
+
+  Les etoiles marchent pareil, mais avec un nombre (la note) :
+
+    final ValueChanged<double> onRatingChanged;
+
+    onTap: () => onRatingChanged(starValue),
